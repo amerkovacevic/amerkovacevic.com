@@ -11,6 +11,7 @@ import Links from "./views/Links";
 import SecretSanta from "./views/SecretSanta";
 import Resume from "./views/Resume";
 import FMTeamDraw from "./views/FMTeamDraw";
+import Bracket from "./views/Bracket";
 import { ThemeProvider } from "./theme";
 
 const router = createBrowserRouter([
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: "santa", element: <SecretSanta /> },   // ← new
       { path: "resume", element: <Resume /> },       // ← new
       { path: "/fm", element: <FMTeamDraw /> },
+          { path: "/bracket", element: <Bracket /> },
     ],
   },
 ]);

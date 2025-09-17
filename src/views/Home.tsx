@@ -5,6 +5,7 @@ const APPS = [
   { id: "pickup", name: "Pickup Soccer", to: "/pickup", emoji: "⚽", blurb: "Post games, RSVP in one click, see spots left." },
   { id: "santa",  name: "Secret Santa",  to: "/santa",  emoji: "🎁", blurb: "Create a group, invite by code, auto-assign matches." },
   { id: "fm",     name: "FM Team Draw",  to: "/fm",     emoji: "🎮", blurb: "Randomly assign Football Manager teams to your group." },
+  { id: "bracket",     name: "Bracket Generator",  to: "/bracket",     emoji: "🏆", blurb: "Create and manage tournament brackets." },
 ] as const;
 
 export default function Home() {

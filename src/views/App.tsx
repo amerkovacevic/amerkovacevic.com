@@ -103,7 +103,7 @@ export default function App() {
       <footer className="mt-12 pb-6">
         <div className="flex justify-center gap-6 text-gray-600 dark:text-gray-400">
           <a
-            href="https://github.com/yourhandle"
+            href="https://github.com/amerkovacevic"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub"
@@ -113,7 +113,7 @@ export default function App() {
             <Github className="h-6 w-6" />
           </a>
           <a
-            href="https://linkedin.com/in/yourhandle"
+            href="https://linkedin.com/in/amerkovacevic"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn"
@@ -123,7 +123,7 @@ export default function App() {
             <Linkedin className="h-6 w-6" />
           </a>
           <a
-            href="https://instagram.com/yourhandle"
+            href="https://instagram.com/am.zzy"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
