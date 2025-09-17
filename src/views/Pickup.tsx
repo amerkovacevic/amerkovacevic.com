@@ -225,7 +225,7 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
       {/* Progress bar */}
       <div className="mt-3 h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
         <div
-          className="h-full bg-brand-light dark:bg-brand-dark transition-all"
+          className="h-2 bg-slate-600 dark:bg-slate-300 rounded transition-all"
           style={{ width: `${pct}%` }}
         />
       </div>
