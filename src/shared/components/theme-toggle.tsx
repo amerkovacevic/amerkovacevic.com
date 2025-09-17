@@ -31,21 +31,43 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-checked={isDark}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       className={cn(
-        "relative inline-flex h-8 w-16 items-center rounded-brand-full transition-colors",
-        isDark ? "bg-brand-subtle" : "bg-brand-strong",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent",
+        "relative inline-flex h-12 w-24 items-center rounded-full border border-transparent px-1 transition-all duration-500",
+        isDark
+          ? "bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-slate-100"
+          : "bg-gradient-to-r from-sky-100 via-white to-sky-100 text-slate-700",
+        "shadow-[0_12px_30px_rgba(15,23,42,0.12)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent",
         className
       )}
     >
-      <span className="absolute left-2 text-xs">☀️</span>
-      <span className="absolute right-2 text-xs">🌙</span>
+      <span
+        className={cn(
+          "pointer-events-none flex h-10 w-10 items-center justify-center text-lg transition-opacity duration-500",
+          isDark ? "opacity-40" : "opacity-100"
+        )}
+        aria-hidden
+      >
+        ☀️
+      </span>
       <span
         aria-hidden
         className={cn(
-          "absolute left-1 top-1 h-6 w-6 rounded-brand-full bg-white shadow-brand-sm transition-transform duration-300 ease-in-out",
-          isDark ? "translate-x-8" : "translate-x-0"
+          "absolute inset-y-1 left-1 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white text-amber-500 shadow-[0_10px_25px_rgba(14,116,144,0.25)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/10 dark:bg-slate-900 dark:text-sky-200",
+          isDark ? "translate-x-12" : "translate-x-0"
         )}
-      />
+      >
+        <span className="text-base" aria-hidden>
+          {isDark ? "🌙" : "☀️"}
+        </span>
+      </span>
+      <span
+        className={cn(
+          "pointer-events-none ml-auto flex h-10 w-10 items-center justify-center text-lg transition-opacity duration-500",
+          isDark ? "opacity-100" : "opacity-40"
+        )}
+        aria-hidden
+      >
+        🌙
+      </span>
     </button>
   );
 }
