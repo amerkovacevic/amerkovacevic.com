@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { Github, Instagram, Linkedin } from "lucide-react";
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
 
@@ -38,8 +38,20 @@ function ExitIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
+const NAV_LINKS = [
+  { label: "Apps", to: "/" },
+  { label: "Resume", to: "/resume" },
+  { label: "Links", to: "/links" },
+];
+
 export default function RootLayout() {
   const [user, setUser] = useState<User | null>(null);
+  const location = useLocation();
+
+  const activeLabel = useMemo(() => {
+    const match = NAV_LINKS.find((item) => location.pathname.startsWith(item.to));
+    return match?.label ?? "";
+  }, [location.pathname]);
 
   useEffect(() => onAuthStateChanged(auth, setUser), []);
 
@@ -52,36 +64,73 @@ export default function RootLayout() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col gap-12">
-      <header className="page-container pt-6">
-        <div className="surface-card flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <Link to="/" className="text-lg font-semibold sm:text-xl">
-            AK Tools
-          </Link>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            {user ? (
-              <Button
-                onClick={handleSignOut}
-                variant="secondary"
-                size="sm"
-                className="group"
-                leftIcon={<ExitIcon />}
-                aria-label="Sign out"
-              >
-                <span className="hidden xs:inline">Sign out</span>
-              </Button>
-            ) : (
-              <Button
-                onClick={handleSignIn}
-                size="sm"
-                className="group"
-                leftIcon={<GoogleG />}
-                aria-label="Sign in with Google"
-              >
-                <span className="hidden xs:inline">Sign in</span>
-              </Button>
-            )}
+    <div className="relative flex min-h-screen flex-col gap-12">
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute left-1/2 top-[-18rem] h-[28rem] w-[60rem] -translate-x-1/2 rounded-[50%] bg-brand/5 blur-[140px]" />
+        <div className="absolute bottom-[-15rem] right-[-8rem] h-[24rem] w-[36rem] rounded-full bg-brand-accent/10 blur-[120px]" />
+      </div>
+
+      <header className="page-container pt-8">
+        <div className="relative overflow-hidden rounded-brand-xl border border-border-light bg-surface-overlay px-5 py-4 shadow-brand-sm backdrop-blur-xl transition-shadow duration-300 hover:shadow-brand">
+          <div className="absolute inset-0 bg-gradient-to-r from-brand/5 via-transparent to-brand-accent/10 opacity-80" aria-hidden />
+          <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <Link to="/" className="inline-flex items-center gap-2 text-xl font-semibold tracking-tight text-brand-strong">
+                <span className="flex h-9 w-9 items-center justify-center rounded-brand-full bg-brand/10 text-lg text-brand">⚡</span>
+                AK Tools
+              </Link>
+              <p className="mt-2 max-w-xl text-sm text-brand-muted">
+                Curated utilities and playgrounds crafted for football, friends, and delightful side-projects.
+              </p>
+            </div>
+            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+              <nav className="flex items-center gap-2 rounded-brand-full bg-surface/60 p-1 text-sm shadow-sm">
+                {NAV_LINKS.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    className={({ isActive }) =>
+                      `rounded-brand-full px-4 py-1.5 font-medium transition-colors duration-150 ${
+                        isActive
+                          ? "bg-brand text-white shadow"
+                          : "text-brand-muted hover:bg-brand/10 hover:text-brand-strong"
+                      }`
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                ))}
+              </nav>
+              <div className="flex items-center gap-3">
+                <ThemeToggle />
+                {user ? (
+                  <Button
+                    onClick={handleSignOut}
+                    variant="secondary"
+                    size="sm"
+                    className="group"
+                    leftIcon={<ExitIcon />}
+                    aria-label="Sign out"
+                  >
+                    <span className="hidden xs:inline">Sign out</span>
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleSignIn}
+                    size="sm"
+                    className="group"
+                    leftIcon={<GoogleG />}
+                    aria-label="Sign in with Google"
+                  >
+                    <span className="hidden xs:inline">Sign in</span>
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-brand-subtle">
+            <span className="rounded-brand-full bg-brand/10 px-3 py-1 text-brand">{activeLabel || "Discover"}</span>
+            <span>Beautiful experiences for everyday helpers</span>
           </div>
         </div>
       </header>
@@ -90,35 +139,46 @@ export default function RootLayout() {
         <Outlet context={{ user }} />
       </main>
 
-      <footer className="page-container pb-10">
-        <div className="flex justify-center gap-6 text-brand-subtle">
-          <a
-            href="https://github.com/amerkovacevic"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-            className="transition-transform duration-150 hover:scale-110 hover:text-brand-strong"
-          >
-            <Github className="h-6 w-6" />
-          </a>
-          <a
-            href="https://linkedin.com/in/amerkovacevic"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn"
-            className="transition-transform duration-150 hover:scale-110 hover:text-brand-accent"
-          >
-            <Linkedin className="h-6 w-6" />
-          </a>
-          <a
-            href="https://instagram.com/am.zzy"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram"
-            className="transition-transform duration-150 hover:scale-110 hover:text-brand-accent"
-          >
-            <Instagram className="h-6 w-6" />
-          </a>
+      <footer className="page-container pb-14">
+        <div className="surface-card relative overflow-hidden rounded-brand-xl px-6 py-6 text-brand-subtle">
+          <div className="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-brand/40 to-transparent" aria-hidden />
+          <div className="relative flex flex-col items-center gap-5 sm:flex-row sm:justify-between">
+            <div className="text-center sm:text-left">
+              <p className="text-xs uppercase tracking-[0.24em] text-brand-muted">Stay in touch</p>
+              <p className="mt-2 max-w-md text-sm text-brand-subtle">
+                Follow along for design sketches, football experiments, and upcoming launches.
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://github.com/amerkovacevic"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="rounded-brand-full border border-transparent bg-surface/80 p-3 text-brand-subtle transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/20 hover:text-brand-strong"
+              >
+                <Github className="h-5 w-5" />
+              </a>
+              <a
+                href="https://linkedin.com/in/amerkovacevic"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="rounded-brand-full border border-transparent bg-surface/80 p-3 text-brand-subtle transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent/40 hover:text-brand-accent"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
+              <a
+                href="https://instagram.com/am.zzy"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="rounded-brand-full border border-transparent bg-surface/80 p-3 text-brand-subtle transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent/40 hover:text-brand-accent"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

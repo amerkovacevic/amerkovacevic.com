@@ -75,43 +75,100 @@ export default function HomePage() {
     });
   }, [query, pinned]);
 
+  const pinnedApps = useMemo(
+    () => APPS.filter((app) => pinned.includes(app.id)),
+    [pinned]
+  );
+
   return (
-    <div className="relative space-y-8">
+    <div className="relative space-y-10">
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-32 -left-24 h-80 w-80 rounded-full bg-brand/10 blur-3xl" />
-        <div className="absolute -bottom-40 -right-16 h-96 w-96 rounded-full bg-brand-accent/10 blur-3xl" />
+        <div className="absolute -top-36 -left-32 h-96 w-96 rounded-full bg-brand/20 blur-3xl" />
+        <div className="absolute -bottom-40 -right-16 h-[28rem] w-[26rem] rounded-full bg-brand-accent/15 blur-3xl" />
       </div>
 
-      <section className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Apps</h1>
-            <p className="text-sm text-brand-subtle">
-              A curated set of side projects, experiments, and reusable tools.
-            </p>
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
+        <Card className="relative overflow-hidden" padding="lg">
+          <div className="absolute inset-0 bg-gradient-to-br from-brand/15 via-transparent to-brand-accent/10" aria-hidden />
+          <div className="relative flex h-full flex-col justify-between gap-8">
+            <div className="space-y-3">
+              <span className="inline-flex items-center gap-2 rounded-brand-full bg-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand">
+                Featured
+              </span>
+              <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
+                Build playful experiences for your crew in seconds.
+              </h1>
+              <p className="max-w-xl text-base text-brand-subtle">
+                Pin the apps you love, discover new experiments, and invite your friends to collaborate with delightfully simple tools.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-brand-muted">
+              <span className="rounded-brand-full bg-brand/10 px-3 py-1 text-brand">
+                {pinnedApps.length ? `${pinnedApps.length} pinned` : "Pin favorites"}
+              </span>
+              <span className="rounded-brand-full bg-brand-accent/10 px-3 py-1 text-brand-accent">Instant sharing</span>
+              <span className="rounded-brand-full bg-brand/5 px-3 py-1">Football & friends</span>
+            </div>
           </div>
-          <div className="relative w-full sm:w-80">
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search apps…"
-              className="w-full rounded-brand border border-border-light bg-surface-overlay px-4 py-2 pl-10 text-sm text-brand-strong shadow-brand-sm focus:border-brand hover:border-brand-muted focus:outline-none focus:ring-2 focus:ring-brand-accent/40 dark:bg-surface-overlayDark"
-              inputMode="search"
-            />
-            <span className="pointer-events-none absolute left-3 top-2.5 text-sm text-brand-subtle">🔎</span>
+        </Card>
+
+        <Card className="relative overflow-hidden" padding="lg">
+          <div className="absolute right-[-120px] top-[-120px] h-64 w-64 rounded-full bg-brand-accent/20 blur-3xl" aria-hidden />
+          <div className="relative space-y-5">
+            <div>
+              <p className="text-sm font-semibold text-brand-strong">Find your tool</p>
+              <p className="text-sm text-brand-subtle">Search across projects and filter by pinned favourites.</p>
+            </div>
+            <div className="relative">
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search apps, e.g. pickup"
+                className="w-full rounded-brand border border-border-light bg-surface/90 px-4 py-3 pl-11 text-sm text-brand-strong shadow-brand-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/40 hover:border-brand-muted dark:bg-surface-overlayDark"
+                inputMode="search"
+              />
+              <span className="pointer-events-none absolute left-4 top-3 text-base">🔍</span>
+            </div>
+            <div className="space-y-2 text-xs">
+              <p className="font-semibold uppercase tracking-[0.2em] text-brand-muted">Pinned</p>
+              {pinnedApps.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {pinnedApps.map((app) => (
+                    <button
+                      key={app.id}
+                      onClick={() => setQuery(app.name)}
+                      className="group flex items-center gap-2 rounded-brand-full border border-border-light bg-surface/80 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-brand-muted transition hover:border-brand/40 hover:text-brand-strong"
+                    >
+                      <span>{app.emoji}</span>
+                      {app.name}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="rounded-brand bg-brand/5 px-3 py-2 text-[11px] uppercase tracking-[0.2em] text-brand-subtle">
+                  Pin an app to spotlight it here.
+                </p>
+              )}
+            </div>
           </div>
-        </div>
+        </Card>
       </section>
 
-      <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        {filteredApps.map((app) => (
-          <AppCard
-            key={app.id}
-            app={app}
-            pinned={pinned.includes(app.id)}
-            onPin={() => togglePin(app.id)}
-          />
-        ))}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-brand-strong">All apps</h2>
+          <span className="text-xs uppercase tracking-[0.2em] text-brand-muted">{filteredApps.length} available</span>
+        </div>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          {filteredApps.map((app) => (
+            <AppCard
+              key={app.id}
+              app={app}
+              pinned={pinned.includes(app.id)}
+              onPin={() => togglePin(app.id)}
+            />
+          ))}
+        </div>
       </section>
     </div>
   );
@@ -119,8 +176,9 @@ export default function HomePage() {
 
 function AppCard({ app, pinned, onPin }: { app: App; pinned: boolean; onPin: () => void }) {
   return (
-    <Card className="group flex h-full flex-col justify-between" padding="lg">
-      <div className="flex items-start justify-between">
+    <Card className="group relative flex h-full flex-col justify-between overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-brand" padding="lg">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand/8 via-transparent to-brand-accent/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden />
+      <div className="relative flex items-start justify-between">
         <span className="text-2xl" aria-hidden>
           {app.emoji}
         </span>
@@ -133,17 +191,22 @@ function AppCard({ app, pinned, onPin }: { app: App; pinned: boolean; onPin: () 
           title={pinned ? "Unpin" : "Pin"}
           aria-pressed={pinned}
         >
-          {pinned ? "★" : "☆"}
+          <span className="transition-transform duration-200 group-hover:scale-110">
+            {pinned ? "★" : "☆"}
+          </span>
         </button>
       </div>
-      <div className="mt-4 space-y-3">
+      <div className="relative mt-4 space-y-3">
         <h3 className="text-lg font-semibold text-brand-strong">{app.name}</h3>
         <p className="text-sm text-brand-subtle">{app.blurb}</p>
       </div>
-      <div className="mt-6 flex items-center justify-between">
+      <div className="relative mt-6 flex items-center justify-between">
         <Link
           to={app.to}
-          className={cn(buttonStyles({ variant: "secondary", size: "sm" }), "no-underline")}
+          className={cn(
+            buttonStyles({ variant: "secondary", size: "sm" }),
+            "no-underline transition-transform duration-200 group-hover:translate-x-1"
+          )}
         >
           Open <span className="transition-transform group-hover:translate-x-1">→</span>
         </Link>
