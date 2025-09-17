@@ -77,10 +77,10 @@ export default function Links() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-10">
       <PageHero
-        icon="🔗"
+        align="center"
         title={
-          <span className="flex flex-col gap-3">
-            <span className="text-balance bg-gradient-to-r from-brand via-brand-accent to-emerald-400 bg-clip-text text-transparent">
+          <span className="flex flex-col items-center gap-3 text-center">
+            <span className="text-balance bg-gradient-to-r from-slate-900 via-brand to-emerald-500 bg-clip-text text-transparent dark:from-sky-100 dark:via-emerald-300 dark:to-teal-200">
               Amer Kovacevic
             </span>
           </span>

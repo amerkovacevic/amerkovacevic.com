@@ -10,6 +10,7 @@ export function PageHero({
   actions,
   stats,
   className,
+  align = "start",
 }: {
   icon?: ReactNode;
   title: ReactNode;
@@ -17,7 +18,10 @@ export function PageHero({
   actions?: ReactNode;
   stats?: ReactNode;
   className?: string;
+  align?: "start" | "center";
 }) {
+  const isCentered = align === "center";
+
   return (
     <section
       className={cn(
@@ -33,9 +37,21 @@ export function PageHero({
         <div className="absolute -right-12 -top-16 h-40 w-40 rounded-full bg-brand-accent/20 blur-[120px]" />
         <div className="absolute -bottom-20 left-12 h-48 w-48 rounded-full bg-white/25 blur-[140px] dark:bg-brand/20" />
       </div>
-      <div className="relative flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-        <div className="space-y-5 text-balance">
-          <div className="flex items-center gap-4 text-3xl font-semibold sm:text-4xl">
+      <div
+        className={cn(
+          "relative flex flex-col gap-8",
+          isCentered
+            ? "items-center gap-6 text-center md:flex-col"
+            : "md:flex-row md:items-end md:justify-between"
+        )}
+      >
+        <div className={cn("space-y-5 text-balance", isCentered && "text-center")}>
+          <div
+            className={cn(
+              "flex items-center gap-4 text-3xl font-semibold sm:text-4xl",
+              isCentered && "flex-col items-center gap-3"
+            )}
+          >
             {icon ? (
               <span className="grid h-14 w-14 place-items-center rounded-[1.35rem] bg-white/80 text-4xl shadow-brand-sm dark:bg-surface/30" aria-hidden>
                 {icon}
@@ -44,16 +60,33 @@ export function PageHero({
             <span className="leading-tight text-brand-strong dark:text-white">{title}</span>
           </div>
           {description ? (
-            <p className="max-w-2xl text-sm text-brand-muted dark:text-white/75 sm:text-base">{description}</p>
+            <p
+              className={cn(
+                "max-w-2xl text-sm text-brand-muted dark:text-white/75 sm:text-base",
+                isCentered && "mx-auto"
+              )}
+            >
+              {description}
+            </p>
           ) : null}
           {stats ? (
-            <div className="flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.24em] text-brand-muted/90 dark:text-white/60">
+            <div
+              className={cn(
+                "flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.24em] text-brand-muted/90 dark:text-white/60",
+                isCentered && "justify-center"
+              )}
+            >
               {stats}
             </div>
           ) : null}
         </div>
         {actions ? (
-          <div className="flex shrink-0 flex-col items-start gap-3 text-sm md:items-end">
+          <div
+            className={cn(
+              "flex shrink-0 flex-col items-start gap-3 text-sm md:items-end",
+              isCentered && "items-center md:items-center"
+            )}
+          >
             {actions}
           </div>
         ) : null}
