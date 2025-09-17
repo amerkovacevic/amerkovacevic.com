@@ -167,8 +167,9 @@ export default function FMTeamDraw() {
         }
       />
 
-      <div className="grid gap-5 md:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">
+      <div className="grid gap-5 md:grid-cols-2">
         <PageSection
+          className="md:col-span-1"
           title="Participants"
           description="Paste names, lock assignments, and see who gets which team."
           contentClassName="space-y-4"
@@ -281,7 +282,7 @@ export default function FMTeamDraw() {
         </PageSection>
 
         <PageSection
-          className="md:sticky md:top-4"
+          className="md:col-span-1"
           title="Filters"
           description="Narrow the pool by league or nation."
           contentClassName="space-y-4"
@@ -333,7 +334,7 @@ export default function FMTeamDraw() {
         </PageSection>
 
         <PageSection
-          className="md:sticky md:top-4"
+          className="md:col-span-2"
           title="Assign"
           description="Assign teams from the current pool (unique teams only). Re-run to shuffle unlocked entries."
           contentClassName="space-y-4"

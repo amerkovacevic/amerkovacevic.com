@@ -23,7 +23,7 @@ import { cn } from "../../shared/lib/classnames";
 
 type Ctx = { user: User | null };
 
-type Game = {
+export type Game = {
   id: string;
   title: string;
   dateTime: Timestamp | number;
@@ -180,9 +180,13 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
       return;
     }
     try {
+      const name =
+        user.displayName?.trim() ||
+        user.email?.split("@")[0]?.trim() ||
+        "Player";
       await setDoc(
         doc(db, "games", game.id, "rsvps", user.uid),
-        { status, joinedAt: serverTimestamp() },
+        { status, joinedAt: serverTimestamp(), name },
         { merge: true }
       );
     } catch (error) {
@@ -218,6 +222,19 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
             <div className="mt-1 text-xs text-brand-subtle">
               {full ? "Roster full" : `${game.maxPlayers - goingCount} spots left`}
             </div>
+            {user?.uid === game.organizerUid ? (
+              <MotionLink
+                to={`/pickup/${game.id}`}
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className={cn(
+                  buttonStyles({ variant: "ghost", size: "sm" }),
+                  "mt-3 text-xs text-brand hover:text-brand-strong"
+                )}
+              >
+                Manage game
+              </MotionLink>
+            ) : null}
           </div>
         </header>
 
@@ -319,7 +336,7 @@ function CreateGameButton({ className }: { className?: string }) {
   );
 }
 
-function toDate(value: Timestamp | number | null | undefined) {
+export function toDate(value: Timestamp | number | null | undefined) {
   if (!value && value !== 0) return null;
   if (value instanceof Timestamp) return value.toDate();
   if (typeof value === "number") return new Date(value);

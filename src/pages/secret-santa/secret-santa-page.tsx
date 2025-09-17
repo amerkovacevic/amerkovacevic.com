@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { useOutletContext } from "react-router-dom";
 import type { User } from "firebase/auth";
 import {
@@ -45,7 +46,7 @@ type Member = {
 export default function SecretSanta() {
   const { user } = useOutletContext<Ctx>();
 
-  const [tab, setTab] = useState<"create" | "join" | "event">("create");
+  const [tab, setTab] = useState<"create" | "join" | "event" | null>(null);
   const [eventId, setEventId] = useState<string | null>(null);
   const [activeEvent, setActiveEvent] = useState<EventDoc | null>(null);
 
@@ -428,17 +429,9 @@ export default function SecretSanta() {
             contentClassName="space-y-5"
           >
             <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setTab("create")}
-                className={cn(
-                  buttonStyles({ variant: tab === "create" ? "primary" : "secondary", size: "sm" }),
-                  "rounded-brand-full"
-                )}
-                type="button"
-              >
-                Create event
-              </button>
-              <button
+              <motion.button
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setTab("join")}
                 className={cn(
                   buttonStyles({ variant: tab === "join" ? "primary" : "secondary", size: "sm" }),
@@ -447,7 +440,19 @@ export default function SecretSanta() {
                 type="button"
               >
                 Join with code
-              </button>
+              </motion.button>
+              <motion.button
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setTab("create")}
+                className={cn(
+                  buttonStyles({ variant: tab === "create" ? "primary" : "secondary", size: "sm" }),
+                  "rounded-brand-full"
+                )}
+                type="button"
+              >
+                Create event
+              </motion.button>
             </div>
 
             {tab === "create" ? (
@@ -485,7 +490,9 @@ export default function SecretSanta() {
                   </p>
                 )}
               </form>
-            ) : (
+            ) : null}
+
+            {tab === "join" ? (
               <form onSubmit={handleJoin} className="grid gap-4 md:max-w-xl">
                 <label className="flex flex-col gap-2 text-sm">
                   <span className="font-medium text-brand-muted">Join code</span>
@@ -519,7 +526,7 @@ export default function SecretSanta() {
                 </button>
                 {!user && <p className="text-sm text-red-500">You must be signed in to join a Secret Santa.</p>}
               </form>
-            )}
+            ) : null}
           </PageSection>
         ) : (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
