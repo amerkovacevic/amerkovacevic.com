@@ -256,7 +256,7 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
             className={cn(
               buttonStyles({ variant: "secondary", size: "sm" }),
               myStatus === "going"
-                ? "border-brand/60 bg-brand/15 text-brand-strong ring-2 ring-brand/50 dark:border-brand/40 dark:bg-brand/25 dark:text-brand-foreground dark:ring-brand/40"
+                ? "border-emerald-300 bg-emerald-100 text-emerald-800 ring-2 ring-emerald-300/80 dark:border-emerald-400/50 dark:bg-emerald-500/20 dark:text-emerald-100 dark:ring-emerald-400/70"
                 : "text-brand-strong dark:text-brand-foreground"
             )}
             disabled={!user || full}
