@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { db } from "../firebase";
+import { db } from "../../shared/lib/firebase";
 import {
   collection,
   query,

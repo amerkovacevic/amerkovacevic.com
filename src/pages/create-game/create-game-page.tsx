@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import type { User } from "firebase/auth";
-import { db } from "../firebase";
+import { db } from "../../shared/lib/firebase";
 import {
   collection,
   addDoc,
