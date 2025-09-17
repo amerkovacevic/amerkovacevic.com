@@ -251,7 +251,7 @@ export default function Bracket() {
 
   return (
     <div className="mx-auto max-w-6xl p-4 md:p-6 space-y-5 md:space-y-6">
-      <header className="rounded-2xl p-5 md:p-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
+      <header className="rounded-2xl p-5 md:p-6 bg-gradient-to-br from-brand-dark via-brand to-brand-light text-white">
   <div className="flex items-start justify-between gap-4">
     <div>
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight">FIFA Tournament Bracket</h1>
