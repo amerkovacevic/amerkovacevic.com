@@ -34,6 +34,7 @@ export type Game = {
 };
 
 const MotionLink = motion(Link);
+const MotionButton = motion.button;
 
 export default function Pickup() {
   const { user } = useOutletContext<Ctx>();
@@ -227,10 +228,11 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
                 to={`/pickup/${game.id}`}
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.97 }}
-                className={cn(
-                  buttonStyles({ variant: "ghost", size: "sm" }),
-                  "mt-3 text-xs text-brand hover:text-brand-strong"
-                )}
+                className={buttonStyles({
+                  variant: "secondary",
+                  size: "sm",
+                  className: "mt-3",
+                })}
               >
                 Manage game
               </MotionLink>
@@ -246,41 +248,52 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <button
+          <MotionButton
+            type="button"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setRSVP("going")}
             className={cn(
-              buttonStyles({ variant: "primary", size: "sm" }),
+              buttonStyles({ variant: "secondary", size: "sm" }),
               myStatus === "going"
-                ? ""
-                : "bg-brand/20 text-brand-strong hover:bg-brand/30 dark:text-white"
+                ? "border-brand/60 bg-brand/15 text-brand-strong ring-2 ring-brand/50 dark:border-brand/40 dark:bg-brand/25 dark:text-brand-foreground dark:ring-brand/40"
+                : "text-brand-strong dark:text-brand-foreground"
             )}
             disabled={!user || full}
             title={!user ? "Sign in to RSVP" : full ? "Game is full" : ""}
           >
             I’m in
-          </button>
-          <button
+          </MotionButton>
+          <MotionButton
+            type="button"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setRSVP("maybe")}
             className={cn(
               buttonStyles({ variant: "secondary", size: "sm" }),
               myStatus === "maybe"
-                ? "border-brand text-brand"
-                : "hover:border-brand/40"
+                ? "border-amber-300 bg-amber-100 text-amber-800 ring-2 ring-amber-300/80 dark:border-amber-400/50 dark:bg-amber-500/20 dark:text-amber-100 dark:ring-amber-400/70"
+                : "text-brand-strong dark:text-brand-foreground"
             )}
             disabled={!user}
           >
             Maybe
-          </button>
-          <button
+          </MotionButton>
+          <MotionButton
+            type="button"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setRSVP("out")}
             className={cn(
-              buttonStyles({ variant: "ghost", size: "sm" }),
-              myStatus === "out" ? "bg-surface/80 text-brand-strong" : ""
+              buttonStyles({ variant: "secondary", size: "sm" }),
+              myStatus === "out"
+                ? "border-red-300 bg-red-100 text-red-700 ring-2 ring-red-300/80 dark:border-red-500/50 dark:bg-red-500/20 dark:text-red-100 dark:ring-red-500/70"
+                : "text-brand-strong dark:text-brand-foreground"
             )}
             disabled={!user}
           >
             Out
-          </button>
+          </MotionButton>
         </div>
       </div>
     </Card>
