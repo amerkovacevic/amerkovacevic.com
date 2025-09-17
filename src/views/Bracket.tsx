@@ -44,7 +44,7 @@ function seedToRounds(seeds: string[], withThirdPlace: boolean): Bracket {
   for (let i = 0; i < byes; i++) seeded.push(null);
 
   const pairings: Array<[string | null, string | null]> = [];
-  for (let i = 0; i < totalSlots / 2; i++) pairings.push([seeded[i], seeded[totalSlots - 1 - i]]);
+  for (let i = 0; i < totalSlots / 2; i++) pairings.push([seeded[i] ?? null, seeded[totalSlots - 1 - i] ?? null]);
 
   const roundNames: Record<number, string> = { 2: "Final", 4: "Semifinals", 8: "Quarterfinals", 16: "Round of 16", 32: "Round of 32" };
 
@@ -57,7 +57,7 @@ function seedToRounds(seeds: string[], withThirdPlace: boolean): Bracket {
   let size = totalSlots / 2;
   let roundIndex = 2;
   while (size >= 2) {
-    const prev = rounds[rounds.length - 1];
+    const prev = rounds[rounds.length - 1]!;
     const matches: Match[] = [];
     for (let i = 0; i < size / 2; i++) {
       const a = prev.matches[i * 2]?.winner ?? null;
@@ -75,18 +75,24 @@ function seedToRounds(seeds: string[], withThirdPlace: boolean): Bracket {
 
 function updateAdvancement(bracket: Bracket) {
   for (let r = 1; r < bracket.rounds.length; r++) {
-    const prev = bracket.rounds[r - 1];
-    for (let i = 0; i < bracket.rounds[r].matches.length; i++) {
+    const prev = bracket.rounds[r - 1]!;
+    const roundR = bracket.rounds[r]!;
+    for (let i = 0; i < roundR.matches.length; i++) {
       const sourceA = prev.matches[i * 2];
       const sourceB = prev.matches[i * 2 + 1];
-      const m = bracket.rounds[r].matches[i];
+      const m = roundR.matches[i];
+      if (!m) continue;
       const oldP1 = m.p1;
       const oldP2 = m.p2;
       m.p1 = sourceA?.winner ?? null;
       m.p2 = sourceB?.winner ?? null;
       if (m.p1 !== oldP1 || m.p2 !== oldP2) {
         m.s1 = null; m.s2 = null;
-        m.winner = (sourceA?.winner && !sourceB?.winner) ? sourceA.winner : (!sourceA?.winner && sourceB?.winner) ? sourceB.winner : null;
+        m.winner = (sourceA?.winner && !sourceB?.winner)
+          ? sourceA!.winner!
+          : (!sourceA?.winner && sourceB?.winner)
+            ? sourceB!.winner!
+            : null;
       }
     }
   }
@@ -118,6 +124,7 @@ function buildSummary(b: Bracket): string {
   const lines: string[] = [];
   for (let r = 0; r < b.rounds.length; r++) {
     const round = b.rounds[r];
+    if (!round) continue;
     lines.push(`# ${round.name}`);
     for (const m of round.matches) {
       const p1 = m.p1 ?? "—";
@@ -200,7 +207,7 @@ export default function Bracket() {
   }
   function randomize() {
     const arr = [...cleanPlayers];
-    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const tmp = arr[i]!; arr[i] = arr[j]!; arr[j] = tmp; }
     setPlayers(arr); persist({ players: arr });
   }
   function buildBracket() {
@@ -213,7 +220,8 @@ export default function Bracket() {
   function setScore(rIdx: number, mIdx: number, s1: number | null, s2: number | null) {
     if (!bracket) return;
     const b = structuredClone(bracket) as Bracket;
-    const match = b.rounds[rIdx].matches[mIdx];
+    const match = b.rounds[rIdx]?.matches[mIdx];
+    if (!match) return;
     const prevWinner = match.winner;
     match.s1 = s1; match.s2 = s2;
     if (s1 !== null && s2 !== null && match.p1 && match.p2) {
@@ -227,7 +235,8 @@ export default function Bracket() {
   function resetScores(rIdx: number, mIdx: number) {
     if (!bracket) return;
     const b = structuredClone(bracket) as Bracket;
-    const match = b.rounds[rIdx].matches[mIdx];
+    const match = b.rounds[rIdx]?.matches[mIdx];
+    if (!match) return;
     match.s1 = null; match.s2 = null; match.winner = null;
     updateAdvancement(b);
     setBracket(b); persist({ bracket: b });
