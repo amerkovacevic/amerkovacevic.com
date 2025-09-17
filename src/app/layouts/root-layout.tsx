@@ -40,7 +40,10 @@ function ExitIcon({ className = "h-4 w-4" }: { className?: string }) {
 
 const NAV_LINKS = [
   { label: "Apps", to: "/" },
-  { label: "Resume", to: "/resume" },
+  { label: "Pickup", to: "/pickup" },
+  { label: "Secret Santa", to: "/santa" },
+  { label: "FM Draw", to: "/fm" },
+  { label: "Bracket", to: "/bracket" },
   { label: "Links", to: "/links" },
 ];
 

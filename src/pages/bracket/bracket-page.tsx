@@ -1,9 +1,13 @@
 import { useMemo, useState } from "react";
-// replace your lucide-react import with this:
 import { Shuffle, Users, Trophy, Plus, X, Sparkles, RotateCcw, Medal, Share2 } from "lucide-react";
 
 
 import { motion, AnimatePresence } from "framer-motion";
+
+import { PageHero, PageSection, StatPill } from "../../shared/components/page";
+import { buttonStyles } from "../../shared/components/ui/button";
+import { Card } from "../../shared/components/ui/card";
+import { cn } from "../../shared/lib/classnames";
 
 type Match = {
   id: string;
@@ -249,129 +253,162 @@ export default function Bracket() {
 
   const placements = computePlacings(bracket);
 
+  const playerCount = cleanPlayers.length;
+  const roundsCount = bracket?.rounds.length ?? 0;
+
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6 space-y-5 md:space-y-6">
-      <header className="rounded-2xl p-5 md:p-6 bg-gradient-to-br from-brand-dark via-brand to-brand-light text-white">
-  <div className="flex items-start justify-between gap-4">
-    <div>
-      <h1 className="text-2xl md:text-3xl font-bold tracking-tight">FIFA Tournament Bracket</h1>
-      <p className="mt-1 text-white/80">Quick single-elim tournaments for game night.</p>
-    </div>
-
-    <div className="shrink-0 flex flex-wrap items-center gap-2">
-      <motion.button
-        whileHover={{ y: -1 }}
-        whileTap={{ scale: 0.97 }}
-        onClick={randomize}
-        className="px-3 py-2 rounded-xl border border-white/20 hover:bg-white/10 inline-flex items-center gap-2 text-white/90"
-        title="Shuffle players"
-      >
-        <Shuffle className="h-4 w-4" />
-        Shuffle
-      </motion.button>
-
-      {/* Generate now matches the outline/glass style */}
-      <motion.button
-        whileHover={{ y: -1 }}
-        whileTap={{ scale: 0.97 }}
-        onClick={buildBracket}
-        className="px-3 py-2 rounded-xl border border-white/20 hover:bg-white/10 inline-flex items-center gap-2 text-white/90"
-        title="Generate bracket"
-      >
-        <Sparkles className="h-4 w-4" />
-        Generate
-      </motion.button>
-
-      {bracket && (
-        <motion.button
-          whileHover={{ y: -1 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={clearBracket}
-          className="px-3 py-2 rounded-xl border border-white/20 hover:bg-white/10 inline-flex items-center gap-2 text-white/90"
-          title="Clear bracket"
-        >
-          <RotateCcw className="h-4 w-4" />
-          Reset
-        </motion.button>
-      )}
-
-      {/* High-contrast 3rd place toggle */}
-      <motion.button
-        whileHover={{ y: -1 }}
-        whileTap={{ scale: 0.97 }}
-        onClick={() => setWithThirdPlace(v => !v)}
-        className={
-          "px-3 py-2 rounded-xl inline-flex items-center gap-2 " +
-          (withThirdPlace
-            ? "bg-emerald-600 text-white hover:bg-emerald-700 ring-1 ring-emerald-400/40 shadow-sm shadow-emerald-600/20"
-            : "border border-white/20 hover:bg-white/10 text-white/90")
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-6">
+      <PageHero
+        icon="🏆"
+        eyebrow="Game night"
+        title="FIFA Tournament Bracket"
+        description="Quick single-elimination brackets for friends, roommates, and weekend tournaments."
+        stats={
+          <>
+            <StatPill>Players · {playerCount}</StatPill>
+            <StatPill>Rounds · {roundsCount || "—"}</StatPill>
+            <StatPill>{withThirdPlace ? "3rd place on" : "Winner takes all"}</StatPill>
+          </>
         }
-        title="Toggle 3rd place match"
-      >
-        <Medal className="h-4 w-4" />
-        3rd place match
-      </motion.button>
-    </div>
-  </div>
-</header>
-
-
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <motion.button
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={randomize}
+              type="button"
+              className={cn(buttonStyles({ variant: "secondary", size: "sm" }), "rounded-brand-full")}
+            >
+              <Shuffle className="h-4 w-4" /> Shuffle
+            </motion.button>
+            <motion.button
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={buildBracket}
+              type="button"
+              className={cn(buttonStyles({ size: "sm" }), "rounded-brand-full")}
+            >
+              <Sparkles className="h-4 w-4" /> Generate
+            </motion.button>
+            {bracket ? (
+              <motion.button
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={clearBracket}
+                type="button"
+                className={cn(buttonStyles({ variant: "secondary", size: "sm" }), "rounded-brand-full")}
+              >
+                <RotateCcw className="h-4 w-4" /> Reset
+              </motion.button>
+            ) : null}
+            <motion.button
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setWithThirdPlace((v) => !v)}
+              type="button"
+              className={cn(
+                buttonStyles({ size: "sm" }),
+                "rounded-brand-full",
+                withThirdPlace ? "bg-emerald-600 text-white hover:bg-emerald-700" : ""
+              )}
+            >
+              <Medal className="h-4 w-4" /> 3rd place match
+            </motion.button>
+          </div>
+        }
+      />
 
       {/* Champion banner + share */}
       {(() => {
         const champ = getFinalWinner(bracket);
         if (!champ) return null;
         return (
-          <div className="mb-4 rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <Card padding="lg" className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 text-sm">
               <span className="text-xl">🏆</span>
-              <div className="text-sm"><span className="font-semibold">Champion:</span> {champ}</div>
+              <div>
+                <span className="font-semibold">Champion:</span> {champ}
+              </div>
             </div>
             <button
-              onClick={async () => { if (bracket) { try { await navigator.clipboard.writeText(buildSummary(bracket)); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {} } }}
-              className="rounded-full border px-3 py-1.5 text-sm hover:bg-muted"
+              type="button"
+              onClick={async () => {
+                if (bracket) {
+                  try {
+                    await navigator.clipboard.writeText(buildSummary(bracket));
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  } catch {}
+                }
+              }}
+              className={buttonStyles({ variant: "secondary", size: "sm" })}
             >
-              {copied ? "Copied!" : (<span className="inline-flex items-center gap-2"><Share2 className="h-4 w-4" /> Share results</span>)}
+              {copied ? "Copied!" : (
+                <span className="inline-flex items-center gap-2">
+                  <Share2 className="h-4 w-4" /> Share results
+                </span>
+              )}
             </button>
-          </div>
+          </Card>
         );
       })()}
 
       {/* Player entry + Standings */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
-        <div className="rounded-2xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-4 md:p-5">
-          <h2 className="mb-3 flex items-center gap-2 font-medium"><Users className="h-5 w-5" /> Players</h2>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <PageSection
+          title={
+            <span className="inline-flex items-center gap-2">
+              <Users className="h-5 w-5" /> Players
+            </span>
+          }
+          description="Add entrants manually or paste a list to seed the bracket."
+        >
           <PlayerList players={cleanPlayers} onAdd={addPlayer} onRemove={removePlayer} onPaste={pasteList} />
-        </div>
+        </PageSection>
 
-        <div className="rounded-2xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-4 md:p-5">
+        <PageSection
+          title="Standings"
+          description="Placements update automatically as you enter results."
+        >
           <StandingsPanel bracket={bracket} placements={placements} hasThird={withThirdPlace} />
-        </div>
-      </section>
+        </PageSection>
+      </div>
 
-      <section className="mt-6">
-        {bracket ? (<BracketVertical bracket={bracket} setScore={setScore} resetScores={resetScores} />) : null}
-      </section>
+      {bracket ? (
+        <PageSection
+          title="Bracket"
+          description="Update scores and watch winners flow through each round."
+          contentClassName="p-0"
+        >
+          <div className="p-4">
+            <BracketVertical bracket={bracket} setScore={setScore} resetScores={resetScores} />
+          </div>
+        </PageSection>
+      ) : null}
     </div>
   );
 }
 
 function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | null; placements: ReturnType<typeof computePlacings>; hasThird: boolean; }) {
   if (!bracket) {
-    return <div className="text-sm text-muted-foreground">Add players and click <span className="font-medium">Generate</span> to create a bracket.</div>;
+    return (
+      <p className="text-sm text-brand-muted">
+        Add players and click <span className="font-medium text-brand-strong">Generate</span> to create a bracket.
+      </p>
+    );
   }
   const { first, second, third, fourth, semifinalLosers } = placements;
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-semibold text-muted-foreground">Standings (live)</h3>
-      <ul className="text-sm space-y-1">
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold text-brand-muted">Standings (live)</h3>
+      <ul className="space-y-1 text-sm text-brand-strong dark:text-white">
         <li>🥇 <span className="font-medium">1st:</span> {first ?? "—"}</li>
         <li>🥈 <span className="font-medium">2nd:</span> {second ?? "—"}</li>
         <li>🥉 <span className="font-medium">3rd:</span> {hasThird ? (third ?? "TBD") : (semifinalLosers.length ? "TBD" : "—")}</li>
         <li>🎗️ <span className="font-medium">4th:</span> {hasThird ? (fourth ?? "TBD") : (semifinalLosers.length ? "TBD" : "—")}</li>
       </ul>
       {!hasThird && semifinalLosers.length > 0 && (
-        <div className="text-xs text-muted-foreground">Semifinalists: {semifinalLosers.join(", ")}</div>
+        <div className="text-xs text-brand-muted">Semifinalists: {semifinalLosers.join(", ")}</div>
       )}
     </div>
   );
@@ -381,30 +418,72 @@ function PlayerList({ players, onAdd, onRemove, onPaste }: { players: string[]; 
   const [name, setName] = useState("");
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex gap-2">
-        <input value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { onAdd(name); setName(""); } }} className="flex-1 rounded-lg border px-3 py-2 text-sm bg-transparent" placeholder="Add player (e.g., Amer)" />
-        <button onClick={() => { onAdd(name); setName(""); }} className="inline-flex items-center gap-2 rounded-lg bg-brand text-white px-3 py-2 text-sm hover:bg-brand/90"><Plus className="h-4 w-4" /> Add</button>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              onAdd(name);
+              setName("");
+            }
+          }}
+          className="flex-1 rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+          placeholder="Add player (e.g., Amer)"
+        />
+        <button
+          type="button"
+          onClick={() => {
+            onAdd(name);
+            setName("");
+          }}
+          className={buttonStyles({ size: "sm" })}
+        >
+          <Plus className="h-4 w-4" /> Add
+        </button>
       </div>
-      <textarea placeholder="Or paste a list (comma or new lines)" className="rounded-lg border p-2 text-sm bg-transparent" rows={3} onPaste={(e) => { const txt = e.clipboardData.getData("text"); if (txt?.trim()) { e.preventDefault(); onPaste(txt); } }} />
-      <motion.ul layout className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <textarea
+        placeholder="Or paste a list (comma or new lines)"
+        className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+        rows={3}
+        onPaste={(e) => {
+          const txt = e.clipboardData.getData("text");
+          if (txt?.trim()) {
+            e.preventDefault();
+            onPaste(txt);
+          }
+        }}
+      />
+      <motion.ul layout className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {players.map((p, i) => (
-          <motion.li key={i} layout className="flex items-center justify-between rounded-lg border px-3 py-2" transition={{ type: "spring", stiffness: 500, damping: 40 }}>
-            <span className="truncate">{p}</span>
-            <button className="p-1 rounded-md hover:bg-muted" onClick={() => onRemove(i)} title="Remove"><X className="h-4 w-4" /></button>
+          <motion.li
+            key={i}
+            layout
+            className="flex items-center justify-between rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm dark:bg-surface-overlayDark"
+            transition={{ type: "spring", stiffness: 500, damping: 40 }}
+          >
+            <span className="truncate text-brand-strong dark:text-white">{p}</span>
+            <button
+              type="button"
+              className="rounded-brand-full p-1 text-brand-muted transition hover:bg-brand/10 hover:text-brand"
+              onClick={() => onRemove(i)}
+              title="Remove"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </motion.li>
         ))}
       </motion.ul>
     </div>
   );
 }
-
 /** Vertical layout (stacked rounds, simple grid) */
 function BracketVertical({ bracket, setScore, resetScores }: { bracket: Bracket; setScore: (rIdx: number, mIdx: number, s1: number | null, s2: number | null) => void; resetScores: (rIdx: number, mIdx: number) => void; }) {
   return (
     <div className="space-y-6">
       {bracket.rounds.map((round, rIdx) => (
         <div key={rIdx} className="rounded-2xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-4 md:p-5">
-          <h3 className="mb-3 text-sm font-semibold text-muted-foreground">{round.name}</h3>
+          <h3 className="mb-3 text-sm font-semibold text-brand-muted">{round.name}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {round.matches.map((m, mIdx) => (
               <MatchCard key={m.id} match={m} onScore={(s1, s2) => setScore(rIdx, mIdx, s1, s2)} onReset={() => resetScores(rIdx, mIdx)} />
@@ -415,11 +494,11 @@ function BracketVertical({ bracket, setScore, resetScores }: { bracket: Bracket;
 
       {typeof bracket.thirdPlace !== "undefined" && (
         <div className="rounded-2xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-4 md:p-5">
-          <h3 className="mb-3 text-sm font-semibold text-muted-foreground">3rd Place</h3>
+          <h3 className="mb-3 text-sm font-semibold text-brand-muted">3rd Place</h3>
           {bracket.thirdPlace ? (
             <MatchCard match={bracket.thirdPlace} onScore={() => {}} onReset={() => {}} readOnly={!bracket.thirdPlace.p1 || !bracket.thirdPlace.p2} />
           ) : (
-            <div className="text-sm text-muted-foreground">Decide semifinals to populate 3rd place.</div>
+            <div className="text-sm text-brand-muted">Decide semifinals to populate 3rd place.</div>
           )}
         </div>
       )}
@@ -439,24 +518,24 @@ function MatchCard({ match, onScore, onReset, readOnly }: { match: Match; onScor
   const p2 = match.p2 ?? "—";
 
   return (
-    <div className={"relative rounded-2xl border p-3 md:p-4 shadow-sm hover:shadow-md transition " + (match.winner ? "ring-1 ring-brand" : "")}>
+    <div className={"relative rounded-2xl border p-3 md:p-4 shadow-brand-sm transition hover:shadow-brand " + (match.winner ? "ring-1 ring-brand" : "")}>
       {match.winner && (
         <AnimatePresence>
           <motion.div key={match.winner} initial={{ opacity: 0 }} animate={{ opacity: 0.12 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }} className="absolute inset-0 rounded-2xl bg-brand pointer-events-none" />
         </AnimatePresence>
       )}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-muted-foreground">Match {match.id}</span>
-        <button className="text-xs underline-offset-2 hover:underline" onClick={onReset} disabled={readOnly}>Clear</button>
+        <span className="text-xs text-brand-muted">Match {match.id}</span>
+        <button className="text-xs text-brand-muted underline-offset-2 transition hover:text-brand hover:underline" onClick={onReset} disabled={readOnly}>Clear</button>
       </div>
       <div className="grid grid-cols-[1fr,48px] items-center gap-2">
-        <motion.div layout initial={false} className={"rounded-lg px-2 py-1 " + (match.winner === p1 ? "bg-brand/10 dark:bg-brand/20" : "bg-muted/50")}>
+        <motion.div layout initial={false} className={"rounded-lg px-2 py-1 " + (match.winner === p1 ? "bg-brand/10 dark:bg-brand/20" : "bg-surface/70 dark:bg-surface-overlayDark/60")}> 
           <AnimatePresence mode="popLayout">
             <motion.div key={p1 || "empty1"} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }} className="truncate text-sm">{p1}</motion.div>
           </AnimatePresence>
         </motion.div>
         <input inputMode="numeric" pattern="[0-9]*" value={s1} onChange={(e) => setS1(e.target.value.replace(/\D+/g, ""))} onBlur={() => onScore(s1 === "" ? null : +s1, s2 === "" ? null : +s2)} className="w-12 rounded-md border px-2 py-1 text-sm text-center bg-transparent disabled:opacity-60" disabled={readOnly || !match.p1} placeholder="-" />
-        <motion.div layout initial={false} className={"rounded-lg px-2 py-1 " + (match.winner === p2 ? "bg-brand/10 dark:bg-brand/20" : "bg-muted/50")}>
+        <motion.div layout initial={false} className={"rounded-lg px-2 py-1 " + (match.winner === p2 ? "bg-brand/10 dark:bg-brand/20" : "bg-surface/70 dark:bg-surface-overlayDark/60")}>
           <AnimatePresence mode="popLayout">
             <motion.div key={p2 || "empty2"} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }} className="truncate text-sm">{p2}</motion.div>
           </AnimatePresence>
