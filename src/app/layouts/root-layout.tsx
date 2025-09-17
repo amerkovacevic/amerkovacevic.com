@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, Outlet } from "react-router-dom";
 import { Github, Instagram, Linkedin } from "lucide-react";
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
 
@@ -38,23 +38,8 @@ function ExitIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
-const NAV_LINKS = [
-  { label: "Apps", to: "/" },
-  { label: "Pickup", to: "/pickup" },
-  { label: "Secret Santa", to: "/santa" },
-  { label: "FM Draw", to: "/fm" },
-  { label: "Bracket", to: "/bracket" },
-  { label: "Links", to: "/links" },
-];
-
 export default function RootLayout() {
   const [user, setUser] = useState<User | null>(null);
-  const location = useLocation();
-
-  const activeLabel = useMemo(() => {
-    const match = NAV_LINKS.find((item) => location.pathname.startsWith(item.to));
-    return match?.label ?? "";
-  }, [location.pathname]);
 
   useEffect(() => onAuthStateChanged(auth, setUser), []);
 
@@ -77,63 +62,35 @@ export default function RootLayout() {
         <div className="relative overflow-hidden rounded-brand-xl border border-border-light bg-surface-overlay px-5 py-4 shadow-brand-sm backdrop-blur-xl transition-shadow duration-300 hover:shadow-brand">
           <div className="absolute inset-0 bg-gradient-to-r from-brand/5 via-transparent to-brand-accent/10 opacity-80" aria-hidden />
           <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <Link to="/" className="inline-flex items-center gap-2 text-xl font-semibold tracking-tight text-brand-strong">
-                <span className="flex h-9 w-9 items-center justify-center rounded-brand-full bg-brand/10 text-lg text-brand">⚡</span>
-                AK Tools
-              </Link>
-              <p className="mt-2 max-w-xl text-sm text-brand-muted">
-                Curated utilities and playgrounds crafted for football, friends, and delightful side-projects.
-              </p>
+            <Link to="/" className="inline-flex items-center gap-2 text-xl font-semibold tracking-tight text-brand-strong">
+              <span className="flex h-9 w-9 items-center justify-center rounded-brand-full bg-brand/10 text-lg text-brand">⚡</span>
+              AK Tools
+            </Link>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              {user ? (
+                <Button
+                  onClick={handleSignOut}
+                  variant="secondary"
+                  size="sm"
+                  className="group"
+                  leftIcon={<ExitIcon />}
+                  aria-label="Sign out"
+                >
+                  <span className="hidden xs:inline">Sign out</span>
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleSignIn}
+                  size="sm"
+                  className="group"
+                  leftIcon={<GoogleG />}
+                  aria-label="Sign in with Google"
+                >
+                  <span className="hidden xs:inline">Sign in</span>
+                </Button>
+              )}
             </div>
-            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-              <nav className="flex items-center gap-2 rounded-brand-full bg-surface/60 p-1 text-sm shadow-sm">
-                {NAV_LINKS.map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    className={({ isActive }) =>
-                      `rounded-brand-full px-4 py-1.5 font-medium transition-colors duration-150 ${
-                        isActive
-                          ? "bg-brand text-white shadow"
-                          : "text-brand-muted hover:bg-brand/10 hover:text-brand-strong"
-                      }`
-                    }
-                  >
-                    {item.label}
-                  </NavLink>
-                ))}
-              </nav>
-              <div className="flex items-center gap-3">
-                <ThemeToggle />
-                {user ? (
-                  <Button
-                    onClick={handleSignOut}
-                    variant="secondary"
-                    size="sm"
-                    className="group"
-                    leftIcon={<ExitIcon />}
-                    aria-label="Sign out"
-                  >
-                    <span className="hidden xs:inline">Sign out</span>
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleSignIn}
-                    size="sm"
-                    className="group"
-                    leftIcon={<GoogleG />}
-                    aria-label="Sign in with Google"
-                  >
-                    <span className="hidden xs:inline">Sign in</span>
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-brand-subtle">
-            <span className="rounded-brand-full bg-brand/10 px-3 py-1 text-brand">{activeLabel || "Discover"}</span>
-            <span>Beautiful experiences for everyday helpers</span>
           </div>
         </div>
       </header>

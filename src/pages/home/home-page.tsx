@@ -1,11 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { buttonStyles } from "../../shared/components/ui/button";
 import { cn } from "../../shared/lib/classnames";
-import { PageHero, PageSection, StatPill } from "../../shared/components/page";
-
-const PIN_STORAGE_KEY = "pinnedApps";
 
 const APPS = [
   {
@@ -48,120 +44,16 @@ const APPS = [
 type App = (typeof APPS)[number];
 
 export default function HomePage() {
-  const [query, setQuery] = useState("");
-  const [pinned, setPinned] = useState<string[]>([]);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(PIN_STORAGE_KEY);
-      if (raw) setPinned(JSON.parse(raw));
-    } catch {
-      setPinned([]);
-    }
-  }, []);
-
-  const togglePin = (id: string) => {
-    setPinned((prev) => {
-      const next = prev.includes(id)
-        ? prev.filter((value) => value !== id)
-        : [...prev, id];
-      localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
-  };
-
-  const filteredApps = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    return APPS.filter((app) =>
-      `${app.name} ${app.blurb}`.toLowerCase().includes(normalized)
-    ).sort((a, b) => {
-      const aPinned = pinned.includes(a.id);
-      const bPinned = pinned.includes(b.id);
-      if (aPinned === bPinned) return a.name.localeCompare(b.name);
-      return aPinned ? -1 : 1;
-    });
-  }, [query, pinned]);
-
-  const pinnedApps = useMemo(
-    () => APPS.filter((app) => pinned.includes(app.id)),
-    [pinned]
-  );
-
   return (
-    <div className="space-y-8">
-      <PageHero
-        icon="✨"
-        eyebrow="Featured"
-        title="Build playful experiences for your crew in seconds."
-        description="Pin the apps you love, discover new experiments, and invite friends to collaborate with delightfully simple tools."
-        stats={
-          <>
-            <StatPill>
-              {pinnedApps.length ? `${pinnedApps.length} pinned` : "Pin favorites"}
-            </StatPill>
-            <StatPill>Instant sharing</StatPill>
-            <StatPill>Football & friends</StatPill>
-          </>
-        }
-      />
-
-      <PageSection
-        title="Find your tool"
-        description="Search across projects and filter by pinned favourites."
-        contentClassName="space-y-5"
-      >
-        <div className="relative">
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search apps, e.g. pickup"
-            className="w-full rounded-brand border border-border-light bg-surface/90 px-4 py-3 pl-11 text-sm text-brand-strong shadow-brand-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/40 hover:border-brand-muted dark:bg-surface-overlayDark"
-            inputMode="search"
-          />
-          <span className="pointer-events-none absolute left-4 top-3 text-base">🔍</span>
-        </div>
-        <div className="space-y-2 text-xs">
-          <p className="font-semibold uppercase tracking-[0.2em] text-brand-muted">Pinned</p>
-          {pinnedApps.length ? (
-            <div className="flex flex-wrap gap-2">
-              {pinnedApps.map((app) => (
-                <button
-                  key={app.id}
-                  onClick={() => setQuery(app.name)}
-                  className="group flex items-center gap-2 rounded-brand-full border border-border-light bg-surface/80 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-brand-muted transition hover:border-brand/40 hover:text-brand-strong"
-                >
-                  <span>{app.emoji}</span>
-                  {app.name}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <p className="rounded-brand bg-brand/5 px-3 py-2 text-[11px] uppercase tracking-[0.2em] text-brand-subtle">
-              Pin an app to spotlight it here.
-            </p>
-          )}
-        </div>
-      </PageSection>
-
-      <PageSection
-        title="All apps"
-        description={`${filteredApps.length} available`}
-        contentClassName="grid grid-cols-1 gap-5 md:grid-cols-2"
-      >
-        {filteredApps.map((app) => (
-          <AppCard
-            key={app.id}
-            app={app}
-            pinned={pinned.includes(app.id)}
-            onPin={() => togglePin(app.id)}
-          />
-        ))}
-      </PageSection>
+    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      {APPS.map((app) => (
+        <AppCard key={app.id} app={app} />
+      ))}
     </div>
   );
 }
 
-function AppCard({ app, pinned, onPin }: { app: App; pinned: boolean; onPin: () => void }) {
+function AppCard({ app }: { app: App }) {
   const navigate = useNavigate();
 
   const handleOpen = () => navigate(app.to);
@@ -184,22 +76,6 @@ function AppCard({ app, pinned, onPin }: { app: App; pinned: boolean; onPin: () 
         <span className="text-2xl" aria-hidden>
           {app.emoji}
         </span>
-        <button
-          onClick={(event) => {
-            event.stopPropagation();
-            onPin();
-          }}
-          className={cn(
-            buttonStyles({ variant: "ghost", size: "sm" }),
-            "!h-8 !px-3 text-[11px] font-medium"
-          )}
-          title={pinned ? "Unpin" : "Pin"}
-          aria-pressed={pinned}
-        >
-          <span className="transition-transform duration-200 group-hover:scale-110">
-            {pinned ? "★" : "☆"}
-          </span>
-        </button>
       </div>
       <div className="relative mt-4 space-y-3">
         <h3 className="text-lg font-semibold text-brand-strong">{app.name}</h3>
