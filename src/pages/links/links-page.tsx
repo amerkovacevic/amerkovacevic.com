@@ -1,4 +1,3 @@
-import { Mail } from "lucide-react";
 import { ReactNode } from "react";
 
 import { PageHero } from "../../shared/components/page";
@@ -56,12 +55,6 @@ function LinkedinIcon({ className }: { className?: string }) {
 export default function Links() {
   const links: LinkItem[] = [
     {
-      title: "Instagram",
-      url: "https://instagram.com/am.zzy",
-      icon: <InstagramIcon className="h-6 w-6 fill-white" />,
-      iconWrapperClassName: "bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#515BD4]",
-    },
-    {
       title: "GitHub",
       url: "https://github.com/amerkovacevic",
       icon: <GithubIcon className="h-6 w-6 fill-white" />,
@@ -74,11 +67,10 @@ export default function Links() {
       iconWrapperClassName: "bg-[#0A66C2]",
     },
     {
-      title: "Email me",
-      url: "mailto:amer@amerkovacevic.com",
-      icon: <Mail aria-hidden className="h-6 w-6" />,
-      iconWrapperClassName: "bg-brand/10 text-brand-strong dark:bg-white/20 dark:text-white",
-      textClassName: "dark:text-brand-foreground",
+      title: "Instagram",
+      url: "https://instagram.com/am.zzy",
+      icon: <InstagramIcon className="h-6 w-6 fill-white" />,
+      iconWrapperClassName: "bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#515BD4]",
     },
   ];
 
@@ -87,16 +79,13 @@ export default function Links() {
       <PageHero
         title={
           <span className="flex flex-col gap-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.4em] text-brand-muted dark:text-white/60">
-              Connect with
-            </span>
             <span className="text-balance bg-gradient-to-r from-brand via-brand-accent to-emerald-400 bg-clip-text text-transparent">
               Amer Kovacevic
             </span>
           </span>
         }
-        description="Curated portals to say hello, follow my work, or drop a quick message."
-        className="shadow-brand"
+        // description="Curated portals to say hello, follow my work, or drop a quick message."
+        // className="shadow-brand"
       />
 
       <section className="space-y-4">
@@ -130,10 +119,6 @@ export default function Links() {
           ))}
         </div>
       </section>
-
-      <p className="text-center text-xs text-brand-muted dark:text-brand-subtle">
-        © {new Date().getFullYear()} AmerKovacevic.com
-      </p>
     </div>
   );
 }
