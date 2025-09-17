@@ -1,4 +1,8 @@
-import colors from "tailwindcss/colors";
+import tokens from "./src/shared/design/tokens.json" assert { type: "json" };
+
+const brand = tokens.colors.brand;
+const surface = tokens.colors.surface;
+const border = tokens.colors.border;
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -8,10 +12,42 @@ export default {
     extend: {
       colors: {
         brand: {
-          light: "#334155",   // slate-700 (for light mode)
-          DEFAULT: "#1e293b", // slate-800
-          dark: "#0f172a",    // slate-900 (for dark mode)
+          DEFAULT: brand.DEFAULT,
+          foreground: brand.foreground,
+          muted: brand.muted,
+          subtle: brand.subtle,
+          strong: brand.strong,
+          accent: brand.accent,
         },
+        surface: {
+          DEFAULT: surface.DEFAULT,
+          muted: surface.muted,
+          overlay: surface.overlay,
+          overlayDark: surface.overlayDark,
+        },
+        border: {
+          light: border.light,
+          dark: border.dark,
+        },
+      },
+      borderRadius: {
+        brand: tokens.radius.md,
+        "brand-lg": tokens.radius.lg,
+        "brand-xl": tokens.radius.xl,
+        "brand-full": tokens.radius.full,
+      },
+      boxShadow: {
+        brand: tokens.shadows.md,
+        "brand-sm": tokens.shadows.sm,
+      },
+      fontFamily: {
+        brand: tokens.typography.fontFamily.split(",").map((part) => part.trim()),
+      },
+      maxWidth: {
+        brand: tokens.layout.maxWidth,
+      },
+      spacing: {
+        "page-gutter": tokens.layout.pagePadding,
       },
     },
   },

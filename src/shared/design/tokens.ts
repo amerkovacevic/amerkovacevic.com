@@ -1,0 +1,13 @@
+import tokensJson from "./tokens.json";
+
+type Tokens = typeof tokensJson;
+
+export const TOKENS: Tokens = tokensJson;
+
+export const BRAND_COLORS = tokensJson.colors.brand;
+export const SURFACE_COLORS = tokensJson.colors.surface;
+export const BORDER_COLORS = tokensJson.colors.border;
+export const RADII = tokensJson.radius;
+export const SHADOWS = tokensJson.shadows;
+export const LAYOUT = tokensJson.layout;
+export const TYPOGRAPHY = tokensJson.typography;

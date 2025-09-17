@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+  --color-brand: #1e293b;
+  --color-brand-foreground: #f8fafc;
+  --color-brand-muted: #475569;
+  --color-brand-subtle: #94a3b8;
+  --color-brand-strong: #0f172a;
+  --color-brand-accent: #38bdf8;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-surface-contrast: #0b1120;
+  --color-surface-overlay: rgba(255, 255, 255, 0.72);
+  --color-surface-overlay-dark: rgba(15, 23, 42, 0.72);
+  --color-border: rgba(15, 23, 42, 0.08);
+  --color-border-strong: rgba(148, 163, 184, 0.24);
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --radius-full: 999px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 16px 60px -30px rgba(15, 23, 42, 0.4);
+  --max-width-page: 80rem;
+  --page-gutter: 1.5rem;
+  --font-brand: 'Inter', 'SF Pro Text', 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-brand);
+  background: var(--color-surface);
+  color: var(--color-brand-strong);
+}
+
+.dark body {
+  background: var(--color-surface-contrast);
+  color: var(--color-brand-foreground);
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: var(--color-brand-strong);
+  }
+
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5,
+  .dark h6 {
+    color: var(--color-brand-foreground);
+  }
+}
+
+@layer components {
+  .page-container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: var(--max-width-page);
+    padding-left: var(--page-gutter);
+    padding-right: var(--page-gutter);
+  }
+
+  .surface-card {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-overlay);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(18px);
+  }
+
+  .dark .surface-card {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface-overlay-dark);
+  }
+}

@@ -14,7 +14,7 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../../shared/lib/firebase";
 
 type Ctx = { user: User | null };
 

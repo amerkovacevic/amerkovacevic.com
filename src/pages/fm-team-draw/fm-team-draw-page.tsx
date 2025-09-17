@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import data from "../data/clubs.json";
+import data from "../../data/clubs.json";
 
 /** clubs.json shape */
 type Team = {
