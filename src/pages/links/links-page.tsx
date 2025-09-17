@@ -80,7 +80,7 @@ export default function Links() {
         align="center"
         title={
           <span className="flex flex-col items-center gap-3 text-center">
-            <span className="text-balance bg-gradient-to-r from-slate-900 via-brand to-emerald-500 bg-clip-text text-transparent dark:from-sky-100 dark:via-emerald-300 dark:to-teal-200">
+            <span className="text-balance bg-gradient-to-r from-emerald-500 via-black to-emerald-500 bg-clip-text text-transparent dark:from-emerald-300 dark:via-white dark:to-emerald-300">
               Amer Kovacevic
             </span>
           </span>
