@@ -1,58 +1,33 @@
 import { useState } from "react";
 
-import { PageHero, PageSection, StatPill } from "../../shared/components/page";
+import { PageHero, PageSection } from "../../shared/components/page";
 import { buttonStyles } from "../../shared/components/ui/button";
 
 type LinkItem = { title: string; url: string; emoji?: string; subtle?: boolean };
 
 export default function Links() {
   const links: LinkItem[] = [
-    { title: "Twitter / X", url: "https://twitter.com/yourhandle", emoji: "🐦" },
-    { title: "LinkedIn", url: "https://linkedin.com/in/yourhandle", emoji: "💼" },
-    { title: "GitHub", url: "https://github.com/yourhandle", emoji: "💻" },
+    { title: "Instagram @am.zzy", url: "https://instagram.com/am.zzy", emoji: "📸" },
+    { title: "GitHub @amerkovacevic", url: "https://github.com/amerkovacevic", emoji: "💻" },
+    { title: "LinkedIn @amerkovacevic", url: "https://linkedin.com/in/amerkovacevic", emoji: "💼" },
     { title: "Email me", url: "mailto:amer@amerkovacevic.com", emoji: "✉️" },
     { title: "Pickup Soccer", url: "/pickup", emoji: "⚽", subtle: true },
   ];
 
-  const [copied, setCopied] = useState(false);
   const email = "amer@amerkovacevic.com";
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(email);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {}
-  };
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-8">
       <PageHero
         icon="🌐"
-        eyebrow="Connect"
         title="Amer Kovacevic"
-        description="Builder of small, useful tools. Based online—shipping from St. Louis energy."
-        stats={
-          <>
-            <StatPill>Product & design</StatPill>
-            <StatPill>Side-project lab</StatPill>
-            <StatPill>Always exploring</StatPill>
-          </>
-        }
         actions={
-          <div className="flex flex-col items-stretch gap-2">
-            <button
-              onClick={copyEmail}
-              className={buttonStyles({ variant: "secondary", size: "sm" })}
-            >
-              {copied ? "Copied ✅" : "Copy email"}
-            </button>
-            <a
-              href={`mailto:${email}`}
-              className={buttonStyles({ size: "sm" })}
-            >
-              Say hi →
-            </a>
-          </div>
+          <a
+            href={`mailto:${email}`}
+            className={buttonStyles({ size: "sm" })}
+          >
+            Say hi →
+          </a>
         }
       />
 
