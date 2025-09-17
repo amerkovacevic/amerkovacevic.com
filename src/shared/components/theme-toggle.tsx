@@ -59,8 +59,8 @@ export function ThemeToggle({ className }: { className?: string }) {
       <span
         aria-hidden
         className={cn(
-          "relative z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-brand-sm transition-all duration-300",
-          "dark:bg-slate-900",
+          "relative z-10 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 shadow-brand-sm transition-all duration-300",
+          "dark:bg-slate-800",
           isDark
             ? "text-sky-100"
             : "text-amber-500"
