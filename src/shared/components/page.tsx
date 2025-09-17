@@ -91,7 +91,9 @@ export function PageSection({
           {(title || description || actions) && (
             <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="space-y-1 text-balance">
-                {title ? <h2 className="text-lg font-semibold text-brand-strong dark:text-white">{title}</h2> : null}
+                {title ? (
+                  <h2 className="text-lg font-semibold text-brand-strong dark:text-brand-foreground">{title}</h2>
+                ) : null}
                 {description ? (
                   <p className="text-sm text-brand-muted dark:text-brand-subtle">{description}</p>
                 ) : null}

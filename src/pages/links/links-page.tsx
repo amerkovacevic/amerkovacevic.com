@@ -7,9 +7,9 @@ type LinkItem = { title: string; url: string; emoji?: string; subtle?: boolean }
 
 export default function Links() {
   const links: LinkItem[] = [
-    { title: "Instagram @am.zzy", url: "https://instagram.com/am.zzy", emoji: "📸" },
-    { title: "GitHub @amerkovacevic", url: "https://github.com/amerkovacevic", emoji: "💻" },
-    { title: "LinkedIn @amerkovacevic", url: "https://linkedin.com/in/amerkovacevic", emoji: "💼" },
+    { title: "Instagram", url: "https://instagram.com/am.zzy", emoji: "📸" },
+    { title: "GitHub", url: "https://github.com/amerkovacevic", emoji: "💻" },
+    { title: "LinkedIn", url: "https://linkedin.com/in/amerkovacevic", emoji: "💼" },
     { title: "Email me", url: "mailto:amer@amerkovacevic.com", emoji: "✉️" },
     { title: "Pickup Soccer", url: "/pickup", emoji: "⚽", subtle: true },
   ];
@@ -48,15 +48,15 @@ export default function Links() {
             className={[
               "flex items-center justify-between rounded-brand-lg px-4 py-3 transition",
               l.subtle
-                ? "border border-border-light bg-surface text-brand-strong hover:border-brand/40 hover:bg-surface/80 dark:bg-surface-overlayDark"
-                : "bg-brand text-white shadow-brand hover:bg-brand-strong",
+                ? "border border-border-light bg-surface text-brand-strong hover:border-brand/40 hover:bg-surface/90 dark:border-border-dark dark:bg-surface-muted dark:text-brand-foreground"
+                : "bg-brand text-brand-foreground shadow-brand hover:bg-brand-strong",
             ].join(" ")}
           >
             <span className="flex items-center gap-3 text-lg">
               <span aria-hidden>{l.emoji ?? "🔗"}</span>
               <span>{l.title}</span>
             </span>
-            <span className={l.subtle ? "text-brand-muted" : "text-white/80"}>→</span>
+            <span className={l.subtle ? "text-brand-muted dark:text-brand-subtle" : "text-brand-foreground/80"}>→</span>
           </a>
         ))}
       </PageSection>

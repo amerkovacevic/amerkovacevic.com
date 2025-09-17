@@ -10,9 +10,18 @@ const VARIANTS: Record<ButtonVariant, string> = {
   primary:
     "bg-brand text-brand-foreground hover:bg-brand-strong focus-visible:outline-brand-accent",
   secondary:
-    "border border-border-light bg-surface-overlay text-brand-strong hover:border-brand-muted dark:bg-surface-overlayDark dark:hover:border-brand-subtle",
+    [
+      "border border-border-light bg-surface text-brand-strong",
+      "hover:border-brand-muted hover:bg-surface/90",
+      "dark:border-border-dark dark:bg-surface-muted dark:text-brand-foreground",
+      "dark:hover:border-brand-subtle dark:hover:bg-surface-muted/80",
+    ].join(" "),
   ghost:
-    "bg-transparent text-brand-subtle hover:bg-surface-overlay dark:hover:bg-surface-overlayDark",
+    [
+      "bg-transparent text-brand-muted",
+      "hover:bg-surface/80",
+      "dark:text-brand-subtle dark:hover:bg-surface-muted/60",
+    ].join(" "),
 };
 
 const SIZES: Record<ButtonSize, string> = {
