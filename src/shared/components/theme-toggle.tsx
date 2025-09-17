@@ -51,13 +51,14 @@ export function ThemeToggle({ className }: { className?: string }) {
       <span
         aria-hidden
         className={cn(
-          "absolute inset-y-1 left-1 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white text-amber-500 shadow-[0_10px_25px_rgba(14,116,144,0.25)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/10 dark:bg-slate-900 dark:text-sky-200",
+          "absolute inset-y-1 left-1 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white shadow-[0_10px_25px_rgba(14,116,144,0.25)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/10 dark:bg-slate-900",
           isDark ? "translate-x-12" : "translate-x-0"
         )}
       >
-        <span className="text-base" aria-hidden>
-          {isDark ? "🌙" : "☀️"}
-        </span>
+        <span
+          className="pointer-events-none h-6 w-6 rounded-full bg-gradient-to-br from-sky-200/60 to-white shadow-inner dark:from-slate-700/60 dark:to-slate-900/80"
+          aria-hidden
+        />
       </span>
       <span
         className={cn(

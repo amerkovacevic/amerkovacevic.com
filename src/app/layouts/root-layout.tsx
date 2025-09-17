@@ -48,8 +48,7 @@ export default function RootLayout() {
             className="pointer-events-none absolute inset-0 opacity-80"
             aria-hidden
             style={{
-              background:
-                "linear-gradient(120deg, rgba(56,189,248,0.14), transparent 40%), radial-gradient(circle at 20% 20%, rgba(59,130,246,0.18), transparent 60%)",
+              background: "rgba(56,189,248,0.14)",
             }}
           />
           <div className="relative flex flex-wrap items-center justify-between gap-4">
