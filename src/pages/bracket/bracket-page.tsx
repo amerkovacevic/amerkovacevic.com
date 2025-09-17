@@ -311,7 +311,7 @@ export default function Bracket() {
     <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-6">
       <PageHero
         icon="🏆"
-        title="FIFA Tournament Bracket"
+        title="Tournament Bracket Generator"
         description="Quick single-elimination brackets for friends, roommates, and weekend tournaments."
         stats={
           <>
@@ -336,7 +336,7 @@ export default function Bracket() {
               whileTap={{ scale: 0.97 }}
               onClick={buildBracket}
               type="button"
-              className={cn(buttonStyles({ size: "sm" }), "rounded-brand-full")}
+              className={cn(buttonStyles({ variant: "secondary", size: "sm" }), "rounded-brand-full")}
             >
               <Sparkles className="h-4 w-4" /> Generate
             </motion.button>
@@ -357,9 +357,9 @@ export default function Bracket() {
               onClick={toggleThirdPlace}
               type="button"
               className={cn(
-                buttonStyles({ size: "sm", variant: "secondary" }),
-                "rounded-brand-full border-0 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-brand-sm",
-                withThirdPlace ? "ring-2 ring-emerald-300/70" : "opacity-80 hover:opacity-100"
+                buttonStyles({ variant: "secondary", size: "sm" }),
+                "rounded-brand-full",
+                withThirdPlace ? "ring-2 ring-emerald-400/70" : undefined
               )}
             >
               <Medal className="h-4 w-4" /> {withThirdPlace ? "3rd place on" : "Enable 3rd place"}
@@ -464,11 +464,11 @@ function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | n
           <span>{first ?? "—"}</span>
         </li>
         <li className="flex items-center justify-between rounded-brand-full border border-border-light/60 bg-white/80 px-3 py-2 shadow-brand-sm backdrop-blur-sm dark:border-border-dark/60 dark:bg-white/10">
-          <span className="inline-flex items-center gap-2 font-medium"><span>🥈</span> Finalist</span>
+          <span className="inline-flex items-center gap-2 font-medium"><span>🥈</span> 2nd Place</span>
           <span>{second ?? "—"}</span>
         </li>
         <li className="flex items-center justify-between rounded-brand-full border border-border-light/60 bg-white/80 px-3 py-2 shadow-brand-sm backdrop-blur-sm dark:border-border-dark/60 dark:bg-white/10">
-          <span className="inline-flex items-center gap-2 font-medium"><span>🥉</span> 3rd place</span>
+          <span className="inline-flex items-center gap-2 font-medium"><span>🥉</span> 3rd Place</span>
           <span>{thirdLabel}</span>
         </li>
       </ul>
@@ -577,7 +577,7 @@ function BracketVertical({ bracket, setScore, resetScores }: { bracket: Bracket;
         </div>
       ))}
 
-      {typeof bracket.thirdPlace !== "undefined" && (
+      {bracket.thirdPlace ? (
         <div className="relative overflow-hidden rounded-[1.75rem] border border-border-light/60 bg-white/90 p-4 shadow-brand-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-white/5 md:p-5">
           <div
             aria-hidden
@@ -588,15 +588,15 @@ function BracketVertical({ bracket, setScore, resetScores }: { bracket: Bracket;
             }}
           />
           <h3 className="relative mb-3 text-xs font-semibold uppercase tracking-[0.32em] text-brand-muted dark:text-white/60">
-            3rd place match
+            3rd Place Match
           </h3>
-          {bracket.thirdPlace ? (
+          {bracket.thirdPlace.p1 && bracket.thirdPlace.p2 ? (
             <MatchCard match={bracket.thirdPlace} onScore={() => {}} onReset={() => {}} readOnly={!bracket.thirdPlace.p1 || !bracket.thirdPlace.p2} />
           ) : (
             <div className="text-sm text-brand-muted">Decide semifinals to populate 3rd place.</div>
           )}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
