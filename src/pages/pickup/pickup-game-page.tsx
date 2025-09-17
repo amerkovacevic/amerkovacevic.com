@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { Link, useNavigate, useOutletContext, useParams } from "react-router-dom";
 import type { User } from "firebase/auth";
 import {
@@ -35,6 +36,9 @@ const STATUS_LABELS: Record<RSVPStatus, string> = {
 };
 
 const STATUS_ORDER: RSVPStatus[] = ["going", "maybe", "out"];
+
+const MotionLink = motion(Link);
+const MotionButton = motion.button;
 
 export default function PickupGamePage() {
   const { user } = useOutletContext<Ctx>();
@@ -177,9 +181,14 @@ export default function PickupGamePage() {
             : "Manage RSVPs and details for your pickup session."
         }
         actions={
-          <Link to="/pickup" className={buttonStyles({ variant: "secondary", size: "sm" })}>
+          <MotionLink
+            to="/pickup"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.97 }}
+            className={buttonStyles({ variant: "secondary", size: "sm" })}
+          >
             ← Back to games
-          </Link>
+          </MotionLink>
         }
         stats={
           game ? (
@@ -273,18 +282,21 @@ export default function PickupGamePage() {
 
             {canManage ? (
               <div className="flex flex-col gap-3 border-t border-border-light pt-4 dark:border-border-dark">
-                <button
+                <MotionButton
+                  type="button"
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.97 }}
                   onClick={handleDelete}
                   disabled={deleting}
                   className={buttonStyles({
-                    variant: "ghost",
+                    variant: "secondary",
                     size: "sm",
                     className:
-                      "justify-start bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-200 dark:hover:bg-red-500/20",
+                      "justify-start border-red-200 text-red-600 ring-1 ring-inset ring-red-300/80 hover:border-red-300 hover:bg-red-50 dark:border-red-500/50 dark:text-red-100 dark:ring-red-500/70 dark:hover:bg-red-500/20",
                   })}
                 >
                   {deleting ? "Deleting…" : "Delete game"}
-                </button>
+                </MotionButton>
                 {deleteErr ? (
                   <p className="text-sm text-red-500">{deleteErr}</p>
                 ) : null}
