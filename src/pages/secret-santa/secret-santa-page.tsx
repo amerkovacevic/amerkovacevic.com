@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { useOutletContext } from "react-router-dom";
 import type { User } from "firebase/auth";
 import {
@@ -45,11 +46,12 @@ type Member = {
 export default function SecretSanta() {
   const { user } = useOutletContext<Ctx>();
 
-  const [tab, setTab] = useState<"create" | "join" | "event">("create");
+  const [tab, setTab] = useState<"create" | "join" | "event" | null>(null);
   const [eventId, setEventId] = useState<string | null>(null);
   const [activeEvent, setActiveEvent] = useState<EventDoc | null>(null);
 
   const [members, setMembers] = useState<Member[]>([]);
+  const [recipientUid, setRecipientUid] = useState<string | null>(null);
   const [myMatch, setMyMatch] = useState<Member | null>(null);
 
   const [loading, setLoading] = useState(false);
@@ -117,32 +119,42 @@ export default function SecretSanta() {
       }
     );
 
-    (async () => {
-      if (!user) return;
-      const myRef = doc(db, "santaEvents", activeEvent.id, "assignments", user.uid);
-      const mySnap = await getDoc(myRef);
-      if (!mySnap.exists()) {
-        setMyMatch(null);
-        return;
-      }
-      const recUid = (mySnap.data() as { recipientUid?: string })?.recipientUid;
-      if (!recUid) return;
-      const recSnap = await getDoc(doc(db, "santaEvents", activeEvent.id, "members", recUid));
-      if (!recSnap.exists()) return;
-      const rd = recSnap.data() as any;
-      setMyMatch({
-        uid: recSnap.id,
-        name: rd?.name ?? "Unknown",
-        email: rd?.email ?? "",
-        wantPlayers: (rd?.wantPlayers ?? []) as string[],
-        wantTeams: (rd?.wantTeams ?? []) as string[],
-        avoidPlayers: (rd?.avoidPlayers ?? []) as string[],
-        avoidTeams: (rd?.avoidTeams ?? []) as string[],
-      });
-    })();
+    return () => unsub();
+  }, [activeEvent?.id]);
 
+  useEffect(() => {
+    if (!activeEvent || !user) {
+      setRecipientUid(null);
+      setMyMatch(null);
+      return;
+    }
+
+    const assignRef = doc(
+      db,
+      "santaEvents",
+      activeEvent.id,
+      "assignments",
+      user.uid
+    );
+    const unsub = onSnapshot(assignRef, (snap) => {
+      const recUid = (snap.data() as { recipientUid?: string } | undefined)
+        ?.recipientUid;
+      setRecipientUid(recUid ?? null);
+      if (!recUid) {
+        setMyMatch(null);
+      }
+    });
     return () => unsub();
   }, [activeEvent?.id, user?.uid]);
+
+  useEffect(() => {
+    if (!recipientUid) {
+      setMyMatch(null);
+      return;
+    }
+    const match = members.find((m) => m.uid === recipientUid) ?? null;
+    setMyMatch(match);
+  }, [members, recipientUid]);
 
   // Derived
   const isOrganizer = useMemo(
@@ -199,63 +211,67 @@ export default function SecretSanta() {
 
   // Join (with preferences)
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  if (!user) {
-    setErr("Please sign in.");
-    return;
-  }
+    e.preventDefault();
+    if (!user) {
+      setErr("Please sign in.");
+      return;
+    }
 
-  const form = e.currentTarget as HTMLFormElement & {
-    code: HTMLInputElement;
-    displayName: HTMLInputElement;
-    wantPlayers: HTMLInputElement;
-    wantTeams: HTMLInputElement;
-    avoidPlayers: HTMLInputElement;
-    avoidTeams: HTMLInputElement;
+    const form = e.currentTarget as HTMLFormElement & {
+      code: HTMLInputElement;
+      displayName: HTMLInputElement;
+      wantPlayers: HTMLInputElement;
+      wantTeams: HTMLInputElement;
+      avoidPlayers: HTMLInputElement;
+      avoidTeams: HTMLInputElement;
+    };
+
+    const code = form.code.value.trim().toUpperCase();
+    const displayName = (
+      form.displayName.value || user.displayName || "Anonymous"
+    ).trim();
+
+    const wantPlayers = normList(form.wantPlayers?.value ?? "");
+    const wantTeams = normList(form.wantTeams?.value ?? "");
+    const avoidPlayers = normList(form.avoidPlayers?.value ?? "");
+    const avoidTeams = normList(form.avoidTeams?.value ?? "");
+
+    setLoading(true);
+    setErr(null);
+    try {
+      const q = query(
+        collection(db, "santaEvents"),
+        where("joinCode", "==", code)
+      );
+      const snap = await getDocs(q);
+
+      if (snap.empty) throw new Error("No event found for that code.");
+
+      const evSnap = snap.docs[0];
+      if (!evSnap) throw new Error("Event not found.");
+
+      await setDoc(
+        doc(db, "santaEvents", evSnap.id, "members", user.uid),
+        {
+          name: displayName,
+          email: user.email ?? "",
+          wantPlayers,
+          wantTeams,
+          avoidPlayers,
+          avoidTeams,
+        },
+        { merge: true }
+      );
+
+      setEventId(evSnap.id);
+      localStorage.setItem("santaEventId", evSnap.id);
+      setTab("event");
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Failed to join event.");
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const code = form.code.value.trim().toUpperCase();
-  const displayName = (form.displayName.value || user.displayName || "Anonymous").trim();
-
-  const wantPlayers = normList(form.wantPlayers?.value ?? "");
-  const wantTeams   = normList(form.wantTeams?.value ?? "");
-  const avoidPlayers = normList(form.avoidPlayers?.value ?? "");
-  const avoidTeams   = normList(form.avoidTeams?.value ?? "");
-
-  setLoading(true);
-  setErr(null);
-  try {
-    const q = query(collection(db, "santaEvents"), where("joinCode", "==", code));
-    const snap = await getDocs(q);
-
-    if (snap.empty) throw new Error("No event found for that code.");
-
-    // Explicit guard so TS knows this is defined
-    const evSnap = snap.docs[0];
-    if (!evSnap) throw new Error("Event not found.");
-
-    await setDoc(
-      doc(db, "santaEvents", evSnap.id, "members", user.uid),
-      {
-        name: displayName,
-        email: user.email ?? "",
-        wantPlayers,
-        wantTeams,
-        avoidPlayers,
-        avoidTeams,
-      },
-      { merge: true }
-    );
-
-    setEventId(evSnap.id);
-    localStorage.setItem("santaEventId", evSnap.id);
-    setTab("event");
-  } catch (e) {
-    setErr(e instanceof Error ? e.message : "Failed to join event.");
-  } finally {
-    setLoading(false);
-  }
-};
 
 
   // Update my preferences (inline editor in event view)
@@ -413,17 +429,9 @@ export default function SecretSanta() {
             contentClassName="space-y-5"
           >
             <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setTab("create")}
-                className={cn(
-                  buttonStyles({ variant: tab === "create" ? "primary" : "secondary", size: "sm" }),
-                  "rounded-brand-full"
-                )}
-                type="button"
-              >
-                Create event
-              </button>
-              <button
+              <motion.button
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setTab("join")}
                 className={cn(
                   buttonStyles({ variant: tab === "join" ? "primary" : "secondary", size: "sm" }),
@@ -432,7 +440,19 @@ export default function SecretSanta() {
                 type="button"
               >
                 Join with code
-              </button>
+              </motion.button>
+              <motion.button
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setTab("create")}
+                className={cn(
+                  buttonStyles({ variant: tab === "create" ? "primary" : "secondary", size: "sm" }),
+                  "rounded-brand-full"
+                )}
+                type="button"
+              >
+                Create event
+              </motion.button>
             </div>
 
             {tab === "create" ? (
@@ -470,7 +490,9 @@ export default function SecretSanta() {
                   </p>
                 )}
               </form>
-            ) : (
+            ) : null}
+
+            {tab === "join" ? (
               <form onSubmit={handleJoin} className="grid gap-4 md:max-w-xl">
                 <label className="flex flex-col gap-2 text-sm">
                   <span className="font-medium text-brand-muted">Join code</span>
@@ -504,7 +526,7 @@ export default function SecretSanta() {
                 </button>
                 {!user && <p className="text-sm text-red-500">You must be signed in to join a Secret Santa.</p>}
               </form>
-            )}
+            ) : null}
           </PageSection>
         ) : (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">

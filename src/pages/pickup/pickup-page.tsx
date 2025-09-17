@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { Plus } from "lucide-react";
 import { db } from "../../shared/lib/firebase";
 import {
+  Timestamp,
   collection,
   query,
   where,
@@ -9,7 +12,6 @@ import {
   doc,
   setDoc,
   serverTimestamp,
-  getDocs,
 } from "firebase/firestore";
 import { useOutletContext, Link } from "react-router-dom";
 import type { User } from "firebase/auth";
@@ -21,15 +23,18 @@ import { cn } from "../../shared/lib/classnames";
 
 type Ctx = { user: User | null };
 
-type Game = {
+export type Game = {
   id: string;
   title: string;
-  dateTime: any;
+  dateTime: Timestamp | number;
   fieldName: string;
   maxPlayers: number;
   organizerUid: string;
   status: "open" | "full" | "cancelled";
 };
+
+const MotionLink = motion(Link);
+const MotionButton = motion.button;
 
 export default function Pickup() {
   const { user } = useOutletContext<Ctx>();
@@ -68,11 +73,9 @@ export default function Pickup() {
   }, []);
 
   const nextGame = games[0] ?? null;
-  const nextGameMs = nextGame
-    ? nextGame.dateTime?.seconds
-      ? nextGame.dateTime.seconds * 1000
-      : Number(nextGame.dateTime)
-    : null;
+  const nextGameDate = useMemo(() => toDate(nextGame?.dateTime ?? null), [
+    nextGame?.dateTime,
+  ]);
 
   return (
     <div className="space-y-8">
@@ -80,20 +83,16 @@ export default function Pickup() {
         icon="⚽"
         title="Pickup Soccer"
         description="Create a game, share the link, and let friends RSVP in one click. Keep track of spots remaining in real time."
-        actions={
-          <Link to="/new" className={buttonStyles({ size: "sm" })}>
-            + Create game
-          </Link>
-        }
+        actions={<CreateGameButton />}
         stats={
           <>
             <StatPill>Open games · {games.length}</StatPill>
             <StatPill>
               {totalSpots ? `${totalSpots} total spots` : "Add your game"}
             </StatPill>
-            {nextGameMs ? (
+            {nextGameDate ? (
               <StatPill>
-                Next: {new Date(nextGameMs).toLocaleString([], {
+                Next: {nextGameDate.toLocaleString([], {
                   weekday: "short",
                   month: "short",
                   day: "numeric",
@@ -131,11 +130,9 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
     "none"
   );
 
-  const ms = game.dateTime?.seconds
-    ? game.dateTime.seconds * 1000
-    : Number(game.dateTime);
+  const gameDate = useMemo(() => toDate(game.dateTime), [game.dateTime]);
   const dateStr = useMemo(() => {
-    const d = new Date(ms);
+    const d = gameDate ?? new Date();
     const day = d.toLocaleDateString(undefined, {
       weekday: "short",
       month: "short",
@@ -146,28 +143,26 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
       minute: "2-digit",
     });
     return `${day} • ${time}`;
-  }, [ms]);
+  }, [gameDate]);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const rsvpsCol = collection(db, "games", game.id, "rsvps");
-      const all = await getDocs(rsvpsCol);
-      const going = all.docs.filter(
-        (d) => (d.data() as any).status === "going"
-      ).length;
-      if (!cancelled) setGoingCount(going);
-
-      if (user) {
-        const mine = all.docs.find((d) => d.id === user.uid);
-        setMyStatus(mine ? (mine.data() as any).status : "none");
-      } else {
-        setMyStatus("none");
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    const rsvpsCol = collection(db, "games", game.id, "rsvps");
+    const unsubscribe = onSnapshot(rsvpsCol, (snap) => {
+      let going = 0;
+      let my = "none" as "going" | "maybe" | "out" | "none";
+      snap.forEach((d) => {
+        const status = (d.data() as any)?.status as
+          | "going"
+          | "maybe"
+          | "out"
+          | undefined;
+        if (status === "going") going += 1;
+        if (user && d.id === user.uid && status) my = status;
+      });
+      setGoingCount(going);
+      setMyStatus(user ? my : "none");
+    });
+    return () => unsubscribe();
   }, [game.id, user?.uid]);
 
   const full = goingCount >= game.maxPlayers;
@@ -185,19 +180,20 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
       alert("This game is full.");
       return;
     }
-    await setDoc(
-      doc(db, "games", game.id, "rsvps", user.uid),
-      { status, joinedAt: serverTimestamp() },
-      { merge: true }
-    );
-    setMyStatus(status);
-
-    const rsvpsCol = collection(db, "games", game.id, "rsvps");
-    const all = await getDocs(rsvpsCol);
-    const going = all.docs.filter(
-      (d) => (d.data() as any).status === "going"
-    ).length;
-    setGoingCount(going);
+    try {
+      const name =
+        user.displayName?.trim() ||
+        user.email?.split("@")[0]?.trim() ||
+        "Player";
+      await setDoc(
+        doc(db, "games", game.id, "rsvps", user.uid),
+        { status, joinedAt: serverTimestamp(), name },
+        { merge: true }
+      );
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update RSVP. Please try again.");
+    }
   };
 
   return (
@@ -227,6 +223,20 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
             <div className="mt-1 text-xs text-brand-subtle">
               {full ? "Roster full" : `${game.maxPlayers - goingCount} spots left`}
             </div>
+            {user?.uid === game.organizerUid ? (
+              <MotionLink
+                to={`/pickup/${game.id}`}
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className={buttonStyles({
+                  variant: "secondary",
+                  size: "sm",
+                  className: "mt-3",
+                })}
+              >
+                Manage game
+              </MotionLink>
+            ) : null}
           </div>
         </header>
 
@@ -238,41 +248,52 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <button
+          <MotionButton
+            type="button"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setRSVP("going")}
             className={cn(
-              buttonStyles({ variant: "primary", size: "sm" }),
+              buttonStyles({ variant: "secondary", size: "sm" }),
               myStatus === "going"
-                ? ""
-                : "bg-brand/20 text-brand-strong hover:bg-brand/30 dark:text-white"
+                ? "border-emerald-300 bg-emerald-100 text-emerald-800 ring-2 ring-emerald-300/80 dark:border-emerald-400/50 dark:bg-emerald-500/20 dark:text-emerald-100 dark:ring-emerald-400/70"
+                : "text-brand-strong dark:text-brand-foreground"
             )}
             disabled={!user || full}
             title={!user ? "Sign in to RSVP" : full ? "Game is full" : ""}
           >
             I’m in
-          </button>
-          <button
+          </MotionButton>
+          <MotionButton
+            type="button"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setRSVP("maybe")}
             className={cn(
               buttonStyles({ variant: "secondary", size: "sm" }),
               myStatus === "maybe"
-                ? "border-brand text-brand"
-                : "hover:border-brand/40"
+                ? "border-amber-300 bg-amber-100 text-amber-800 ring-2 ring-amber-300/80 dark:border-amber-400/50 dark:bg-amber-500/20 dark:text-amber-100 dark:ring-amber-400/70"
+                : "text-brand-strong dark:text-brand-foreground"
             )}
             disabled={!user}
           >
             Maybe
-          </button>
-          <button
+          </MotionButton>
+          <MotionButton
+            type="button"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setRSVP("out")}
             className={cn(
-              buttonStyles({ variant: "ghost", size: "sm" }),
-              myStatus === "out" ? "bg-surface/80 text-brand-strong" : ""
+              buttonStyles({ variant: "secondary", size: "sm" }),
+              myStatus === "out"
+                ? "border-red-300 bg-red-100 text-red-700 ring-2 ring-red-300/80 dark:border-red-500/50 dark:bg-red-500/20 dark:text-red-100 dark:ring-red-500/70"
+                : "text-brand-strong dark:text-brand-foreground"
             )}
             disabled={!user}
           >
             Out
-          </button>
+          </MotionButton>
         </div>
       </div>
     </Card>
@@ -305,7 +326,34 @@ function EmptyState() {
       <p className="mt-2 text-sm text-brand-muted">
         Be the first to post one for this week.
       </p>
-      <Link to="/new" className={cn(buttonStyles({ size: "sm" }), "mt-4 inline-flex")}>Create game</Link>
+      <CreateGameButton className="mt-4" />
     </Card>
   );
+}
+
+function CreateGameButton({ className }: { className?: string }) {
+  return (
+    <MotionLink
+      to="/new"
+      whileHover={{ y: -1 }}
+      whileTap={{ scale: 0.97 }}
+      className={cn(
+        buttonStyles({ variant: "secondary", size: "sm" }),
+        "inline-flex items-center gap-2 rounded-brand-full",
+        className
+      )}
+    >
+      <Plus className="h-4 w-4" />
+      Create game
+    </MotionLink>
+  );
+}
+
+export function toDate(value: Timestamp | number | null | undefined) {
+  if (!value && value !== 0) return null;
+  if (value instanceof Timestamp) return value.toDate();
+  if (typeof value === "number") return new Date(value);
+  if (typeof (value as any)?.toDate === "function")
+    return (value as { toDate: () => Date }).toDate();
+  return null;
 }

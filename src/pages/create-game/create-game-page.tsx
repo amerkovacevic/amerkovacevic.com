@@ -20,11 +20,12 @@ export default function CreateGame() {
   const { user } = useOutletContext<Ctx>();
   const nav = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) {
-      alert("Please sign in");
+      setError("Please sign in to create a game.");
       return;
     }
 
@@ -38,30 +39,43 @@ export default function CreateGame() {
     const title = form.title.value.trim();
     const dateTimeLocal = form.dateTime.value;
     const fieldName = form.fieldName.value.trim();
-    const maxPlayers = parseInt(form.maxPlayers.value, 10);
+    const maxPlayersRaw = parseInt(form.maxPlayers.value, 10);
+    const maxPlayers = Number.isFinite(maxPlayersRaw)
+      ? Math.min(30, Math.max(2, maxPlayersRaw))
+      : 0;
 
-    if (!title || !dateTimeLocal || !fieldName || !maxPlayers) return;
+    if (!title || !dateTimeLocal || !fieldName || !maxPlayers) {
+      setError("Fill in all fields before submitting.");
+      return;
+    }
 
     setBusy(true);
-    const when = Timestamp.fromDate(new Date(dateTimeLocal));
-    await addDoc(collection(db, "games"), {
-      title,
-      dateTime: when,
-      fieldName,
-      maxPlayers,
-      organizerUid: user.uid,
-      status: "open",
-      createdAt: serverTimestamp(),
-    });
+    setError(null);
+    try {
+      const when = Timestamp.fromDate(new Date(dateTimeLocal));
+      await addDoc(collection(db, "games"), {
+        title,
+        dateTime: when,
+        fieldName,
+        maxPlayers,
+        organizerUid: user.uid,
+        status: "open",
+        createdAt: serverTimestamp(),
+      });
 
-    await setDoc(
-      doc(db, "fields", fieldName.toLowerCase().replace(/\s+/g, "-")),
-      { name: fieldName },
-      { merge: true }
-    );
+      await setDoc(
+        doc(db, "fields", fieldName.toLowerCase().replace(/\s+/g, "-")),
+        { name: fieldName },
+        { merge: true }
+      );
 
-    setBusy(false);
-    nav("/pickup");
+      nav("/pickup");
+    } catch (e) {
+      console.error(e);
+      setError("Could not create the game. Please try again.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -89,6 +103,11 @@ export default function CreateGame() {
         description="Fill out the essentials. We’ll auto-save the field for next time and ping your friends as soon as it’s live."
       >
         <form onSubmit={onSubmit} className="grid gap-5">
+          {error ? (
+            <div className="rounded-brand border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-400/40 dark:bg-red-500/10 dark:text-red-200">
+              {error}
+            </div>
+          ) : null}
           <div className="grid gap-4 md:grid-cols-2">
             <label className="flex flex-col gap-2 text-sm">
               <span className="font-medium text-brand-muted">Title</span>

@@ -7,6 +7,7 @@ import {
   FmTeamDrawPage,
   HomePage,
   LinksPage,
+  PickupGamePage,
   PickupPage,
   SecretSantaPage,
 } from "../../pages";
@@ -18,6 +19,7 @@ export const routes: RouteObject[] = [
     children: [
       { index: true, element: <HomePage /> },
       { path: "pickup", element: <PickupPage /> },
+      { path: "pickup/:gameId", element: <PickupGamePage /> },
       { path: "new", element: <CreateGamePage /> },
       { path: "links", element: <LinksPage /> },
       { path: "santa", element: <SecretSantaPage /> },

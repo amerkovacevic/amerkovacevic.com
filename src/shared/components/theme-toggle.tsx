@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
 
 import { useTheme } from "../../app/providers";
 import { cn } from "../lib/classnames";
@@ -11,7 +10,15 @@ export function ThemeToggle({ className }: { className?: string }) {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return <div className="h-10 w-[9.5rem] animate-pulse rounded-brand-full bg-border-light/60" aria-hidden />;
+    return (
+      <div
+        className={cn(
+          "h-12 w-[8.5rem] animate-pulse rounded-full bg-border-light/70",
+          className
+        )}
+        aria-hidden
+      />
+    );
   }
 
   const isDark = theme === "dark";
@@ -24,41 +31,54 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-checked={isDark}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       className={cn(
-        "group relative inline-flex h-10 min-w-[9.5rem] items-center justify-between overflow-hidden rounded-brand-full border border-border-light/70 px-4 text-sm font-semibold transition-all duration-300",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent",
+        "group relative inline-flex h-12 w-[8.5rem] items-center overflow-hidden rounded-full border border-border-light/70 px-2 text-[0.65rem] font-semibold uppercase tracking-[0.22em] transition-all duration-500",
         isDark
-          ? "bg-brand-strong/90 text-white shadow-brand"
-          : "bg-surface/95 text-brand-strong shadow-brand-sm",
-        "hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-brand",
+          ? "bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 text-brand-foreground shadow-[0_14px_34px_rgba(15,23,42,0.42)] dark:border-border-dark"
+          : "bg-gradient-to-r from-white via-sky-50 to-sky-100 text-brand-strong shadow-[0_18px_40px_rgba(56,189,248,0.28)]",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent",
         className
       )}
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{
-          background:
-            "radial-gradient(circle at 20% 20%, rgba(59,130,246,0.25), transparent 60%), radial-gradient(circle at 80% 50%, rgba(14,165,233,0.28), transparent 55%)",
-        }}
+        className={cn(
+          "pointer-events-none absolute inset-0 opacity-80 blur-[38px] transition-opacity duration-500",
+          isDark
+            ? "bg-gradient-to-r from-brand-accent/10 via-brand/30 to-brand-accent/5"
+            : "bg-gradient-to-r from-brand/20 via-brand-accent/30 to-white/50"
+        )}
       />
-      <span className="relative flex items-center gap-3">
-        <span
-          className={cn(
-            "grid h-7 w-7 place-items-center rounded-brand-full bg-white/90 text-brand shadow-brand-sm transition-colors duration-300",
-            isDark && "bg-slate-900/80 text-white"
-          )}
-        >
-          {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+
+      <span
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full border border-white/60 bg-white/90 shadow-[0_10px_26px_rgba(59,130,246,0.25)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/10 dark:bg-slate-900/90 dark:shadow-[0_12px_28px_rgba(15,23,42,0.45)]",
+          isDark ? "translate-x-full" : "translate-x-0"
+        )}
+      />
+
+      <span
+        className={cn(
+          "relative z-10 flex flex-1 items-center justify-center gap-1 transition-colors duration-500",
+          isDark ? "text-white/45" : "text-brand-strong"
+        )}
+      >
+        <span aria-hidden className="text-base">
+          ☀️
         </span>
-        <span className="relative hidden sm:inline-flex flex-col leading-none">
-          <span>{isDark ? "Dark" : "Light"}</span>
-          <span className="text-[11px] font-normal uppercase tracking-[0.32em] text-brand-muted/80 dark:text-white/60">
-            Mode
-          </span>
-        </span>
+        
       </span>
-      <span className="relative text-[11px] font-medium uppercase tracking-[0.32em] text-brand-muted/80 dark:text-white/60">
-        {isDark ? "Dark" : "Light"}
+
+      <span
+        className={cn(
+          "relative z-10 flex flex-1 items-center justify-center gap-1 transition-colors duration-500",
+          isDark ? "text-brand-foreground" : "text-slate-400"
+        )}
+      >
+        <span aria-hidden className="text-base">
+          🌙
+        </span>
+        
       </span>
     </button>
   );
