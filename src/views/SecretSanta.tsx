@@ -386,7 +386,7 @@ export default function SecretSanta() {
     <div>
       {/* Header */}
       <div className="rounded-2xl p-5 md:p-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
-        <h1 className="text-2xl md:text-3xl font-bold">Secret Santa — Soccer Jerseys</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">Secret Santa</h1>
         <p className="mt-1 text-white/80">Create a group, invite with a code, set preferences, and auto-assign matches.</p>
       </div>
 
@@ -537,32 +537,28 @@ export default function SecretSanta() {
           )}
 
           {/* My assignment with recipient prefs */}
-          <div className="rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-4">
-            <h3 className="text-sm font-medium mb-2">Your match</h3>
-            {myMatch ? (
-              <div className="grid gap-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold">{myMatch.name}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-300">{myMatch.email}</div>
-                  </div>
-                  <span className="rounded-lg px-2 py-1 text-xs bg-brand-light text-white dark:bg-brand-dark">
-                    🎁 Buy a jersey
-                  </span>
-                </div>
-                <div className="text-sm mt-1">
-                  <div><span className="font-medium">Wants — Players:</span> {listOrDash(myMatch.wantPlayers)}</div>
-                  <div><span className="font-medium">Wants — Teams:</span> {listOrDash(myMatch.wantTeams)}</div>
-                  <div><span className="font-medium">Avoid — Players:</span> {listOrDash(myMatch.avoidPlayers)}</div>
-                  <div><span className="font-medium">Avoid — Teams:</span> {listOrDash(myMatch.avoidTeams)}</div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-gray-600 dark:text-gray-300 text-sm">
-                No assignment yet. Ask the organizer to run the draw.
-              </div>
-            )}
-          </div>
+<div className="rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-4">
+  <h3 className="text-sm font-medium mb-2">Your match</h3>
+  {myMatch ? (
+    <div className="grid gap-2">
+      <div>
+        <div className="font-semibold">{myMatch.name}</div>
+        <div className="text-sm text-gray-600 dark:text-gray-300">{myMatch.email}</div>
+      </div>
+      <div className="text-sm mt-1">
+        <div><span className="font-medium">Wants — Players:</span> {listOrDash(myMatch.wantPlayers)}</div>
+        <div><span className="font-medium">Wants — Teams:</span> {listOrDash(myMatch.wantTeams)}</div>
+        <div><span className="font-medium">Avoid — Players:</span> {listOrDash(myMatch.avoidPlayers)}</div>
+        <div><span className="font-medium">Avoid — Teams:</span> {listOrDash(myMatch.avoidTeams)}</div>
+      </div>
+    </div>
+  ) : (
+    <div className="text-gray-600 dark:text-gray-300 text-sm">
+      No assignment yet. Ask the organizer to run the draw.
+    </div>
+  )}
+</div>
+
         </div>
       )}
     </div>

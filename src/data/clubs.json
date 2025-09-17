@@ -1,0 +1,2858 @@
+{
+  "meta": {
+    "scrapedAt": "2025-09-17T03:45:02.131Z",
+    "source": "Wikipedia (League table sections)",
+    "leagues": [
+      {
+        "nation": "England",
+        "league": "Premier League",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+      },
+      {
+        "nation": "England",
+        "league": "EFL Championship",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+      },
+      {
+        "nation": "England",
+        "league": "EFL League One",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+      },
+      {
+        "nation": "England",
+        "league": "EFL League Two",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+      },
+      {
+        "nation": "France",
+        "league": "Ligue 1",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+      },
+      {
+        "nation": "France",
+        "league": "Ligue 2",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+      },
+      {
+        "nation": "France",
+        "league": "Championnat National",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+      },
+      {
+        "nation": "Germany",
+        "league": "Bundesliga",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+      },
+      {
+        "nation": "Germany",
+        "league": "2. Bundesliga",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+      },
+      {
+        "nation": "Germany",
+        "league": "3. Liga",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+      },
+      {
+        "nation": "Italy",
+        "league": "Serie A",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+      },
+      {
+        "nation": "Italy",
+        "league": "Serie B",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_B"
+      },
+      {
+        "nation": "Spain",
+        "league": "LaLiga",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+      },
+      {
+        "nation": "Spain",
+        "league": "Segunda División",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+      },
+      {
+        "nation": "Portugal",
+        "league": "Primeira Liga",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+      },
+      {
+        "nation": "Portugal",
+        "league": "Liga Portugal 2",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+      },
+      {
+        "nation": "Turkey",
+        "league": "Süper Lig",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+      },
+      {
+        "nation": "Belgium",
+        "league": "Belgian Pro League",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+      },
+      {
+        "nation": "Austria",
+        "league": "Austrian Bundesliga",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+      },
+      {
+        "nation": "Croatia",
+        "league": "HNL",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Croatian_Football_League"
+      },
+      {
+        "nation": "Serbia",
+        "league": "Serbian SuperLiga",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+      },
+      {
+        "nation": "Scotland",
+        "league": "Scottish Premiership",
+        "url": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+      }
+    ],
+    "total": 391
+  },
+  "clubs": [
+    {
+      "id": "1_fc_heidenheim",
+      "name": "1. FC Heidenheim",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "1_fc_kaiserslautern",
+      "name": "1. FC Kaiserslautern",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "1_fc_k_ln",
+      "name": "1. FC Köln",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "1_fc_magdeburg",
+      "name": "1. FC Magdeburg",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "1_fc_n_rnberg",
+      "name": "1. FC Nürnberg",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "1_fc_saarbr_cken",
+      "name": "1. FC Saarbrücken",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "1860_munich",
+      "name": "1860 Munich",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "aberdeen",
+      "name": "Aberdeen",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "ac_milan",
+      "name": "AC Milan",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "acad_mico_de_viseu",
+      "name": "Académico de Viseu",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "accrington_stanley",
+      "name": "Accrington Stanley",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "adana_demirspor",
+      "name": "Adana Demirspor",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "afc_wimbledon",
+      "name": "AFC Wimbledon",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "ajaccio",
+      "name": "Ajaccio",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "alanyaspor",
+      "name": "Alanyaspor",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "alav_s",
+      "name": "Alavés",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "albacete",
+      "name": "Albacete",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "alemannia_aachen",
+      "name": "Alemannia Aachen",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "almer_a",
+      "name": "Almería",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "alverca",
+      "name": "Alverca",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "amiens",
+      "name": "Amiens",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "anderlecht",
+      "name": "Anderlecht",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "angers",
+      "name": "Angers",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "annecy",
+      "name": "Annecy",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "antalyaspor",
+      "name": "Antalyaspor",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "antwerp",
+      "name": "Antwerp",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "arminia_bielefeld",
+      "name": "Arminia Bielefeld",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "arouca",
+      "name": "Arouca",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "arsenal",
+      "name": "Arsenal",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "aston_villa",
+      "name": "Aston Villa",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "atalanta",
+      "name": "Atalanta",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "athletic_bilbao",
+      "name": "Athletic Bilbao",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "atl_tico_madrid",
+      "name": "Atlético Madrid",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "aubagne",
+      "name": "Aubagne",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "austria_klagenfurt",
+      "name": "Austria Klagenfurt",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "austria_wien",
+      "name": "Austria Wien",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "auxerre",
+      "name": "Auxerre",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "avs",
+      "name": "AVS",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "barcelona",
+      "name": "Barcelona",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "barnsley",
+      "name": "Barnsley",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "barrow",
+      "name": "Barrow",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "ba_ak_ehir",
+      "name": "Başakşehir",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "bastia",
+      "name": "Bastia",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "bayer_leverkusen",
+      "name": "Bayer Leverkusen",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "bayern_munich",
+      "name": "Bayern Munich",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "beerschot",
+      "name": "Beerschot",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "benfica",
+      "name": "Benfica",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "benfica_b",
+      "name": "Benfica B",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "be_ikta",
+      "name": "Beşiktaş",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "birmingham_city",
+      "name": "Birmingham City",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "blackburn_rovers",
+      "name": "Blackburn Rovers",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "blackpool",
+      "name": "Blackpool",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "blau_wei_linz",
+      "name": "Blau-Weiß Linz",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "boavista",
+      "name": "Boavista",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "bodrum",
+      "name": "Bodrum",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "bologna",
+      "name": "Bologna",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "bolton_wanderers",
+      "name": "Bolton Wanderers",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "borussia_dortmund",
+      "name": "Borussia Dortmund",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "borussia_dortmund_ii",
+      "name": "Borussia Dortmund II",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "borussia_m_nchengladbach",
+      "name": "Borussia Mönchengladbach",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "boulogne",
+      "name": "Boulogne",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "bourg_p_ronnas",
+      "name": "Bourg-Péronnas",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "bournemouth",
+      "name": "Bournemouth",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "bradford_city",
+      "name": "Bradford City",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "braga",
+      "name": "Braga",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "brentford",
+      "name": "Brentford",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "brest",
+      "name": "Brest",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "brighton_hove_albion",
+      "name": "Brighton & Hove Albion",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "bristol_city",
+      "name": "Bristol City",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "bristol_rovers",
+      "name": "Bristol Rovers",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "bromley",
+      "name": "Bromley",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "burgos",
+      "name": "Burgos",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "burnley",
+      "name": "Burnley",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "burton_albion",
+      "name": "Burton Albion",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "c_diz",
+      "name": "Cádiz",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "caen",
+      "name": "Caen",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "cagliari",
+      "name": "Cagliari",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "cambridge_united",
+      "name": "Cambridge United",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "campania",
+      "name": "Campania",
+      "nation": "Italy",
+      "league": "Serie B",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_B"
+    },
+    {
+      "id": "cardiff_city",
+      "name": "Cardiff City",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "carlisle_united",
+      "name": "Carlisle United",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "cartagena",
+      "name": "Cartagena",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "casa_pia",
+      "name": "Casa Pia",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "castell_n",
+      "name": "Castellón",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "celta_vigo",
+      "name": "Celta Vigo",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "celtic",
+      "name": "Celtic",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "cercle_brugge",
+      "name": "Cercle Brugge",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "charleroi",
+      "name": "Charleroi",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "charlton_athletic",
+      "name": "Charlton Athletic",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "ch_teauroux",
+      "name": "Châteauroux",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "chaves",
+      "name": "Chaves",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "chelsea",
+      "name": "Chelsea",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "cheltenham_town",
+      "name": "Cheltenham Town",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "chesterfield",
+      "name": "Chesterfield",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "clermont",
+      "name": "Clermont",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "club_brugge",
+      "name": "Club Brugge",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "colchester_united",
+      "name": "Colchester United",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "como",
+      "name": "Como",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "concarneau",
+      "name": "Concarneau",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "c_rdoba",
+      "name": "Córdoba",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "coventry_city",
+      "name": "Coventry City",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "crawley_town",
+      "name": "Crawley Town",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "crewe_alexandra",
+      "name": "Crewe Alexandra",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "crystal_palace",
+      "name": "Crystal Palace",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "ukari_ki",
+      "name": "Čukarički",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "darmstadt_98",
+      "name": "Darmstadt 98",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "dender_eh",
+      "name": "Dender EH",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "deportivo_la_coru_a",
+      "name": "Deportivo La Coruña",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "derby_county",
+      "name": "Derby County",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "dijon",
+      "name": "Dijon",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "dinamo_zagreb",
+      "name": "Dinamo Zagreb",
+      "nation": "Croatia",
+      "league": "HNL",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Croatian_Football_League"
+    },
+    {
+      "id": "doncaster_rovers",
+      "name": "Doncaster Rovers",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "dundee",
+      "name": "Dundee",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "dundee_united",
+      "name": "Dundee United",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "dunkerque",
+      "name": "Dunkerque",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "dynamo_dresden",
+      "name": "Dynamo Dresden",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "eibar",
+      "name": "Eibar",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "eintracht_braunschweig",
+      "name": "Eintracht Braunschweig",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "eintracht_frankfurt",
+      "name": "Eintracht Frankfurt",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "elche",
+      "name": "Elche",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "eldense",
+      "name": "Eldense",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "empoli",
+      "name": "Empoli",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "energie_cottbus",
+      "name": "Energie Cottbus",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "erzgebirge_aue",
+      "name": "Erzgebirge Aue",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "espanyol",
+      "name": "Espanyol",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "estoril",
+      "name": "Estoril",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "estrela_da_amadora",
+      "name": "Estrela da Amadora",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "everton",
+      "name": "Everton",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "exeter_city",
+      "name": "Exeter City",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "ey_pspor",
+      "name": "Eyüpspor",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "famalic_o",
+      "name": "Famalicão",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "farense",
+      "name": "Farense",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "fc_augsburg",
+      "name": "FC Augsburg",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "fc_ingolstadt",
+      "name": "FC Ingolstadt",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "fc_st_pauli",
+      "name": "FC St. Pauli",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "feirense",
+      "name": "Feirense",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "felgueiras",
+      "name": "Felgueiras",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "fenerbah_e",
+      "name": "Fenerbahçe",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "fiorentina",
+      "name": "Fiorentina",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "fleetwood_town",
+      "name": "Fleetwood Town",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "fortuna_d_sseldorf",
+      "name": "Fortuna Düsseldorf",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "fulham",
+      "name": "Fulham",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "galatasaray",
+      "name": "Galatasaray",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "gaziantep",
+      "name": "Gaziantep",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "genk",
+      "name": "Genk",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "genoa",
+      "name": "Genoa",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "gent",
+      "name": "Gent",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "getafe",
+      "name": "Getafe",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "gil_vicente",
+      "name": "Gil Vicente",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "gillingham",
+      "name": "Gillingham",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "girona",
+      "name": "Girona",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "gorica",
+      "name": "Gorica",
+      "nation": "Croatia",
+      "league": "HNL",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Croatian_Football_League"
+    },
+    {
+      "id": "g_ztepe",
+      "name": "Göztepe",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "granada",
+      "name": "Granada",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "grazer_ak",
+      "name": "Grazer AK",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "grenoble",
+      "name": "Grenoble",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "greuther_f_rth",
+      "name": "Greuther Fürth",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "grimsby_town",
+      "name": "Grimsby Town",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "guingamp",
+      "name": "Guingamp",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "hajduk_split",
+      "name": "Hajduk Split",
+      "nation": "Croatia",
+      "league": "HNL",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Croatian_Football_League"
+    },
+    {
+      "id": "hamburger_sv",
+      "name": "Hamburger SV",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "hannover_96",
+      "name": "Hannover 96",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "hannover_96_ii",
+      "name": "Hannover 96 II",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "hansa_rostock",
+      "name": "Hansa Rostock",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "harrogate_town",
+      "name": "Harrogate Town",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "hatayspor",
+      "name": "Hatayspor",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "heart_of_midlothian",
+      "name": "Heart of Midlothian",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "hellas_verona",
+      "name": "Hellas Verona",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "hertha_bsc",
+      "name": "Hertha BSC",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "hibernian",
+      "name": "Hibernian",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "holstein_kiel",
+      "name": "Holstein Kiel",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "huddersfield_town",
+      "name": "Huddersfield Town",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "huesca",
+      "name": "Huesca",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "hull_city",
+      "name": "Hull City",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "imt",
+      "name": "IMT",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "inter_milan",
+      "name": "Inter Milan",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "ipswich_town",
+      "name": "Ipswich Town",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "istra_1961",
+      "name": "Istra 1961",
+      "nation": "Croatia",
+      "league": "HNL",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Croatian_Football_League"
+    },
+    {
+      "id": "jahn_regensburg",
+      "name": "Jahn Regensburg",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "jedinstvo_ub",
+      "name": "Jedinstvo Ub",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "juventus",
+      "name": "Juventus",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "karlsruher_sc",
+      "name": "Karlsruher SC",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "kas_mpa_a",
+      "name": "Kasımpaşa",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "kayserispor",
+      "name": "Kayserispor",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "kilmarnock",
+      "name": "Kilmarnock",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "konyaspor",
+      "name": "Konyaspor",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "kortrijk",
+      "name": "Kortrijk",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "las_palmas",
+      "name": "Las Palmas",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "lask",
+      "name": "LASK",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "laval",
+      "name": "Laval",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "lazio",
+      "name": "Lazio",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "lazio",
+      "name": "Lazio",
+      "nation": "Italy",
+      "league": "Serie B",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_B"
+    },
+    {
+      "id": "le_havre",
+      "name": "Le Havre",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "le_mans",
+      "name": "Le Mans",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "lecce",
+      "name": "Lecce",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "leeds_united",
+      "name": "Leeds United",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "legan_s",
+      "name": "Leganés",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "leicester_city",
+      "name": "Leicester City",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "leix_es",
+      "name": "Leixões",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "lens",
+      "name": "Lens",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "levante",
+      "name": "Levante",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "leyton_orient",
+      "name": "Leyton Orient",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "liguria",
+      "name": "Liguria",
+      "nation": "Italy",
+      "league": "Serie B",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_B"
+    },
+    {
+      "id": "lille",
+      "name": "Lille",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "lincoln_city",
+      "name": "Lincoln City",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "liverpool",
+      "name": "Liverpool",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "lokomotiva",
+      "name": "Lokomotiva",
+      "nation": "Croatia",
+      "league": "HNL",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Croatian_Football_League"
+    },
+    {
+      "id": "lorient",
+      "name": "Lorient",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "luton_town",
+      "name": "Luton Town",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "lyon",
+      "name": "Lyon",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "mafra",
+      "name": "Mafra",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "mainz_05",
+      "name": "Mainz 05",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "m_laga",
+      "name": "Málaga",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "mallorca",
+      "name": "Mallorca",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "manchester_city",
+      "name": "Manchester City",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "manchester_united",
+      "name": "Manchester United",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "mansfield_town",
+      "name": "Mansfield Town",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "mar_timo",
+      "name": "Marítimo",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "marseille",
+      "name": "Marseille",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "martigues",
+      "name": "Martigues",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "mechelen",
+      "name": "Mechelen",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "metz",
+      "name": "Metz",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "middlesbrough",
+      "name": "Middlesbrough",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "millwall",
+      "name": "Millwall",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "milton_keynes_dons",
+      "name": "Milton Keynes Dons",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "mirand_s",
+      "name": "Mirandés",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "mladost_lu_ani",
+      "name": "Mladost Lučani",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "monaco",
+      "name": "Monaco",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "montpellier",
+      "name": "Montpellier",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "monza",
+      "name": "Monza",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "morecambe",
+      "name": "Morecambe",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "moreirense",
+      "name": "Moreirense",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "motherwell",
+      "name": "Motherwell",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "nacional",
+      "name": "Nacional",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "nancy",
+      "name": "Nancy",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "nantes",
+      "name": "Nantes",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "napoli",
+      "name": "Napoli",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "napredak",
+      "name": "Napredak",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "newcastle_united",
+      "name": "Newcastle United",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "newport_county",
+      "name": "Newport County",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "nice",
+      "name": "Nice",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "n_mes",
+      "name": "Nîmes",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "northampton_town",
+      "name": "Northampton Town",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "norwich_city",
+      "name": "Norwich City",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "nottingham_forest",
+      "name": "Nottingham Forest",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "notts_county",
+      "name": "Notts County",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "novi_pazar",
+      "name": "Novi Pazar",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "ofk_beograd",
+      "name": "OFK Beograd",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "oh_leuven",
+      "name": "OH Leuven",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "oliveirense",
+      "name": "Oliveirense",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "orl_ans",
+      "name": "Orléans",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "osasuna",
+      "name": "Osasuna",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "osijek",
+      "name": "Osijek",
+      "nation": "Croatia",
+      "league": "HNL",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Croatian_Football_League"
+    },
+    {
+      "id": "oviedo",
+      "name": "Oviedo",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "oxford_united",
+      "name": "Oxford United",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "pa_os_de_ferreira",
+      "name": "Paços de Ferreira",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "paris_13_atletico",
+      "name": "Paris 13 Atletico",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "paris_fc",
+      "name": "Paris FC",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "paris_saint_germain",
+      "name": "Paris Saint-Germain",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "parma",
+      "name": "Parma",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "partizan",
+      "name": "Partizan",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "pau",
+      "name": "Pau",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "penafiel",
+      "name": "Penafiel",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "peterborough_united",
+      "name": "Peterborough United",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "plymouth_argyle",
+      "name": "Plymouth Argyle",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "port_vale",
+      "name": "Port Vale",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "portimonense",
+      "name": "Portimonense",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "porto",
+      "name": "Porto",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "porto_b",
+      "name": "Porto B",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "portsmouth",
+      "name": "Portsmouth",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "preston_north_end",
+      "name": "Preston North End",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "preu_en_m_nster",
+      "name": "Preußen Münster",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "queens_park_rangers",
+      "name": "Queens Park Rangers",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "quevilly_rouen",
+      "name": "Quevilly-Rouen",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "racing_ferrol",
+      "name": "Racing Ferrol",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "racing_santander",
+      "name": "Racing Santander",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "radni_ki_1923",
+      "name": "Radnički 1923",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "radni_ki_ni",
+      "name": "Radnički Niš",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "rangers",
+      "name": "Rangers",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "rayo_vallecano",
+      "name": "Rayo Vallecano",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "rb_leipzig",
+      "name": "RB Leipzig",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "reading",
+      "name": "Reading",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "real_betis",
+      "name": "Real Betis",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "real_madrid",
+      "name": "Real Madrid",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "real_sociedad",
+      "name": "Real Sociedad",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "red_bull_salzburg",
+      "name": "Red Bull Salzburg",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "red_star",
+      "name": "Red Star",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "red_star_belgrade",
+      "name": "Red Star Belgrade",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "reims",
+      "name": "Reims",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "rennes",
+      "name": "Rennes",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "rheindorf_altach",
+      "name": "Rheindorf Altach",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "rijeka",
+      "name": "Rijeka",
+      "nation": "Croatia",
+      "league": "HNL",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Croatian_Football_League"
+    },
+    {
+      "id": "rio_ave",
+      "name": "Rio Ave",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "rizespor",
+      "name": "Rizespor",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "rodez",
+      "name": "Rodez",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "roma",
+      "name": "Roma",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "ross_county",
+      "name": "Ross County",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "rot_weiss_essen",
+      "name": "Rot-Weiss Essen",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "rotherham_united",
+      "name": "Rotherham United",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "rouen",
+      "name": "Rouen",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "saint_tienne",
+      "name": "Saint-Étienne",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "salford_city",
+      "name": "Salford City",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "samsunspor",
+      "name": "Samsunspor",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "santa_clara",
+      "name": "Santa Clara",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "sc_freiburg",
+      "name": "SC Freiburg",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "sc_paderborn",
+      "name": "SC Paderborn",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "sc_verl",
+      "name": "SC Verl",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "schalke_04",
+      "name": "Schalke 04",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "sevilla",
+      "name": "Sevilla",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "sheffield_united",
+      "name": "Sheffield United",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "sheffield_wednesday",
+      "name": "Sheffield Wednesday",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "shrewsbury_town",
+      "name": "Shrewsbury Town",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "ibenik",
+      "name": "Šibenik",
+      "nation": "Croatia",
+      "league": "HNL",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Croatian_Football_League"
+    },
+    {
+      "id": "sicily",
+      "name": "Sicily",
+      "nation": "Italy",
+      "league": "Serie B",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_B"
+    },
+    {
+      "id": "sint_truiden",
+      "name": "Sint-Truiden",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "sivasspor",
+      "name": "Sivasspor",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "sk_rapid",
+      "name": "SK Rapid",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "slaven_belupo",
+      "name": "Slaven Belupo",
+      "nation": "Croatia",
+      "league": "HNL",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Croatian_Football_League"
+    },
+    {
+      "id": "sochaux",
+      "name": "Sochaux",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "southampton",
+      "name": "Southampton",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "spartak",
+      "name": "Spartak",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "sporting_cp",
+      "name": "Sporting CP",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "sporting_gij_n",
+      "name": "Sporting Gijón",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "spvgg_unterhaching",
+      "name": "SpVgg Unterhaching",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "ssv_ulm",
+      "name": "SSV Ulm",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "st_johnstone",
+      "name": "St Johnstone",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "st_mirren",
+      "name": "St Mirren",
+      "nation": "Scotland",
+      "league": "Scottish Premiership",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Scottish_Premiership"
+    },
+    {
+      "id": "standard_li_ge",
+      "name": "Standard Liège",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "stevenage",
+      "name": "Stevenage",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "stockport_county",
+      "name": "Stockport County",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "stoke_city",
+      "name": "Stoke City",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "strasbourg",
+      "name": "Strasbourg",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "sturm_graz",
+      "name": "Sturm Graz",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "sunderland",
+      "name": "Sunderland",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "sv_elversberg",
+      "name": "SV Elversberg",
+      "nation": "Germany",
+      "league": "2. Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga"
+    },
+    {
+      "id": "sv_sandhausen",
+      "name": "SV Sandhausen",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "swansea_city",
+      "name": "Swansea City",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "swindon_town",
+      "name": "Swindon Town",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "tekstilac",
+      "name": "Tekstilac",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "tenerife",
+      "name": "Tenerife",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "tondela",
+      "name": "Tondela",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "torino",
+      "name": "Torino",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "torreense",
+      "name": "Torreense",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "tottenham_hotspur",
+      "name": "Tottenham Hotspur",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "toulouse",
+      "name": "Toulouse",
+      "nation": "France",
+      "league": "Ligue 1",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1"
+    },
+    {
+      "id": "trabzonspor",
+      "name": "Trabzonspor",
+      "nation": "Turkey",
+      "league": "Süper Lig",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_S%C3%BCper_Lig"
+    },
+    {
+      "id": "tranmere_rovers",
+      "name": "Tranmere Rovers",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "trentino_alto_adige_s_dtirol",
+      "name": "Trentino-Alto Adige/Südtirol",
+      "nation": "Italy",
+      "league": "Serie B",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_B"
+    },
+    {
+      "id": "troyes",
+      "name": "Troyes",
+      "nation": "France",
+      "league": "Ligue 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2"
+    },
+    {
+      "id": "tsc",
+      "name": "TSC",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "tsg_hoffenheim",
+      "name": "TSG Hoffenheim",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "tsv_hartberg",
+      "name": "TSV Hartberg",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "tuscany",
+      "name": "Tuscany",
+      "nation": "Italy",
+      "league": "Serie B",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_B"
+    },
+    {
+      "id": "udinese",
+      "name": "Udinese",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "uni_o_de_leiria",
+      "name": "União de Leiria",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "union_berlin",
+      "name": "Union Berlin",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "union_sg",
+      "name": "Union SG",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "valencia",
+      "name": "Valencia",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "valenciennes",
+      "name": "Valenciennes",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "valladolid",
+      "name": "Valladolid",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "vara_din",
+      "name": "Varaždin",
+      "nation": "Croatia",
+      "league": "HNL",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Croatian_Football_League"
+    },
+    {
+      "id": "veneto",
+      "name": "Veneto",
+      "nation": "Italy",
+      "league": "Serie B",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_B"
+    },
+    {
+      "id": "venezia",
+      "name": "Venezia",
+      "nation": "Italy",
+      "league": "Serie A",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A"
+    },
+    {
+      "id": "versailles",
+      "name": "Versailles",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "vfb_stuttgart",
+      "name": "VfB Stuttgart",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "vfb_stuttgart_ii",
+      "name": "VfB Stuttgart II",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "vfl_bochum",
+      "name": "VfL Bochum",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "vfl_osnabr_ck",
+      "name": "VfL Osnabrück",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "vfl_wolfsburg",
+      "name": "VfL Wolfsburg",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "viktoria_k_ln",
+      "name": "Viktoria Köln",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "villarreal",
+      "name": "Villarreal",
+      "nation": "Spain",
+      "league": "LaLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga"
+    },
+    {
+      "id": "villefranche",
+      "name": "Villefranche",
+      "nation": "France",
+      "league": "Championnat National",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National"
+    },
+    {
+      "id": "vit_ria_de_guimar_es",
+      "name": "Vitória de Guimarães",
+      "nation": "Portugal",
+      "league": "Primeira Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga"
+    },
+    {
+      "id": "vizela",
+      "name": "Vizela",
+      "nation": "Portugal",
+      "league": "Liga Portugal 2",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2"
+    },
+    {
+      "id": "vojvodina",
+      "name": "Vojvodina",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    },
+    {
+      "id": "waldhof_mannheim",
+      "name": "Waldhof Mannheim",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "walsall",
+      "name": "Walsall",
+      "nation": "England",
+      "league": "EFL League Two",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two"
+    },
+    {
+      "id": "watford",
+      "name": "Watford",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "wehen_wiesbaden",
+      "name": "Wehen Wiesbaden",
+      "nation": "Germany",
+      "league": "3. Liga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga"
+    },
+    {
+      "id": "werder_bremen",
+      "name": "Werder Bremen",
+      "nation": "Germany",
+      "league": "Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga"
+    },
+    {
+      "id": "west_bromwich_albion",
+      "name": "West Bromwich Albion",
+      "nation": "England",
+      "league": "EFL Championship",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship"
+    },
+    {
+      "id": "west_ham_united",
+      "name": "West Ham United",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "westerlo",
+      "name": "Westerlo",
+      "nation": "Belgium",
+      "league": "Belgian Pro League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Belgian_Pro_League"
+    },
+    {
+      "id": "wigan_athletic",
+      "name": "Wigan Athletic",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "wolfsberger_ac",
+      "name": "Wolfsberger AC",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "wolverhampton_wanderers",
+      "name": "Wolverhampton Wanderers",
+      "nation": "England",
+      "league": "Premier League",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League"
+    },
+    {
+      "id": "wrexham",
+      "name": "Wrexham",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "wsg_tirol",
+      "name": "WSG Tirol",
+      "nation": "Austria",
+      "league": "Austrian Bundesliga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Austrian_Football_Bundesliga"
+    },
+    {
+      "id": "wycombe_wanderers",
+      "name": "Wycombe Wanderers",
+      "nation": "England",
+      "league": "EFL League One",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One"
+    },
+    {
+      "id": "zaragoza",
+      "name": "Zaragoza",
+      "nation": "Spain",
+      "league": "Segunda División",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n"
+    },
+    {
+      "id": "elezni_ar",
+      "name": "Železničar",
+      "nation": "Serbia",
+      "league": "Serbian SuperLiga",
+      "source": "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serbian_SuperLiga"
+    }
+  ]
+}
