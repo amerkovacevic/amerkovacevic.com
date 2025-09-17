@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import data from "../../data/clubs.json";
 
 import { PageHero, PageSection, StatPill } from "../../shared/components/page";
@@ -29,11 +29,7 @@ export default function FMTeamDraw() {
 
   // Suspense / animation
   const [isDrawing, setIsDrawing] = useState(false);
-  const [drawProgress, setDrawProgress] = useState(0);
-  const [recentlyAssigned, setRecentlyAssigned] = useState<string[]>([]);
-  const progressInterval = useRef<number | null>(null);
-  const highlightTimeout = useRef<number | null>(null);
-  const progressResetTimeout = useRef<number | null>(null);
+  const [rolling, setRolling] = useState<Record<string, string>>({}); // rowId -> temp rolling text
 
   // Filters
   const leagues = useMemo(
@@ -59,24 +55,12 @@ export default function FMTeamDraw() {
         if (!hay.includes(q)) return false;
       }
       return true;
-    }).sort((a, b) => {
-      const repA = a.rep ?? 0;
-      const repB = b.rep ?? 0;
-      if (repA !== repB) return repB - repA;
-      return a.name.localeCompare(b.name);
     });
   }, [selLeagues, selNations, search]);
 
-  useEffect(() => {
-    return () => {
-      if (progressInterval.current) window.clearInterval(progressInterval.current);
-      if (highlightTimeout.current) window.clearTimeout(highlightTimeout.current);
-      if (progressResetTimeout.current) window.clearTimeout(progressResetTimeout.current);
-    };
-  }, []);
-
   // helpers
   function delay(ms: number) { return new Promise((res) => setTimeout(res, ms)); }
+  function pick<T>(arr: T[]) { return arr[Math.floor(Math.random() * arr.length)]!; }
 
   const addNames = () => {
     const names = bulkNames
@@ -91,27 +75,8 @@ export default function FMTeamDraw() {
   const removeRow = (id: string) => setList((cur) => cur.filter((r) => r.id !== id));
   const toggleLock = (id: string) =>
     setList((cur) => cur.map((r) => (r.id === id ? { ...r, locked: !r.locked } : r)));
-  const clearList = () => {
-    setList([]);
-    setBulkNames("");
-    setErr(null);
-    setRecentlyAssigned([]);
-    setDrawProgress(0);
-    if (highlightTimeout.current) {
-      window.clearTimeout(highlightTimeout.current);
-      highlightTimeout.current = null;
-    }
-    if (progressInterval.current) {
-      window.clearInterval(progressInterval.current);
-      progressInterval.current = null;
-    }
-    if (progressResetTimeout.current) {
-      window.clearTimeout(progressResetTimeout.current);
-      progressResetTimeout.current = null;
-    }
-  };
 
-  // UNIQUE assignments with modern draw animation
+  // UNIQUE assignments w/ suspense reveal
   const assign = async () => {
     if (isDrawing) return;
     setErr(null);
@@ -139,73 +104,36 @@ export default function FMTeamDraw() {
       finalMap.set(shuffledPeople[i]!.id, shuffledTeams[i]!);
     }
 
-    if (progressInterval.current) window.clearInterval(progressInterval.current);
-    if (highlightTimeout.current) window.clearTimeout(highlightTimeout.current);
-    if (progressResetTimeout.current) window.clearTimeout(progressResetTimeout.current);
-
-    // Smooth draw animation: dynamic progress followed by reveal
+    // Suspense animation: reveal one-by-one
     setIsDrawing(true);
-    setDrawProgress(0);
     try {
-      const duration = 1600 + Math.random() * 400; // 1.6–2.0s shuffle window
-      const start = Date.now();
-      progressInterval.current = window.setInterval(() => {
-        const elapsed = Date.now() - start;
-        const pct = Math.min(100, Math.round((elapsed / duration) * 100));
-        setDrawProgress(pct);
-      }, 80);
-
-      await delay(duration);
-
-      if (progressInterval.current) {
-        window.clearInterval(progressInterval.current);
-        progressInterval.current = null;
+      for (const person of shuffledPeople) {
+        const endTime = Date.now() + 1000 + Math.random() * 400; // 1.0–1.4s roll
+        while (Date.now() < endTime) {
+          setRolling((r) => ({ ...r, [person.id]: pick(available).name }));
+          await delay(60);
+        }
+        const t = finalMap.get(person.id)!;
+        setList((cur) =>
+          cur.map((row) => (row.id === person.id && !row.locked ? { ...row, team: t } : row))
+        );
+        await delay(120);
+        setRolling((r) => {
+          const { [person.id]: _gone, ...rest } = r;
+          return rest;
+        });
+        await delay(120);
       }
 
-      setDrawProgress(100);
-
-      setList((cur) =>
-        cur.map((row) => {
-          if (row.locked) return row;
-          const assigned = finalMap.get(row.id);
-          return assigned ? { ...row, team: assigned } : { ...row, team: row.team };
-        })
-      );
-
-      const ids = shuffledPeople.map((p) => p.id);
-      setRecentlyAssigned(ids);
+      // tiny celebratory burst
       confettiBurst();
-
-      highlightTimeout.current = window.setTimeout(() => {
-        setRecentlyAssigned([]);
-        highlightTimeout.current = null;
-      }, 1600);
     } finally {
       setIsDrawing(false);
-      progressResetTimeout.current = window.setTimeout(() => {
-        setDrawProgress(0);
-        progressResetTimeout.current = null;
-      }, 420);
     }
   };
 
-  const clearTeams = () => {
+  const clearTeams = () =>
     setList((cur) => cur.map((r) => ({ ...r, team: undefined, locked: false })));
-    setRecentlyAssigned([]);
-    setDrawProgress(0);
-    if (highlightTimeout.current) {
-      window.clearTimeout(highlightTimeout.current);
-      highlightTimeout.current = null;
-    }
-    if (progressInterval.current) {
-      window.clearInterval(progressInterval.current);
-      progressInterval.current = null;
-    }
-    if (progressResetTimeout.current) {
-      window.clearTimeout(progressResetTimeout.current);
-      progressResetTimeout.current = null;
-    }
-  };
 
   const copyResults = async () => {
     const lines = list.map((r) =>
@@ -218,22 +146,15 @@ export default function FMTeamDraw() {
     "meta" in (data as any) && (data as any).meta?.scrapedAt
       ? new Date((data as any).meta.scrapedAt).toLocaleDateString()
       : null;
-  const hasFilters = Boolean(selLeagues.length || selNations.length || search.trim());
-  const lockedCount = list.filter((r) => r.locked).length;
-  const assignedCount = list.filter((r) => r.team).length;
-  const awaitingCount = Math.max(0, list.length - assignedCount);
 
   return (
-    <div className="space-y-10 pb-10">
+    <div className="space-y-6">
       <PageHero
-        align="center"
         icon="🎮"
-        title="FM Team Draft Hub"
+        title="FM Team Draw"
         description={
           <>
-            Orchestrate a fair Football Manager save with curated pools, live stats, and one-click draws.
-            {" "}
-            {TEAMS.length.toLocaleString()} teams loaded
+            Paste names, filter by nation/league, and assign teams fairly. {TEAMS.length.toLocaleString()} teams loaded
             {datasetDate ? ` · updated ${datasetDate}` : ""}
           </>
         }
@@ -246,299 +167,211 @@ export default function FMTeamDraw() {
         }
       />
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.85fr)]">
-        <div className="space-y-6">
-          <PageSection
-            title="Participants"
-            description="Add managers, lock favourites, and keep track of who received which club."
-            contentClassName="space-y-5"
-          >
-            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
-              <textarea
-                value={bulkNames}
-                onChange={(e) => setBulkNames(e.target.value)}
-                placeholder="Enter manager names (comma or newline separated)"
-                className="h-28 w-full rounded-brand-xl border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:border-border-dark dark:bg-surface-overlayDark"
-                disabled={isDrawing}
-              />
-              <div className="flex gap-2 md:flex-col">
-                <button
-                  onClick={addNames}
-                  className={buttonStyles({ size: "sm", className: "md:h-full" })}
-                  disabled={!bulkNames.trim() || isDrawing}
-                  title="Add names to the list"
-                >
-                  Add managers
-                </button>
-                <button
-                  onClick={clearList}
-                  className={buttonStyles({ variant: "ghost", size: "sm", className: "md:h-full" })}
-                  disabled={isDrawing || list.length === 0}
-                >
-                  Clear list
-                </button>
-              </div>
-            </div>
+      <div className="grid gap-5 md:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">
+        <PageSection
+          title="Participants"
+          description="Paste names, lock assignments, and see who gets which team."
+          contentClassName="space-y-4"
+        >
+          <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+            <textarea
+              value={bulkNames}
+              onChange={(e) => setBulkNames(e.target.value)}
+              placeholder="Enter names (comma or newline separated)"
+              className="h-28 w-full rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+            />
+            <button
+              onClick={addNames}
+              className={buttonStyles({ size: "sm", className: "md:h-auto" })}
+              disabled={!bulkNames.trim() || isDrawing}
+              title="Add names to the list"
+            >
+              Add
+            </button>
+          </div>
 
-            {list.length === 0 ? (
-              <EmptyState text="No participants yet. Add some names to get started." />
-            ) : (
-              <>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="text-sm text-brand-muted">
-                    Total managers: <strong>{list.length}</strong>
-                    {lockedCount ? ` · ${lockedCount} locked` : ""}
-                    {assignedCount ? ` · ${assignedCount} assigned` : ""}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {list.some((r) => r.team) && (
-                      <>
-                        <button
-                          onClick={copyResults}
-                          className={buttonStyles({ variant: "secondary", size: "sm" })}
-                          disabled={isDrawing}
-                        >
-                          Copy results
-                        </button>
-                        <button
-                          onClick={clearTeams}
-                          className={buttonStyles({ variant: "ghost", size: "sm" })}
-                          disabled={isDrawing}
-                        >
-                          Reset teams
-                        </button>
-                      </>
+          {list.length === 0 ? (
+            <EmptyState text="No participants yet. Add some names to get started." />
+          ) : (
+            <>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="text-sm text-brand-muted">
+                  Total participants: <strong>{list.length}</strong>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {list.some((r) => r.team) && (
+                    <>
+                      <button
+                        onClick={copyResults}
+                        className={buttonStyles({ variant: "secondary", size: "sm" })}
+                        disabled={isDrawing}
+                      >
+                        Copy results
+                      </button>
+                      <button
+                        onClick={clearTeams}
+                        className={buttonStyles({ variant: "ghost", size: "sm" })}
+                        disabled={isDrawing}
+                      >
+                        Clear teams
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <ul className="divide-y divide-border-light overflow-hidden rounded-brand border border-border-light">
+                {list.map((r) => (
+                  <li
+                    key={r.id}
+                    className={cn(
+                      "flex items-center justify-between gap-3 bg-surface px-3 py-3 transition",
+                      rolling[r.id]
+                        ? "bg-brand/5 dark:bg-brand-dark/30"
+                        : "dark:bg-surface-overlayDark"
                     )}
-                  </div>
-                </div>
+                  >
+                    <div className="min-w-0">
+                      <div className="font-medium text-brand-strong dark:text-white truncate">{r.name}</div>
+                      <div className="text-xs text-brand-muted truncate">
+                        {rolling[r.id] ? (
+                          <span className="animate-pulse">
+                            {rolling[r.id]} <span className="opacity-60">• rolling…</span>
+                          </span>
+                        ) : r.team ? (
+                          <>
+                            {r.team.name} — {r.team.league} ({r.team.nation})
+                          </>
+                        ) : (
+                          "No team assigned"
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button
+                        onClick={() => toggleLock(r.id)}
+                        disabled={isDrawing}
+                        className={cn(
+                          buttonStyles({ variant: "secondary", size: "sm", className: "!h-8 !px-3 text-[11px]" }),
+                          r.locked
+                            ? "border-brand text-brand"
+                            : "border-border-light bg-surface hover:border-brand/40"
+                        )}
+                        title="Lock this assignment when re-rolling"
+                      >
+                        {r.locked ? "Locked" : "Lock"}
+                      </button>
+                      <button
+                        onClick={() => removeRow(r.id)}
+                        disabled={isDrawing}
+                        className={cn(
+                          buttonStyles({ variant: "ghost", size: "sm", className: "!h-8 !px-3 text-[11px]" }),
+                          "hover:text-red-500"
+                        )}
+                        title="Remove participant"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </PageSection>
 
-                <div className="overflow-hidden rounded-[1.75rem] border border-border-light/70 bg-surface/80 shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-overlayDark">
-                  <ul className="divide-y divide-border-light/70 dark:divide-border-dark/60">
-                    {list.map((r) => {
-                      const isFresh = recentlyAssigned.includes(r.id);
-                      return (
-                        <li
-                          key={r.id}
-                          className={cn(
-                            "flex flex-col gap-3 px-4 py-4 transition-all sm:flex-row sm:items-center sm:justify-between",
-                            isFresh && "bg-brand/10 shadow-brand-sm dark:bg-brand/25",
-                            r.locked && "border-l-4 border-brand/40"
-                          )}
-                        >
-                          <div className="min-w-0 space-y-2">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="truncate text-sm font-semibold text-brand-strong dark:text-white">
-                                {r.name}
-                              </span>
-                              {r.locked ? (
-                                <span className="inline-flex items-center gap-1 rounded-brand-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand">
-                                  🔒 Locked
-                                </span>
-                              ) : null}
-                              {isFresh ? (
-                                <span className="inline-flex items-center gap-1 rounded-brand-full bg-brand-accent/25 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-strong/80">
-                                  ✨ New draw
-                                </span>
-                              ) : null}
-                            </div>
-                            <div className="text-xs text-brand-muted dark:text-white/70">
-                              {r.team ? (
-                                <>
-                                  <span className="font-semibold text-brand-strong dark:text-white">{r.team.name}</span>
-                                  <span className="text-brand-subtle"> · {r.team.league}</span>
-                                  <span className="text-brand-subtle"> ({r.team.nation})</span>
-                                </>
-                              ) : (
-                                <span className="italic text-brand-subtle">Awaiting assignment</span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex shrink-0 items-center gap-2">
-                            <button
-                              onClick={() => toggleLock(r.id)}
-                              disabled={isDrawing}
-                              className={buttonStyles({
-                                variant: r.locked ? "primary" : "secondary",
-                                size: "sm",
-                                className: "h-9 px-3 text-[11px]",
-                              })}
-                            >
-                              {r.locked ? "Unlock" : "Lock"}
-                            </button>
-                            <button
-                              onClick={() => removeRow(r.id)}
-                              disabled={isDrawing}
-                              className={buttonStyles({
-                                variant: "ghost",
-                                size: "sm",
-                                className: "h-9 px-3 text-[11px] text-red-500 hover:text-red-400",
-                              })}
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </>
-            )}
-          </PageSection>
-        </div>
+        <PageSection
+          className="md:sticky md:top-4"
+          title="Filters"
+          description="Narrow the pool by league or nation."
+          contentClassName="space-y-4"
+        >
+          <div className="relative">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search team / league / nation…"
+              className="w-full rounded-brand border border-border-light bg-surface px-3 py-2 pl-9 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+              disabled={isDrawing}
+            />
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted">🔎</span>
+          </div>
 
-        <div className="space-y-6">
-          <PageSection
-            title="Team pool"
-            description="Filter the database to create the perfect shortlist for your save."
-            actions={
-              hasFilters ? (
-                <button
-                  onClick={() => {
-                    setSelLeagues([]);
-                    setSelNations([]);
-                    setSearch("");
-                  }}
-                  className={buttonStyles({ variant: "ghost", size: "sm" })}
-                  disabled={isDrawing}
-                >
-                  Clear filters
-                </button>
-              ) : null
-            }
-            contentClassName="space-y-5"
-          >
-            <div className="relative">
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by club, league, or nation"
-                className="w-full rounded-brand-xl border border-border-light bg-surface px-3 py-2 pl-9 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:border-border-dark dark:bg-surface-overlayDark"
-                disabled={isDrawing}
-              />
-              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted">🔎</span>
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-brand-muted">Leagues</div>
+            <ChipList
+              items={leagues}
+              selected={selLeagues}
+              onToggle={(lg) =>
+                setSelLeagues((cur) =>
+                  cur.includes(lg) ? cur.filter((x) => x !== lg) : [...cur, lg]
+                )
+              }
+              disabled={isDrawing}
+              emptyText="No leagues"
+            />
+          </div>
+
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-brand-muted">Nations</div>
+            <ChipList
+              items={nations}
+              selected={selNations}
+              onToggle={(na) =>
+                setSelNations((cur) =>
+                  cur.includes(na) ? cur.filter((x) => x !== na) : [...cur, na]
+                )
+              }
+              disabled={isDrawing}
+              emptyText="No nations"
+            />
+          </div>
+
+          <div className="text-xs text-brand-muted">
+            Pool size: <strong>{pool.length}</strong> (of {TEAMS.length})
+          </div>
+        </PageSection>
+
+        <PageSection
+          className="md:sticky md:top-4"
+          title="Assign"
+          description="Assign teams from the current pool (unique teams only). Re-run to shuffle unlocked entries."
+          contentClassName="space-y-4"
+        >
+          {err && <div className="text-sm text-red-500">{err}</div>}
+
+          <div className="flex flex-col gap-2">
+            <button
+              className={buttonStyles({ size: "md" })}
+              onClick={assign}
+              disabled={isDrawing || list.length === 0 || pool.length === 0}
+              title={
+                list.length === 0
+                  ? "Add participants first"
+                  : pool.length === 0
+                  ? "No teams in pool"
+                  : isDrawing
+                  ? "Drawing…"
+                  : "Assign teams"
+              }
+            >
+              {isDrawing ? "⏳ Drawing…" : "🎲 Assign teams"}
+            </button>
+            <button
+              className={buttonStyles({ variant: "secondary", size: "md" })}
+              onClick={clearTeams}
+              disabled={isDrawing || !list.some((r) => r.team)}
+            >
+              Reset assignments
+            </button>
+          </div>
+
+          {"meta" in (data as any) && (
+            <div className="text-[11px] text-brand-muted">
+              Dataset: {(data as any).meta?.source || "local"} · {datasetDate || "unknown date"}
             </div>
-
-            <div className="space-y-2">
-              <div className="text-xs font-semibold uppercase tracking-wide text-brand-muted">Leagues</div>
-              <ChipList
-                items={leagues}
-                selected={selLeagues}
-                onToggle={(lg) =>
-                  setSelLeagues((cur) =>
-                    cur.includes(lg) ? cur.filter((x) => x !== lg) : [...cur, lg]
-                  )
-                }
-                disabled={isDrawing}
-                emptyText="No leagues"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="text-xs font-semibold uppercase tracking-wide text-brand-muted">Nations</div>
-              <ChipList
-                items={nations}
-                selected={selNations}
-                onToggle={(na) =>
-                  setSelNations((cur) =>
-                    cur.includes(na) ? cur.filter((x) => x !== na) : [...cur, na]
-                  )
-                }
-                disabled={isDrawing}
-                emptyText="No nations"
-              />
-            </div>
-
-            <div className="rounded-brand-xl border border-dashed border-border-light/70 bg-surface/70 px-4 py-3 text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-overlayDark/80">
-              Pool size: <strong>{pool.length}</strong> clubs (of {TEAMS.length})
-            </div>
-
-            {pool.length === 0 ? (
-              <div className="rounded-brand-xl border border-dashed border-red-200/80 bg-red-50/60 px-4 py-4 text-sm text-red-600 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200">
-                No clubs match the current filters.
-              </div>
-            ) : (
-              <>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {pool.slice(0, 8).map((team) => (
-                    <TeamPreview key={team.id} team={team} />
-                  ))}
-                </div>
-                {pool.length > 8 ? (
-                  <div className="text-xs text-brand-muted">
-                    Showing {Math.min(8, pool.length)} of {pool.length} clubs. Narrow filters to focus your draw.
-                  </div>
-                ) : null}
-              </>
-            )}
-          </PageSection>
-
-          <PageSection
-            title="Draw controls"
-            description="Run a unique assignment from the active pool. Everyone receives a different club."
-            contentClassName="space-y-5"
-          >
-            {err && (
-              <div className="rounded-brand-xl border border-red-200/80 bg-red-50/60 px-4 py-3 text-sm text-red-600 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200">
-                {err}
-              </div>
-            )}
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <InfoStat label="Managers" value={list.length} />
-              <InfoStat label="Locked" value={lockedCount} />
-              <InfoStat label="Assigned" value={assignedCount} />
-              <InfoStat label="Awaiting" value={awaitingCount} />
-            </div>
-
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <button
-                className={buttonStyles({ size: "md", className: "flex-1" })}
-                onClick={assign}
-                disabled={isDrawing || list.length === 0 || pool.length === 0}
-                title={
-                  list.length === 0
-                    ? "Add participants first"
-                    : pool.length === 0
-                    ? "No teams in pool"
-                    : isDrawing
-                    ? "Drawing…"
-                    : "Assign teams"
-                }
-              >
-                {isDrawing ? "Shuffling clubs…" : "🎲 Draw clubs"}
-              </button>
-              <button
-                className={buttonStyles({ variant: "secondary", size: "md", className: "sm:flex-1" })}
-                onClick={clearTeams}
-                disabled={isDrawing || !list.some((r) => r.team)}
-              >
-                Reset assignments
-              </button>
-            </div>
-
-            {drawProgress > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-brand-muted">
-                  <span>{isDrawing ? "Shuffling teams" : "Draw complete"}</span>
-                  <span>{drawProgress}%</span>
-                </div>
-                <div className="h-2 rounded-full bg-border-light/60 dark:bg-border-dark/60">
-                  <div
-                    className="h-2 rounded-full bg-brand transition-all duration-200"
-                    style={{ width: `${drawProgress}%` }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {"meta" in (data as any) && (
-              <div className="text-[11px] text-brand-muted">
-                Dataset: {(data as any).meta?.source || "local"} · {datasetDate || "unknown date"}
-              </div>
-            )}
-          </PageSection>
-        </div>
+          )}
+        </PageSection>
       </div>
     </div>
   );
@@ -550,25 +383,6 @@ function EmptyState({ text }: { text: string }) {
     <div className="rounded-brand-xl border border-dashed border-border-light/70 bg-surface/90 p-6 text-center shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-overlayDark/80">
       <div className="text-3xl">📝</div>
       <div className="mt-2 text-sm text-brand-muted dark:text-white/70">{text}</div>
-    </div>
-  );
-}
-
-function InfoStat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-brand-xl border border-border-light/70 bg-surface/80 px-4 py-3 shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-overlayDark/70">
-      <div className="text-[11px] font-semibold uppercase tracking-wide text-brand-muted">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-brand-strong dark:text-white">{value}</div>
-    </div>
-  );
-}
-
-function TeamPreview({ team }: { team: Team }) {
-  return (
-    <div className="rounded-brand-xl border border-border-light/70 bg-surface px-3 py-3 shadow-brand-sm transition hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-brand dark:border-border-dark/60 dark:bg-surface-overlayDark">
-      <div className="truncate text-sm font-semibold text-brand-strong dark:text-white">{team.name}</div>
-      <div className="mt-1 text-xs text-brand-muted">{team.league}</div>
-      <div className="text-[11px] uppercase tracking-wide text-brand-subtle">{team.nation}</div>
     </div>
   );
 }
