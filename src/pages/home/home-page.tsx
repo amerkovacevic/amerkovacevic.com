@@ -34,10 +34,10 @@ const APPS = [
   },
   {
     id: "links",
-    name: "Link in Bio",
+    name: "Contact",
     to: "/links",
     emoji: "🌐",
-    blurb: "Gather every profile and project in one beautiful hub.",
+    blurb: "Reach me anywhere from one tidy home for every profile.",
   },
 ] as const;
 
@@ -69,7 +69,7 @@ function AppCard({ app }: { app: App }) {
           handleOpen();
         }
       }}
-      className="group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-brand-lg border border-border-light bg-surface/90 p-6 text-left shadow-brand-sm transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-brand dark:bg-surface-overlayDark"
+      className="group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-brand-lg border border-border-light bg-surface p-6 text-left text-brand-strong shadow-brand-sm transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-brand dark:border-border-dark dark:bg-surface-muted dark:text-brand-foreground"
     >
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand/8 via-transparent to-brand-accent/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden />
       <div className="relative flex items-start justify-between">
@@ -78,19 +78,19 @@ function AppCard({ app }: { app: App }) {
         </span>
       </div>
       <div className="relative mt-4 space-y-3">
-        <h3 className="text-lg font-semibold text-brand-strong">{app.name}</h3>
-        <p className="text-sm text-brand-subtle">{app.blurb}</p>
+        <h3 className="text-lg font-semibold text-brand-strong dark:text-brand-foreground">{app.name}</h3>
+        <p className="text-sm text-brand-muted dark:text-brand-subtle">{app.blurb}</p>
       </div>
       <div className="relative mt-6 flex items-center justify-between">
         <span
           className={cn(
             buttonStyles({ variant: "secondary", size: "sm" }),
-            "pointer-events-none select-none no-underline"
+            "pointer-events-none select-none no-underline text-brand-strong dark:text-brand-foreground"
           )}
         >
           Open <span className="transition-transform group-hover:translate-x-1">→</span>
         </span>
-        <span className="rounded-brand-full bg-brand-subtle/10 px-3 py-1 text-[10px] uppercase tracking-wide text-brand-subtle">
+        <span className="rounded-brand-full bg-brand-subtle/10 px-3 py-1 text-[10px] uppercase tracking-wide text-brand-muted dark:bg-brand-subtle/20 dark:text-brand-subtle">
           {app.id}
         </span>
       </div>

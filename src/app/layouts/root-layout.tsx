@@ -154,44 +154,36 @@ export default function RootLayout() {
       </main>
 
       <footer className="page-container pb-14">
-        <div className="surface-card relative overflow-hidden rounded-brand-xl px-6 py-6 text-brand-subtle">
+        <div className="surface-card relative overflow-hidden rounded-brand-xl px-6 py-6">
           <div className="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-brand/40 to-transparent" aria-hidden />
-          <div className="relative flex flex-col items-center gap-5 sm:flex-row sm:justify-between">
-            <div className="text-center sm:text-left">
-              <p className="text-xs uppercase tracking-[0.24em] text-brand-muted">Stay in touch</p>
-              <p className="mt-2 max-w-md text-sm text-brand-subtle">
-                Follow along for design sketches, football experiments, and upcoming launches.
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <a
-                href="https://github.com/amerkovacevic"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="rounded-brand-full border border-transparent bg-surface/80 p-3 text-brand-subtle transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/20 hover:text-brand-strong"
-              >
-                <Github className="h-5 w-5" />
-              </a>
-              <a
-                href="https://linkedin.com/in/amerkovacevic"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="rounded-brand-full border border-transparent bg-surface/80 p-3 text-brand-subtle transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent/40 hover:text-brand-accent"
-              >
-                <Linkedin className="h-5 w-5" />
-              </a>
-              <a
-                href="https://instagram.com/am.zzy"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="rounded-brand-full border border-transparent bg-surface/80 p-3 text-brand-subtle transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-accent/40 hover:text-brand-accent"
-              >
-                <Instagram className="h-5 w-5" />
-              </a>
-            </div>
+          <div className="relative flex items-center justify-center gap-4 text-brand-strong dark:text-brand-foreground">
+            <a
+              href="https://github.com/amerkovacevic"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              className="rounded-brand-full bg-brand/10 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand/20 dark:bg-brand/20 dark:hover:bg-brand/30"
+            >
+              <Github className="h-5 w-5" />
+            </a>
+            <a
+              href="https://linkedin.com/in/amerkovacevic"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="rounded-brand-full bg-brand/10 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand/20 dark:bg-brand/20 dark:hover:bg-brand/30"
+            >
+              <Linkedin className="h-5 w-5" />
+            </a>
+            <a
+              href="https://instagram.com/am.zzy"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="rounded-brand-full bg-brand/10 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand/20 dark:bg-brand/20 dark:hover:bg-brand/30"
+            >
+              <Instagram className="h-5 w-5" />
+            </a>
           </div>
         </div>
       </footer>

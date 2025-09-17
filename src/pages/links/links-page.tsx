@@ -1,42 +1,55 @@
-import { useState } from "react";
-
 import { PageHero, PageSection } from "../../shared/components/page";
-import { buttonStyles } from "../../shared/components/ui/button";
 
-type LinkItem = { title: string; url: string; emoji?: string; subtle?: boolean };
+type LinkItem = {
+  title: string;
+  url: string;
+  icon: {
+    light: string;
+    dark: string;
+  };
+  subtle?: boolean;
+};
 
 export default function Links() {
   const links: LinkItem[] = [
-    { title: "Instagram @am.zzy", url: "https://instagram.com/am.zzy", emoji: "📸" },
-    { title: "GitHub @amerkovacevic", url: "https://github.com/amerkovacevic", emoji: "💻" },
-    { title: "LinkedIn @amerkovacevic", url: "https://linkedin.com/in/amerkovacevic", emoji: "💼" },
-    { title: "Email me", url: "mailto:amer@amerkovacevic.com", emoji: "✉️" },
-    { title: "Pickup Soccer", url: "/pickup", emoji: "⚽", subtle: true },
+    {
+      title: "Instagram",
+      url: "https://instagram.com/am.zzy",
+      icon: {
+        light: "/icons/instagram-light.svg",
+        dark: "/icons/instagram-dark.svg",
+      },
+    },
+    {
+      title: "GitHub",
+      url: "https://github.com/amerkovacevic",
+      icon: {
+        light: "/icons/github-light.svg",
+        dark: "/icons/github-dark.svg",
+      },
+    },
+    {
+      title: "LinkedIn",
+      url: "https://linkedin.com/in/amerkovacevic",
+      icon: {
+        light: "/icons/linkedin-light.svg",
+        dark: "/icons/linkedin-dark.svg",
+      },
+    },
+    {
+      title: "Email me",
+      url: "mailto:amer@amerkovacevic.com",
+      icon: {
+        light: "/icons/email-light.svg",
+        dark: "/icons/email-dark.svg",
+      },
+      subtle: true,
+    },
   ];
-
-  const email = "amer@amerkovacevic.com";
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-8">
-      <PageHero
-        icon="🌐"
-        title="Amer Kovacevic"
-        actions={
-          <a
-            href={`mailto:${email}`}
-            className={buttonStyles({ size: "sm" })}
-          >
-            Say hi →
-          </a>
-        }
-      />
-
-      <PageSection contentClassName="flex flex-col items-center gap-4 text-center">
-        <Avatar />
-        <p className="max-w-xl text-sm text-brand-muted dark:text-brand-subtle">
-          Each experiment below is a living document of things I’m learning—whether it’s community tools for pickup soccer or tiny utilities for friends.
-        </p>
-      </PageSection>
+      <PageHero title="Amer Kovacevic" />
 
       <PageSection title="Links" description="Favorite places on the internet right now." contentClassName="grid gap-3">
         {links.map((l) => (
@@ -48,15 +61,18 @@ export default function Links() {
             className={[
               "flex items-center justify-between rounded-brand-lg px-4 py-3 transition",
               l.subtle
-                ? "border border-border-light bg-surface text-brand-strong hover:border-brand/40 hover:bg-surface/80 dark:bg-surface-overlayDark"
-                : "bg-brand text-white shadow-brand hover:bg-brand-strong",
+                ? "border border-border-light bg-surface text-brand-strong hover:border-brand/40 hover:bg-surface/90 dark:border-border-dark dark:bg-surface-muted dark:text-brand-foreground"
+                : "bg-brand text-brand-foreground shadow-brand hover:bg-brand-strong",
             ].join(" ")}
           >
             <span className="flex items-center gap-3 text-lg">
-              <span aria-hidden>{l.emoji ?? "🔗"}</span>
+              <span aria-hidden className="relative flex h-7 w-7 items-center justify-center">
+                <img src={l.icon.light} alt="" className="h-7 w-7 dark:hidden" />
+                <img src={l.icon.dark} alt="" className="hidden h-7 w-7 dark:block" />
+              </span>
               <span>{l.title}</span>
             </span>
-            <span className={l.subtle ? "text-brand-muted" : "text-white/80"}>→</span>
+            <span className={l.subtle ? "text-brand-muted dark:text-brand-subtle" : "text-brand-foreground/80"}>→</span>
           </a>
         ))}
       </PageSection>
@@ -64,26 +80,6 @@ export default function Links() {
       <p className="text-center text-xs text-brand-muted dark:text-brand-subtle">
         © {new Date().getFullYear()} AmerKovacevic.com
       </p>
-    </div>
-  );
-}
-
-function Avatar() {
-  // If /public/amer.jpg exists, show it; else show initials
-  const [errored, setErrored] = useState(false);
-  if (!errored) {
-    return (
-      <img
-        src="/amer.jpg"
-        alt="Amer Kovacevic"
-        onError={() => setErrored(true)}
-        className="mx-auto h-24 w-24 rounded-full object-cover ring-2 ring-white/20"
-      />
-    );
-  }
-  return (
-    <div className="mx-auto h-24 w-24 rounded-full bg-white/10 ring-2 ring-white/20 grid place-items-center text-3xl font-semibold">
-      AK
     </div>
   );
 }
