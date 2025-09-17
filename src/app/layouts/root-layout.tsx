@@ -22,21 +22,6 @@ function GoogleG({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
-function ExitIcon({ className = "h-4 w-4" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-      className={`${className} shrink-0`}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M16 13v-2H7V8l-5 4 5 4v-3h9z" />
-      <path d="M20 3H9c-1.1 0-2 .9-2 2v4h2V5h11v14H9v-4H7v4c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" />
-    </svg>
-  );
-}
-
 export default function RootLayout() {
   const [user, setUser] = useState<User | null>(null);
 
@@ -79,9 +64,9 @@ export default function RootLayout() {
               {user ? (
                 <button
                   onClick={handleSignOut}
-                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:bg-brand-strong"
+                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-white text-xl shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:bg-brand-strong"
                 >
-                  <ExitIcon className="h-4 w-4" />
+                  <span aria-hidden>🚪</span>
                   <span className="sr-only">Sign out</span>
                 </button>
               ) : (

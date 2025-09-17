@@ -49,7 +49,6 @@ export function ThemeToggle({ className }: { className?: string }) {
           isDark ? "translate-x-[2.5rem]" : "translate-x-0"
         )}
       >
-        {isDark ? <Moon className="h-4 w-4" aria-hidden /> : <Sun className="h-4 w-4" aria-hidden />}
         <span className="sr-only">{isDark ? "Dark" : "Light"}</span>
       </span>
     </button>
