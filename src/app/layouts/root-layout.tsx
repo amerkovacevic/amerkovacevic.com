@@ -3,7 +3,6 @@ import { Link, Outlet } from "react-router-dom";
 import { Github, Instagram, Linkedin } from "lucide-react";
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
 
-import { Button } from "../../shared/components/ui/button";
 import { ThemeToggle } from "../../shared/components/theme-toggle";
 import { auth, googleProvider } from "../../shared/lib/firebase";
 
@@ -12,7 +11,7 @@ function GoogleG({ className = "h-4 w-4" }: { className?: string }) {
     <svg
       viewBox="0 0 24 24"
       aria-hidden="true"
-      className={`${className} shrink-0 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3`}
+      className={`${className} shrink-0`}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path fill="#4285F4" d="M23.49 12.27c0-.85-.08-1.67-.23-2.46H12v4.66h6.46c-.28 1.5-1.12 2.77-2.39 3.62v3h3.86c2.26-2.08 3.56-5.14 3.56-8.82z" />
@@ -29,7 +28,7 @@ function ExitIcon({ className = "h-4 w-4" }: { className?: string }) {
       viewBox="0 0 24 24"
       fill="currentColor"
       aria-hidden="true"
-      className={`${className} shrink-0 transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-3`}
+      className={`${className} shrink-0`}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path d="M16 13v-2H7V8l-5 4 5 4v-3h9z" />
@@ -68,59 +67,31 @@ export default function RootLayout() {
                 "linear-gradient(120deg, rgba(56,189,248,0.14), transparent 40%), radial-gradient(circle at 20% 20%, rgba(59,130,246,0.18), transparent 60%)",
             }}
           />
-          <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative flex flex-wrap items-center justify-between gap-4">
             <Link
               to="/"
               className="inline-flex items-center rounded-brand-full border border-transparent bg-white/80 px-6 py-3 text-sm font-semibold tracking-[0.26em] text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-brand-strong/80 dark:bg-surface-overlayDark/80 dark:text-white"
             >
               AK TOOLS
             </Link>
-            <div className="flex flex-col gap-3 xs:flex-row xs:items-center xs:justify-end">
-              <ThemeToggle />
+            <div className="flex items-center gap-3">
+              <ThemeToggle className="shrink-0" />
               {user ? (
-                <Button
+                <button
                   onClick={handleSignOut}
-                  variant="ghost"
-                  size="lg"
-                  className="group relative h-12 w-12 min-w-0 overflow-hidden rounded-full border border-transparent bg-gradient-to-br from-brand via-brand-strong to-brand-accent text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
-                  aria-label="Sign out"
+                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:bg-brand-strong"
                 >
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                    style={{
-                      background:
-                        "linear-gradient(120deg, rgba(255,255,255,0.18), transparent 45%), radial-gradient(circle at 80% 30%, rgba(125,211,252,0.24), transparent 55%)",
-                    }}
-                  />
-                  <span className="relative grid h-full w-full place-items-center">
-                    <span className="grid h-8 w-8 place-items-center rounded-brand-full bg-white/20 text-white">
-                      <ExitIcon className="h-4 w-4" />
-                    </span>
-                  </span>
-                </Button>
+                  <ExitIcon className="h-4 w-4" />
+                  <span className="sr-only">Sign out</span>
+                </button>
               ) : (
-                <Button
+                <button
                   onClick={handleSignIn}
-                  variant="ghost"
-                  size="lg"
-                  className="group relative h-12 w-12 min-w-0 overflow-hidden rounded-full border border-transparent bg-gradient-to-br from-[#4285F4] via-[#34A853] to-[#EA4335] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
-                  aria-label="Sign in with Google"
+                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-brand shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:border-border-dark dark:bg-slate-900"
                 >
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                    style={{
-                      background:
-                        "linear-gradient(120deg, rgba(255,255,255,0.2), transparent 45%), radial-gradient(circle at 15% 25%, rgba(66,133,244,0.35), transparent 55%)",
-                    }}
-                  />
-                  <span className="relative grid h-full w-full place-items-center">
-                    <span className="grid h-8 w-8 place-items-center rounded-brand-full bg-white/25">
-                      <GoogleG className="h-4 w-4" />
-                    </span>
-                  </span>
-                </Button>
+                  <GoogleG className="h-5 w-5" />
+                  <span className="sr-only">Sign in with Google</span>
+                </button>
               )}
             </div>
           </div>

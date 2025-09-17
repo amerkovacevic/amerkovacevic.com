@@ -11,7 +11,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return <div className="h-10 w-28 animate-pulse rounded-full bg-border-light/60" aria-hidden />;
+    return <div className="h-10 w-20 animate-pulse rounded-full bg-border-light/60" aria-hidden />;
   }
 
   const isDark = theme === "dark";
@@ -24,7 +24,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-checked={isDark}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       className={cn(
-        "group relative inline-flex h-10 w-28 items-center justify-between overflow-hidden rounded-full border border-border-light/70 bg-surface/95 px-2 transition-all duration-300",
+        "relative inline-flex h-10 w-20 shrink-0 items-center rounded-full border border-border-light/70 bg-surface px-1.5 transition-all duration-300",
         "dark:border-border-dark dark:bg-surface-overlayDark/80",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent",
         "hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-brand",
@@ -33,30 +33,24 @@ export function ThemeToggle({ className }: { className?: string }) {
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 rounded-full opacity-80"
         style={{
           background:
-            "radial-gradient(circle at 20% 20%, rgba(59,130,246,0.25), transparent 60%), radial-gradient(circle at 80% 50%, rgba(14,165,233,0.28), transparent 55%)",
+            "radial-gradient(circle at 25% 25%, rgba(250,204,21,0.4), transparent 60%), radial-gradient(circle at 75% 60%, rgba(56,189,248,0.35), transparent 55%)",
         }}
       />
+      <span className="relative z-10 flex w-full items-center justify-between px-1 text-xs text-brand-muted dark:text-brand-subtle">
+        <Sun className={cn("h-4 w-4 transition-opacity", isDark ? "opacity-40" : "opacity-90")} aria-hidden />
+        <Moon className={cn("h-4 w-4 transition-opacity", isDark ? "opacity-90" : "opacity-40")} aria-hidden />
+      </span>
       <span
         className={cn(
-          "absolute top-1 flex h-8 items-center justify-center rounded-full bg-white text-brand shadow-brand-sm transition-[transform,background-color,color] duration-300 dark:bg-slate-900 dark:text-white",
-          isDark ? "translate-x-[calc(100%+0.5rem)]" : "translate-x-0"
+          "absolute left-1 top-1 flex h-8 w-8 items-center justify-center rounded-full bg-white text-brand shadow-brand-sm transition-transform duration-300 dark:bg-slate-900 dark:text-white",
+          isDark ? "translate-x-[2.5rem]" : "translate-x-0"
         )}
-        style={{ width: "calc(50% - 0.35rem)" }}
       >
-        {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-      </span>
-      <span className="relative z-10 flex w-full items-center justify-between px-1 text-[11px] font-semibold uppercase tracking-[0.32em]">
-        <span className={cn("flex items-center gap-1 transition-opacity", isDark ? "opacity-45" : "opacity-90")}> 
-          <Sun className="h-3.5 w-3.5" />
-          <span>Light</span>
-        </span>
-        <span className={cn("flex items-center gap-1 transition-opacity", isDark ? "opacity-90" : "opacity-45")}> 
-          <span>Dark</span>
-          <Moon className="h-3.5 w-3.5" />
-        </span>
+        {isDark ? <Moon className="h-4 w-4" aria-hidden /> : <Sun className="h-4 w-4" aria-hidden />}
+        <span className="sr-only">{isDark ? "Dark" : "Light"}</span>
       </span>
     </button>
   );
