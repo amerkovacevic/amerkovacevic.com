@@ -66,7 +66,7 @@ export function ThemeToggle({ className }: { className?: string }) {
         <span aria-hidden className="text-base">
           ☀️
         </span>
-        Light
+        
       </span>
 
       <span
@@ -78,7 +78,7 @@ export function ThemeToggle({ className }: { className?: string }) {
         <span aria-hidden className="text-base">
           🌙
         </span>
-        Dark
+        
       </span>
     </button>
   );
