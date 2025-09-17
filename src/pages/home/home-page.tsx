@@ -92,13 +92,13 @@ function AppIcon({ id }: { id: App["id"] }) {
     theme === "dark"
       ? {
           primary: "#38bdf8",
-          secondary: "#22d3ee",
-          background: "#082f49",
-          stroke: "#f8fafc",
+          secondary: "#facc15",
+          background: "#0f172a",
+          stroke: "#e2e8f0",
         }
       : {
           primary: "#0284c7",
-          secondary: "#0ea5e9",
+          secondary: "#f97316",
           background: "#e0f2fe",
           stroke: "#0f172a",
         };
@@ -117,16 +117,17 @@ const ICONS: Record<App["id"], ({ palette }: { palette: Palette }) => JSX.Elemen
     const { background, primary, secondary, stroke } = palette;
     return (
       <svg viewBox="0 0 48 48" aria-hidden className="h-10 w-10">
-        <circle cx="24" cy="24" r="18" fill={background} stroke={primary} strokeWidth="2.5" />
-        <path d="M24 15l7 4-2.5 8h-9L17 19z" fill={primary} />
+        <circle cx="24" cy="24" r="17" fill={background} stroke={primary} strokeWidth="2.5" />
+        <polygon points="24,16 28,19 26,24 22,24 20,19" fill={primary} stroke={stroke} strokeLinejoin="round" strokeWidth="1.5" />
         <path
-          d="M24 33l-4.2-2.5-4.1 1.7M24 33l4.2-2.5 4.1 1.7M24 15l1.5 6h6.5M24 15l-1.5 6H16"
+          d="M24 16l4-2m-4 2-4-2m-4 6-3 3m7 1-2 5m12-5 2 5m1-11 3 3m-10-3h6m-16 0h6m-1 12-4 2m13-2 4 2"
           stroke={stroke}
-          strokeWidth="2"
+          strokeWidth="1.8"
           strokeLinecap="round"
+          strokeLinejoin="round"
         />
-        <circle cx="13" cy="22" r="2.5" fill={secondary} />
-        <circle cx="35" cy="22" r="2.5" fill={secondary} />
+        <circle cx="15" cy="24" r="2" fill={secondary} />
+        <circle cx="33" cy="24" r="2" fill={secondary} />
       </svg>
     );
   },
@@ -134,11 +135,28 @@ const ICONS: Record<App["id"], ({ palette }: { palette: Palette }) => JSX.Elemen
     const { background, primary, secondary, stroke } = palette;
     return (
       <svg viewBox="0 0 48 48" aria-hidden className="h-10 w-10">
-        <rect x="10" y="18" width="28" height="20" rx="5" fill={background} stroke={primary} strokeWidth="2.5" />
-        <path d="M10 24h28" stroke={primary} strokeWidth="2.5" strokeLinecap="round" />
-        <rect x="21.5" y="14" width="5" height="24" rx="2.5" fill={secondary} />
-        <path d="M18 16c2-3.5 5-5 6-5s4 1.5 6 5" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" />
-        <circle cx="24" cy="24" r="3" fill={primary} stroke={stroke} strokeWidth="1.5" />
+        <path
+          d="M10 30c0-5.5 4.5-9.5 14-12.5L38 12l-6 9.5c3 1.5 5 4.3 5 7.5 0 4-3 7-7.5 7h-12C13 36 10 33 10 30Z"
+          fill={background}
+          stroke={primary}
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M15 28h18"
+          stroke={stroke}
+          strokeWidth="2.2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M36 12c-3-2.5-7-4-11-4-3 0-6 1-8.5 2.5"
+          stroke={stroke}
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <path d="M12 26l14-9 9 3" fill={primary} fillOpacity={0.85} />
+        <path d="M14 30h20" stroke={secondary} strokeWidth="3.2" strokeLinecap="round" />
+        <circle cx="37" cy="13" r="3.3" fill={secondary} stroke={stroke} strokeWidth="1.2" />
       </svg>
     );
   },
@@ -147,18 +165,27 @@ const ICONS: Record<App["id"], ({ palette }: { palette: Palette }) => JSX.Elemen
     return (
       <svg viewBox="0 0 48 48" aria-hidden className="h-10 w-10">
         <path
-          d="M12 30c0-5.5 4-10 12-10s12 4.5 12 10c0 3-1.5 5-4.5 5h-15C13.5 35 12 33 12 30Z"
+          d="M10 18c0-3.3 2.7-6 6-6h16c3.3 0 6 2.7 6 6v12c0 3.3-2.7 6-6 6H16c-3.3 0-6-2.7-6-6V18Z"
           fill={background}
           stroke={primary}
-          strokeWidth="2.5"
+          strokeWidth="2.4"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M18 29v-9h6m-6 4h4"
+          stroke={stroke}
+          strokeWidth="2.3"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <circle cx="18" cy="27" r="2.5" fill={primary} />
-        <circle cx="30" cy="27" r="2.5" fill={primary} />
-        <path d="M21 22l-3-5" stroke={stroke} strokeWidth="2" strokeLinecap="round" />
-        <path d="M27 22l3-5" stroke={stroke} strokeWidth="2" strokeLinecap="round" />
-        <path d="M24 24l-2 3h4l-2-3Z" fill={secondary} />
+        <path
+          d="M31 20c-2 0-3 .8-3 2.5V29h2.6v-3.3h2l1.4 3.3H37l-1.6-3.7c1-.5 1.6-1.4 1.6-2.6 0-2-1.4-3.4-4-3.4Z"
+          fill={secondary}
+          stroke={stroke}
+          strokeWidth="1.6"
+          strokeLinejoin="round"
+        />
+        <path d="M17 33h14" stroke={primary} strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     );
   },
@@ -166,14 +193,24 @@ const ICONS: Record<App["id"], ({ palette }: { palette: Palette }) => JSX.Elemen
     const { background, primary, secondary, stroke } = palette;
     return (
       <svg viewBox="0 0 48 48" aria-hidden className="h-10 w-10">
-        <rect x="12" y="12" width="24" height="24" rx="6" fill={background} stroke={primary} strokeWidth="2.5" />
         <path
-          d="M19 17h-3v14h3M29 17h3v14h-3M19 24h10"
+          d="M15 16h18l-1.2 8.5c-.4 2.9-2.8 5-5.8 5h-4c-3 0-5.4-2.1-5.8-5L15 16Z"
+          fill={background}
+          stroke={primary}
+          strokeWidth="2.4"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M17 16v-3h14v3M20 29l-1 6m10-6 1 6"
           stroke={stroke}
-          strokeWidth="2.5"
+          strokeWidth="2"
           strokeLinecap="round"
         />
-        <circle cx="24" cy="24" r="3" fill={secondary} />
+        <path
+          d="M19 35h10l-.8 3.5c-.2.9-1 1.5-1.9 1.5h-4.6c-.9 0-1.7-.6-1.9-1.5L19 35Z"
+          fill={secondary}
+        />
+        <circle cx="24" cy="23" r="3" fill={secondary} stroke={stroke} strokeWidth="1.2" />
       </svg>
     );
   },
@@ -181,15 +218,10 @@ const ICONS: Record<App["id"], ({ palette }: { palette: Palette }) => JSX.Elemen
     const { background, primary, secondary, stroke } = palette;
     return (
       <svg viewBox="0 0 48 48" aria-hidden className="h-10 w-10">
-        <circle cx="24" cy="24" r="18" fill={background} stroke={primary} strokeWidth="2.5" />
-        <path
-          d="M24 9c5.5 4 8 9 8 15s-2.5 11-8 15c-5.5-4-8-9-8-15s2.5-11 8-15Z"
-          fill="none"
-          stroke={stroke}
-          strokeWidth="2"
-        />
-        <path d="M11 24h26" stroke={secondary} strokeWidth="2.2" strokeLinecap="round" />
-        <path d="M15 15h18M15 33h18" stroke={stroke} strokeWidth="1.8" strokeLinecap="round" />
+        <rect x="9" y="14" width="30" height="20" rx="5" fill={background} stroke={primary} strokeWidth="2.4" />
+        <path d="M12 18l12 8 12-8" fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 32h24" stroke={primary} strokeWidth="1.8" strokeLinecap="round" />
+        <circle cx="37" cy="16" r="3" fill={secondary} stroke={stroke} strokeWidth="1.4" />
       </svg>
     );
   },
