@@ -14,6 +14,11 @@ import {
 import { useOutletContext, Link } from "react-router-dom";
 import type { User } from "firebase/auth";
 
+import { PageHero, PageSection, StatPill } from "../../shared/components/page";
+import { buttonStyles } from "../../shared/components/ui/button";
+import { Card } from "../../shared/components/ui/card";
+import { cn } from "../../shared/lib/classnames";
+
 type Ctx = { user: User | null };
 
 type Game = {
@@ -31,6 +36,11 @@ export default function Pickup() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
+
+  const totalSpots = useMemo(
+    () => games.reduce((sum, game) => sum + game.maxPlayers, 0),
+    [games]
+  );
 
   useEffect(() => {
     const q = query(
@@ -57,56 +67,61 @@ export default function Pickup() {
     return unsub;
   }, []);
 
+  const nextGame = games[0] ?? null;
+  const nextGameMs = nextGame
+    ? nextGame.dateTime?.seconds
+      ? nextGame.dateTime.seconds * 1000
+      : Number(nextGame.dateTime)
+    : null;
+
   return (
-    <div>
-      {/* Page hero */}
-      <div className="rounded-2xl p-5 md:p-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              Pickup Soccer
-            </h1>
-            <p className="mt-1 text-white/80">
-              Create a game, share the link, and RSVP in one click.
-            </p>
-          </div>
-          <Link
-            to="/new"
-            className="shrink-0 px-3 py-2 rounded-lg bg-brand-light text-white hover:bg-brand dark:bg-brand-dark dark:hover:bg-brand"
-            title="Create a new game"
-          >
-            + Create Game
+    <div className="space-y-8">
+      <PageHero
+        icon="⚽"
+        eyebrow="Community"
+        title="Pickup Soccer"
+        description="Create a game, share the link, and let friends RSVP in one click. Keep track of spots remaining in real time."
+        actions={
+          <Link to="/new" className={buttonStyles({ size: "sm" })}>
+            + Create game
           </Link>
-        </div>
-      </div>
+        }
+        stats={
+          <>
+            <StatPill>Open games · {games.length}</StatPill>
+            <StatPill>
+              {totalSpots ? `${totalSpots} total spots` : "Add your game"}
+            </StatPill>
+            {nextGameMs ? (
+              <StatPill>
+                Next: {new Date(nextGameMs).toLocaleString([], {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                })}
+              </StatPill>
+            ) : null}
+          </>
+        }
+      />
 
-      {/* Status area */}
-      {loading && <div className="mt-4">Loading…</div>}
-      {err && <div className="mt-4 text-red-600 text-sm">Error: {err}</div>}
-
-      {/* Empty state */}
-      {!loading && !err && !games.length && (
-        <div className="mt-6 rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-6 text-center">
-          <div className="text-3xl">🟦</div>
-          <h3 className="mt-2 text-lg font-semibold">No upcoming games</h3>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-            Be the first to post one for this week.
-          </p>
-          <Link
-            to="/new"
-            className="inline-flex mt-4 px-3 py-1.5 rounded-lg bg-brand-light text-white hover:bg-brand dark:bg-brand-dark dark:hover:bg-brand"
-          >
-            Create Game
-          </Link>
-        </div>
-      )}
-
-      {/* Games list */}
-      <div className="mt-6 grid gap-4">
-        {games.map((g) => (
-          <GameCard key={g.id} game={g} user={user} />
-        ))}
-      </div>
+      <PageSection
+        title="Upcoming games"
+        description="Browse open sessions and RSVP instantly."
+        contentClassName="grid gap-4"
+      >
+        {loading ? (
+          <LoadingState />
+        ) : err ? (
+          <ErrorState message={err} />
+        ) : !games.length ? (
+          <EmptyState />
+        ) : (
+          games.map((g) => <GameCard key={g.id} game={g} user={user} />)
+        )}
+      </PageSection>
     </div>
   );
 }
@@ -187,88 +202,111 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
   };
 
   return (
-    <div className="border rounded-xl p-5 bg-white dark:bg-gray-900 dark:border-gray-800">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-lg font-semibold">{game.title}</h3>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm">
-            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200">
-              📍 {game.fieldName}
-            </span>
-            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200">
-              🕒 {dateStr}
-            </span>
-            {user?.uid === game.organizerUid && (
-              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 bg-brand-light text-white dark:bg-brand-dark">
-                👑 Organizer
+    <Card padding="lg" className="relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-brand/8 via-transparent to-brand-accent/5" aria-hidden />
+      <div className="relative flex flex-col gap-4">
+        <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-brand-strong dark:text-white">{game.title}</h3>
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-brand-muted">
+              <span className="inline-flex items-center gap-1 rounded-brand-full bg-surface/70 px-3 py-1">
+                📍 {game.fieldName}
               </span>
+              <span className="inline-flex items-center gap-1 rounded-brand-full bg-surface/70 px-3 py-1">
+                🕒 {dateStr}
+              </span>
+              {user?.uid === game.organizerUid && (
+                <span className="inline-flex items-center gap-1 rounded-brand-full bg-brand/15 px-3 py-1 text-brand">
+                  👑 Organizer
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="text-right text-sm">
+            <div className="font-semibold text-brand">{goingCount}</div>
+            <div className="text-xs uppercase tracking-[0.18em] text-brand-muted">of {game.maxPlayers} spots</div>
+            <div className="mt-1 text-xs text-brand-subtle">
+              {full ? "Roster full" : `${game.maxPlayers - goingCount} spots left`}
+            </div>
+          </div>
+        </header>
+
+        <div className="h-2 rounded-brand-full bg-surface/60">
+          <div
+            className="h-2 rounded-brand-full bg-brand/80 transition-all"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setRSVP("going")}
+            className={cn(
+              buttonStyles({ variant: "primary", size: "sm" }),
+              myStatus === "going"
+                ? ""
+                : "bg-brand/20 text-brand-strong hover:bg-brand/30 dark:text-white"
             )}
-          </div>
+            disabled={!user || full}
+            title={!user ? "Sign in to RSVP" : full ? "Game is full" : ""}
+          >
+            I’m in
+          </button>
+          <button
+            onClick={() => setRSVP("maybe")}
+            className={cn(
+              buttonStyles({ variant: "secondary", size: "sm" }),
+              myStatus === "maybe"
+                ? "border-brand text-brand"
+                : "hover:border-brand/40"
+            )}
+            disabled={!user}
+          >
+            Maybe
+          </button>
+          <button
+            onClick={() => setRSVP("out")}
+            className={cn(
+              buttonStyles({ variant: "ghost", size: "sm" }),
+              myStatus === "out" ? "bg-surface/80 text-brand-strong" : ""
+            )}
+            disabled={!user}
+          >
+            Out
+          </button>
         </div>
-
-        {/* Spots summary */}
-        <div className="text-right">
-          <div className="text-sm">
-            <strong className="text-brand">{goingCount}</strong> / {game.maxPlayers}
-          </div>
-          {full ? (
-            <span className="text-xs text-brand font-medium">Full</span>
-          ) : (
-            <span className="text-xs text-gray-600 dark:text-gray-300">
-              {game.maxPlayers - goingCount} spots left
-            </span>
-          )}
-        </div>
       </div>
+    </Card>
+  );
+}
 
-      {/* Progress bar */}
-      <div className="mt-3 h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
-        <div
-          className="h-2 bg-slate-600 dark:bg-slate-300 rounded transition-all"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
+function LoadingState() {
+  return (
+    <Card padding="lg" className="animate-pulse text-sm text-brand-muted">
+      Loading games…
+    </Card>
+  );
+}
 
-      {/* Actions */}
-      <div className="mt-4 flex flex-wrap gap-2">
-        <button
-          onClick={() => setRSVP("going")}
-          className={`px-3 py-1.5 rounded-lg border ${
-            myStatus === "going"
-              ? "bg-brand-light text-white border-brand-light hover:bg-brand dark:bg-brand-dark dark:border-brand-dark dark:hover:bg-brand"
-              : "hover:bg-gray-50 dark:hover:bg-white/10"
-          }`}
-          disabled={!user || full}
-          title={!user ? "Sign in to RSVP" : full ? "Game is full" : ""}
-        >
-          I’m in
-        </button>
+function ErrorState({ message }: { message: string }) {
+  return (
+    <Card padding="lg" className="text-sm text-red-500">
+      Error: {message}
+    </Card>
+  );
+}
 
-        <button
-          onClick={() => setRSVP("maybe")}
-          className={`px-3 py-1.5 rounded-lg border ${
-            myStatus === "maybe"
-              ? "bg-brand-light text-white border-brand-light hover:bg-brand dark:bg-brand-dark dark:border-brand-dark dark:hover:bg-brand"
-              : "hover:bg-gray-50 dark:hover:bg-white/10"
-          }`}
-          disabled={!user}
-        >
-          Maybe
-        </button>
-
-        <button
-          onClick={() => setRSVP("out")}
-          className={`px-3 py-1.5 rounded-lg border ${
-            myStatus === "out"
-              ? "bg-brand-light text-white border-brand-light hover:bg-brand dark:bg-brand-dark dark:border-brand-dark dark:hover:bg-brand"
-              : "hover:bg-gray-50 dark:hover:bg-white/10"
-          }`}
-          disabled={!user}
-        >
-          Out
-        </button>
-      </div>
-    </div>
+function EmptyState() {
+  return (
+    <Card padding="lg" className="text-center">
+      <div className="text-3xl">🟦</div>
+      <h3 className="mt-3 text-lg font-semibold text-brand-strong dark:text-white">
+        No upcoming games
+      </h3>
+      <p className="mt-2 text-sm text-brand-muted">
+        Be the first to post one for this week.
+      </p>
+      <Link to="/new" className={cn(buttonStyles({ size: "sm" }), "mt-4 inline-flex")}>Create game</Link>
+    </Card>
   );
 }

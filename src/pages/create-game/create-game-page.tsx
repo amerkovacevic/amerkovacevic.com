@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { useOutletContext, useNavigate } from "react-router-dom";
+import { useOutletContext, useNavigate, Link } from "react-router-dom";
 import type { User } from "firebase/auth";
 import { db } from "../../shared/lib/firebase";
 import {
@@ -10,6 +10,9 @@ import {
   setDoc,
   Timestamp,
 } from "firebase/firestore";
+
+import { PageHero, PageSection, StatPill } from "../../shared/components/page";
+import { buttonStyles } from "../../shared/components/ui/button";
 
 type Ctx = { user: User | null };
 
@@ -62,59 +65,94 @@ export default function CreateGame() {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Create a Game</h2>
-      <form onSubmit={onSubmit} className="grid gap-3 max-w-md">
-        <input
-          name="title"
-          placeholder="7v7 at Tower Grove"
-          className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand dark:bg-gray-900 dark:border-gray-800"
-          required
-        />
+    <div className="space-y-8">
+      <PageHero
+        icon="🛠️"
+        eyebrow="Organizer tools"
+        title="Create a pickup game"
+        description="Schedule your next session, cap the roster, and instantly share it with your crew."
+        stats={
+          <>
+            <StatPill>Publish in under a minute</StatPill>
+            <StatPill>Auto-track RSVPs</StatPill>
+            <StatPill>Remember favourite fields</StatPill>
+          </>
+        }
+        actions={
+          <Link to="/pickup" className={buttonStyles({ variant: "secondary", size: "sm" })}>
+            ← Back to games
+          </Link>
+        }
+      />
 
-        <label className="text-sm">
-          Date & time
-          <input
-            name="dateTime"
-            type="datetime-local"
-            className="mt-1 border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand dark:bg-gray-900 dark:border-gray-800"
-            required
-          />
-        </label>
+      <PageSection
+        title="Game details"
+        description="Fill out the essentials. We’ll auto-save the field for next time and ping your friends as soon as it’s live."
+      >
+        <form onSubmit={onSubmit} className="grid gap-5">
+          <div className="grid gap-4 md:grid-cols-2">
+            <label className="flex flex-col gap-2 text-sm">
+              <span className="font-medium text-brand-muted">Title</span>
+              <input
+                name="title"
+                placeholder="7v7 at Tower Grove"
+                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                required
+              />
+            </label>
 
-        <input
-          name="fieldName"
-          placeholder="Field name"
-          className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand dark:bg-gray-900 dark:border-gray-800"
-          required
-        />
+            <label className="flex flex-col gap-2 text-sm">
+              <span className="font-medium text-brand-muted">Date & time</span>
+              <input
+                name="dateTime"
+                type="datetime-local"
+                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                required
+              />
+            </label>
 
-        <label className="text-sm">
-          Max players (2–30)
-          <input
-            name="maxPlayers"
-            type="number"
-            min={2}
-            max={30}
-            defaultValue={14}
-            className="mt-1 border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand dark:bg-gray-900 dark:border-gray-800"
-            required
-          />
-        </label>
+            <label className="flex flex-col gap-2 text-sm">
+              <span className="font-medium text-brand-muted">Field name</span>
+              <input
+                name="fieldName"
+                placeholder="Imo’s Soccer Park"
+                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                required
+              />
+            </label>
 
-        <button
-          disabled={!user || busy}
-          className="px-3 py-2 rounded-lg bg-brand text-white hover:bg-brand-light dark:hover:bg-brand-dark disabled:opacity-50"
-        >
-          {busy ? "Creating..." : "Create game"}
-        </button>
-
-        {!user && (
-          <div className="text-sm text-red-600">
-            Sign in to create a game.
+            <label className="flex flex-col gap-2 text-sm">
+              <span className="font-medium text-brand-muted">Max players (2–30)</span>
+              <input
+                name="maxPlayers"
+                type="number"
+                min={2}
+                max={30}
+                defaultValue={14}
+                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                required
+              />
+            </label>
           </div>
-        )}
-      </form>
+
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <button
+              disabled={!user || busy}
+              className={buttonStyles({ size: "md" })}
+            >
+              {busy ? "Creating…" : "Create game"}
+            </button>
+
+            {!user ? (
+              <p className="text-sm text-red-500">Sign in to create a game.</p>
+            ) : (
+              <p className="text-sm text-brand-muted">
+                Need to adjust later? Visit the game in <Link to="/pickup" className="underline">Pickup Soccer</Link> and edit RSVPs live.
+              </p>
+            )}
+          </div>
+        </form>
+      </PageSection>
     </div>
   );
 }

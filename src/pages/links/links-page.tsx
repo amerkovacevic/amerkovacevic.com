@@ -1,9 +1,11 @@
 import { useState } from "react";
 
+import { PageHero, PageSection, StatPill } from "../../shared/components/page";
+import { buttonStyles } from "../../shared/components/ui/button";
+
 type LinkItem = { title: string; url: string; emoji?: string; subtle?: boolean };
 
 export default function Links() {
-  // 🔧 Update these with your real profiles
   const links: LinkItem[] = [
     { title: "Twitter / X", url: "https://twitter.com/yourhandle", emoji: "🐦" },
     { title: "LinkedIn", url: "https://linkedin.com/in/yourhandle", emoji: "💼" },
@@ -23,36 +25,45 @@ export default function Links() {
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      {/* Header card */}
-      <section className="rounded-3xl overflow-hidden">
-        <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 p-8 text-white text-center">
-          <Avatar />
-          <h1 className="mt-4 text-3xl font-bold tracking-tight">Amer Kovacevic</h1>
-          <p className="mt-2 text-gray-300">
-            Builder of small, useful tools. Based online—shipping from St. Louis energy.
-          </p>
-
-          <div className="mt-4 flex items-center justify-center gap-3">
+    <div className="mx-auto flex max-w-2xl flex-col gap-8">
+      <PageHero
+        icon="🌐"
+        eyebrow="Connect"
+        title="Amer Kovacevic"
+        description="Builder of small, useful tools. Based online—shipping from St. Louis energy."
+        stats={
+          <>
+            <StatPill>Product & design</StatPill>
+            <StatPill>Side-project lab</StatPill>
+            <StatPill>Always exploring</StatPill>
+          </>
+        }
+        actions={
+          <div className="flex flex-col items-stretch gap-2">
             <button
               onClick={copyEmail}
-              className="rounded-xl border border-white/20 px-3 py-1.5 text-sm hover:bg-white/10"
-              title="Copy email"
+              className={buttonStyles({ variant: "secondary", size: "sm" })}
             >
               {copied ? "Copied ✅" : "Copy email"}
             </button>
             <a
-              href="mailto:amer@amerkovacevic.com"
-              className="rounded-xl bg-brand text-white px-3 py-1.5 text-sm font-medium hover:bg-brand-light dark:hover:bg-brand-dark"
+              href={`mailto:${email}`}
+              className={buttonStyles({ size: "sm" })}
             >
-              Email
+              Say hi →
             </a>
           </div>
-        </div>
-      </section>
+        }
+      />
 
-      {/* Link buttons */}
-      <section className="mt-6 grid gap-3">
+      <PageSection contentClassName="flex flex-col items-center gap-4 text-center">
+        <Avatar />
+        <p className="max-w-xl text-sm text-brand-muted dark:text-brand-subtle">
+          Each experiment below is a living document of things I’m learning—whether it’s community tools for pickup soccer or tiny utilities for friends.
+        </p>
+      </PageSection>
+
+      <PageSection title="Links" description="Favorite places on the internet right now." contentClassName="grid gap-3">
         {links.map((l) => (
           <a
             key={l.url}
@@ -60,22 +71,22 @@ export default function Links() {
             target={l.url.startsWith("/") ? "_self" : "_blank"}
             rel={l.url.startsWith("/") ? undefined : "noreferrer"}
             className={[
-              "flex items-center justify-between rounded-2xl px-4 py-3 border",
+              "flex items-center justify-between rounded-brand-lg px-4 py-3 transition",
               l.subtle
-                ? "bg-white text-gray-900 border-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-800 dark:hover:bg-gray-800"
-                : "bg-brand text-white border-brand hover:bg-brand-light dark:hover:bg-brand-dark",
+                ? "border border-border-light bg-surface text-brand-strong hover:border-brand/40 hover:bg-surface/80 dark:bg-surface-overlayDark"
+                : "bg-brand text-white shadow-brand hover:bg-brand-strong",
             ].join(" ")}
           >
             <span className="flex items-center gap-3 text-lg">
-              <span>{l.emoji ?? "🔗"}</span>
+              <span aria-hidden>{l.emoji ?? "🔗"}</span>
               <span>{l.title}</span>
             </span>
-            <span className={l.subtle ? "text-gray-400" : "text-white/70"}>→</span>
+            <span className={l.subtle ? "text-brand-muted" : "text-white/80"}>→</span>
           </a>
         ))}
-      </section>
+      </PageSection>
 
-      <p className="mt-8 text-center text-xs text-gray-500 dark:text-gray-400">
+      <p className="text-center text-xs text-brand-muted dark:text-brand-subtle">
         © {new Date().getFullYear()} AmerKovacevic.com
       </p>
     </div>

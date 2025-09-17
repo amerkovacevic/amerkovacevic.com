@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { buttonStyles } from "../../shared/components/ui/button";
-import { Card } from "../../shared/components/ui/card";
 import { cn } from "../../shared/lib/classnames";
+import { PageHero, PageSection, StatPill } from "../../shared/components/page";
 
 const PIN_STORAGE_KEY = "pinnedApps";
 
@@ -35,6 +35,13 @@ const APPS = [
     to: "/bracket",
     emoji: "🏆",
     blurb: "Create and manage tournament brackets.",
+  },
+  {
+    id: "links",
+    name: "Link in Bio",
+    to: "/links",
+    emoji: "🌐",
+    blurb: "Gather every profile and project in one beautiful hub.",
   },
 ] as const;
 
@@ -81,109 +88,107 @@ export default function HomePage() {
   );
 
   return (
-    <div className="relative space-y-10">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-36 -left-32 h-96 w-96 rounded-full bg-brand/20 blur-3xl" />
-        <div className="absolute -bottom-40 -right-16 h-[28rem] w-[26rem] rounded-full bg-brand-accent/15 blur-3xl" />
-      </div>
+    <div className="space-y-8">
+      <PageHero
+        icon="✨"
+        eyebrow="Featured"
+        title="Build playful experiences for your crew in seconds."
+        description="Pin the apps you love, discover new experiments, and invite friends to collaborate with delightfully simple tools."
+        stats={
+          <>
+            <StatPill>
+              {pinnedApps.length ? `${pinnedApps.length} pinned` : "Pin favorites"}
+            </StatPill>
+            <StatPill>Instant sharing</StatPill>
+            <StatPill>Football & friends</StatPill>
+          </>
+        }
+      />
 
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
-        <Card className="relative overflow-hidden" padding="lg">
-          <div className="absolute inset-0 bg-gradient-to-br from-brand/15 via-transparent to-brand-accent/10" aria-hidden />
-          <div className="relative flex h-full flex-col justify-between gap-8">
-            <div className="space-y-3">
-              <span className="inline-flex items-center gap-2 rounded-brand-full bg-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand">
-                Featured
-              </span>
-              <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
-                Build playful experiences for your crew in seconds.
-              </h1>
-              <p className="max-w-xl text-base text-brand-subtle">
-                Pin the apps you love, discover new experiments, and invite your friends to collaborate with delightfully simple tools.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-brand-muted">
-              <span className="rounded-brand-full bg-brand/10 px-3 py-1 text-brand">
-                {pinnedApps.length ? `${pinnedApps.length} pinned` : "Pin favorites"}
-              </span>
-              <span className="rounded-brand-full bg-brand-accent/10 px-3 py-1 text-brand-accent">Instant sharing</span>
-              <span className="rounded-brand-full bg-brand/5 px-3 py-1">Football & friends</span>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="relative overflow-hidden" padding="lg">
-          <div className="absolute right-[-120px] top-[-120px] h-64 w-64 rounded-full bg-brand-accent/20 blur-3xl" aria-hidden />
-          <div className="relative space-y-5">
-            <div>
-              <p className="text-sm font-semibold text-brand-strong">Find your tool</p>
-              <p className="text-sm text-brand-subtle">Search across projects and filter by pinned favourites.</p>
-            </div>
-            <div className="relative">
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search apps, e.g. pickup"
-                className="w-full rounded-brand border border-border-light bg-surface/90 px-4 py-3 pl-11 text-sm text-brand-strong shadow-brand-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/40 hover:border-brand-muted dark:bg-surface-overlayDark"
-                inputMode="search"
-              />
-              <span className="pointer-events-none absolute left-4 top-3 text-base">🔍</span>
-            </div>
-            <div className="space-y-2 text-xs">
-              <p className="font-semibold uppercase tracking-[0.2em] text-brand-muted">Pinned</p>
-              {pinnedApps.length ? (
-                <div className="flex flex-wrap gap-2">
-                  {pinnedApps.map((app) => (
-                    <button
-                      key={app.id}
-                      onClick={() => setQuery(app.name)}
-                      className="group flex items-center gap-2 rounded-brand-full border border-border-light bg-surface/80 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-brand-muted transition hover:border-brand/40 hover:text-brand-strong"
-                    >
-                      <span>{app.emoji}</span>
-                      {app.name}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="rounded-brand bg-brand/5 px-3 py-2 text-[11px] uppercase tracking-[0.2em] text-brand-subtle">
-                  Pin an app to spotlight it here.
-                </p>
-              )}
-            </div>
-          </div>
-        </Card>
-      </section>
-
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-brand-strong">All apps</h2>
-          <span className="text-xs uppercase tracking-[0.2em] text-brand-muted">{filteredApps.length} available</span>
+      <PageSection
+        title="Find your tool"
+        description="Search across projects and filter by pinned favourites."
+        contentClassName="space-y-5"
+      >
+        <div className="relative">
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search apps, e.g. pickup"
+            className="w-full rounded-brand border border-border-light bg-surface/90 px-4 py-3 pl-11 text-sm text-brand-strong shadow-brand-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/40 hover:border-brand-muted dark:bg-surface-overlayDark"
+            inputMode="search"
+          />
+          <span className="pointer-events-none absolute left-4 top-3 text-base">🔍</span>
         </div>
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {filteredApps.map((app) => (
-            <AppCard
-              key={app.id}
-              app={app}
-              pinned={pinned.includes(app.id)}
-              onPin={() => togglePin(app.id)}
-            />
-          ))}
+        <div className="space-y-2 text-xs">
+          <p className="font-semibold uppercase tracking-[0.2em] text-brand-muted">Pinned</p>
+          {pinnedApps.length ? (
+            <div className="flex flex-wrap gap-2">
+              {pinnedApps.map((app) => (
+                <button
+                  key={app.id}
+                  onClick={() => setQuery(app.name)}
+                  className="group flex items-center gap-2 rounded-brand-full border border-border-light bg-surface/80 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-brand-muted transition hover:border-brand/40 hover:text-brand-strong"
+                >
+                  <span>{app.emoji}</span>
+                  {app.name}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="rounded-brand bg-brand/5 px-3 py-2 text-[11px] uppercase tracking-[0.2em] text-brand-subtle">
+              Pin an app to spotlight it here.
+            </p>
+          )}
         </div>
-      </section>
+      </PageSection>
+
+      <PageSection
+        title="All apps"
+        description={`${filteredApps.length} available`}
+        contentClassName="grid grid-cols-1 gap-5 md:grid-cols-2"
+      >
+        {filteredApps.map((app) => (
+          <AppCard
+            key={app.id}
+            app={app}
+            pinned={pinned.includes(app.id)}
+            onPin={() => togglePin(app.id)}
+          />
+        ))}
+      </PageSection>
     </div>
   );
 }
 
 function AppCard({ app, pinned, onPin }: { app: App; pinned: boolean; onPin: () => void }) {
+  const navigate = useNavigate();
+
+  const handleOpen = () => navigate(app.to);
+
   return (
-    <Card className="group relative flex h-full flex-col justify-between overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-brand" padding="lg">
+    <div
+      role="link"
+      tabIndex={0}
+      onClick={handleOpen}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          handleOpen();
+        }
+      }}
+      className="group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-brand-lg border border-border-light bg-surface/90 p-6 text-left shadow-brand-sm transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-brand dark:bg-surface-overlayDark"
+    >
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand/8 via-transparent to-brand-accent/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden />
       <div className="relative flex items-start justify-between">
         <span className="text-2xl" aria-hidden>
           {app.emoji}
         </span>
         <button
-          onClick={onPin}
+          onClick={(event) => {
+            event.stopPropagation();
+            onPin();
+          }}
           className={cn(
             buttonStyles({ variant: "ghost", size: "sm" }),
             "!h-8 !px-3 text-[11px] font-medium"
@@ -201,19 +206,18 @@ function AppCard({ app, pinned, onPin }: { app: App; pinned: boolean; onPin: () 
         <p className="text-sm text-brand-subtle">{app.blurb}</p>
       </div>
       <div className="relative mt-6 flex items-center justify-between">
-        <Link
-          to={app.to}
+        <span
           className={cn(
             buttonStyles({ variant: "secondary", size: "sm" }),
-            "no-underline transition-transform duration-200 group-hover:translate-x-1"
+            "pointer-events-none select-none no-underline"
           )}
         >
           Open <span className="transition-transform group-hover:translate-x-1">→</span>
-        </Link>
+        </span>
         <span className="rounded-brand-full bg-brand-subtle/10 px-3 py-1 text-[10px] uppercase tracking-wide text-brand-subtle">
           {app.id}
         </span>
       </div>
-    </Card>
+    </div>
   );
 }

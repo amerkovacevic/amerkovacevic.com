@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import type { User } from "firebase/auth";
 import {
@@ -15,6 +15,11 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../shared/lib/firebase";
+
+import { PageHero, PageSection, StatPill } from "../../shared/components/page";
+import { buttonStyles } from "../../shared/components/ui/button";
+import { Card } from "../../shared/components/ui/card";
+import { cn } from "../../shared/lib/classnames";
 
 type Ctx = { user: User | null };
 
@@ -383,185 +388,245 @@ export default function SecretSanta() {
   const me = user ? members.find((m) => m.uid === user.uid) : null;
 
   return (
-    <div>
-      {/* Header */}
-      <div className="rounded-2xl p-5 md:p-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
-        <h1 className="text-2xl md:text-3xl font-bold">Secret Santa</h1>
-        <p className="mt-1 text-white/80">Create a group, invite with a code, set preferences, and auto-assign matches.</p>
-      </div>
-
-      {/* Tabs */}
-      {!activeEvent && (
-        <div className="mt-4 flex gap-2">
-          <button onClick={() => setTab("create")} className={`px-3 py-1.5 rounded-lg border ${tab === "create" ? "bg-brand-light text-white dark:bg-brand-dark" : "hover:bg-gray-50 dark:hover:bg-white/10"}`}>Create event</button>
-          <button onClick={() => setTab("join")} className={`px-3 py-1.5 rounded-lg border ${tab === "join" ? "bg-brand-light text-white dark:bg-brand-dark" : "hover:bg-gray-50 dark:hover:bg-white/10"}`}>Join with code</button>
-        </div>
-      )}
-
-      {err && <div className="mt-4 text-red-600 text-sm">Error: {err}</div>}
-      {loading && <div className="mt-4">Working…</div>}
-
-      {/* Create form */}
-{!activeEvent && tab === "create" && (
-  <form onSubmit={handleCreate} className="mt-4 grid gap-3 max-w-md">
-    <input
-      name="name"
-      placeholder="e.g., Jerseys 2025"
-      className="border rounded-lg px-3 py-2"
-      required
-      disabled={!user}
-    />
-    <label className="text-sm">
-      Exchange date
-      <input
-        name="date"
-        type="date"
-        className="mt-1 border rounded-lg px-3 py-2 w-full"
-        disabled={!user}
+    <div className="space-y-8">
+      <PageHero
+        icon="🎁"
+        eyebrow="Holiday helpers"
+        title="Secret Santa"
+        description="Create a group, invite with a code, set preferences, and auto-assign matches."
+        stats={
+          <>
+            <StatPill>Unlimited members</StatPill>
+            <StatPill>Smart pairing</StatPill>
+            <StatPill>Preferences built-in</StatPill>
+          </>
+        }
       />
-    </label>
-    <button
-      className="px-3 py-2 rounded-lg bg-brand-light text-white disabled:opacity-50"
-      disabled={!user || loading}
-    >
-      Create & join
-    </button>
-    {!user && (
-      <div className="text-sm text-red-600">
-        You must be signed in to create a Secret Santa.
-      </div>
-    )}
-  </form>
-)}
 
-      {/* Join form */}
-{!activeEvent && tab === "join" && (
-  <form onSubmit={handleJoin} className="mt-4 grid gap-3 max-w-md">
-    <input
-      name="code"
-      placeholder="Join code (e.g., 7FQK9C)"
-      className="uppercase border rounded-lg px-3 py-2 tracking-widest"
-      required
-      disabled={!user}
-    />
-    <input
-      name="displayName"
-      placeholder="Your display name"
-      className="border rounded-lg px-3 py-2"
-      disabled={!user}
-    />
-    <div className="text-sm text-gray-600">Enter 1–3 items, comma-separated.</div>
-    <input name="wantPlayers" placeholder="Desired players" className="border rounded-lg px-3 py-2" disabled={!user} />
-    <input name="wantTeams" placeholder="Desired teams" className="border rounded-lg px-3 py-2" disabled={!user} />
-    <input name="avoidPlayers" placeholder="Players to avoid" className="border rounded-lg px-3 py-2" disabled={!user} />
-    <input name="avoidTeams" placeholder="Teams to avoid" className="border rounded-lg px-3 py-2" disabled={!user} />
-    <button
-      className="px-3 py-2 rounded-lg bg-brand-light text-white disabled:opacity-50"
-      disabled={!user || loading}
-    >
-      Join event
-    </button>
-    {!user && (
-      <div className="text-sm text-red-600">
-        You must be signed in to join a Secret Santa.
-      </div>
-    )}
-  </form>
-)}
+      <div className="space-y-6">
+        {err ? <Alert tone="error">Error: {err}</Alert> : null}
+        {loading ? <Alert tone="info">Working…</Alert> : null}
 
-
-      {/* Event view */}
-      {activeEvent && (
-        <div className="mt-6 grid gap-4">
-          <div className="rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-lg font-semibold">{activeEvent.name}</h2>
-                <div className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                  {activeEvent.exchangeDate ? `Exchange: ${new Date(activeEvent.exchangeDate.seconds * 1000).toLocaleDateString()}` : "Date: TBA"}
-                </div>
-                <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  You: <code>{user?.uid || "?"}</code> · Organizer: <code>{activeEvent.organizerUid || "?"}</code> · Members: {members.length}
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-xs text-gray-600 dark:text-gray-300">Join code</div>
-                <code className="inline-block mt-1 px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 font-mono tracking-widest">
-                  {activeEvent.joinCode}
-                </code>
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <h3 className="text-sm font-medium">Members ({members.length})</h3>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {members.map((m) => (
-                  <span key={m.uid} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200">
-                    🧑 {m.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-4 flex flex-wrap items-center gap-2">
+        {!activeEvent ? (
+          <PageSection
+            title="Plan your exchange"
+            description="Create a new event for your crew or join an existing one with a code."
+            contentClassName="space-y-5"
+          >
+            <div className="flex flex-wrap gap-2">
               <button
-                onClick={runDraw}
-                className="px-3 py-1.5 rounded-lg bg-brand-light text-white dark:bg-brand-dark disabled:opacity-50"
-                disabled={!canDraw || loading}
-                title={drawTooltip}
+                onClick={() => setTab("create")}
+                className={cn(
+                  buttonStyles({ variant: tab === "create" ? "primary" : "secondary", size: "sm" }),
+                  "rounded-brand-full"
+                )}
+                type="button"
               >
-                Run draw
+                Create event
               </button>
-              <span className="text-xs text-gray-600 dark:text-gray-300">
-                Only the organizer can run the draw. Each person sees only their own match.
-              </span>
+              <button
+                onClick={() => setTab("join")}
+                className={cn(
+                  buttonStyles({ variant: tab === "join" ? "primary" : "secondary", size: "sm" }),
+                  "rounded-brand-full"
+                )}
+                type="button"
+              >
+                Join with code
+              </button>
+            </div>
+
+            {tab === "create" ? (
+              <form onSubmit={handleCreate} className="grid gap-4 md:max-w-xl">
+                <label className="flex flex-col gap-2 text-sm">
+                  <span className="font-medium text-brand-muted">Event name</span>
+                  <input
+                    name="name"
+                    placeholder="e.g., Jerseys 2025"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                    required
+                    disabled={!user || loading}
+                  />
+                </label>
+                <label className="flex flex-col gap-2 text-sm">
+                  <span className="font-medium text-brand-muted">Exchange date</span>
+                  <input
+                    name="date"
+                    type="date"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                    disabled={!user || loading}
+                  />
+                </label>
+                <button
+                  className={buttonStyles({ size: "md" })}
+                  disabled={!user || loading}
+                >
+                  Create & join
+                </button>
+                {!user ? (
+                  <p className="text-sm text-red-500">You must be signed in to create a Secret Santa.</p>
+                ) : (
+                  <p className="text-xs text-brand-muted">
+                    We’ll automatically add you as the first member so you can set your preferences below.
+                  </p>
+                )}
+              </form>
+            ) : (
+              <form onSubmit={handleJoin} className="grid gap-4 md:max-w-xl">
+                <label className="flex flex-col gap-2 text-sm">
+                  <span className="font-medium text-brand-muted">Join code</span>
+                  <input
+                    name="code"
+                    placeholder="7FQK9C"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong uppercase tracking-[0.4em] shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                    required
+                    disabled={!user || loading}
+                  />
+                </label>
+                <label className="flex flex-col gap-2 text-sm">
+                  <span className="font-medium text-brand-muted">Display name</span>
+                  <input
+                    name="displayName"
+                    placeholder="Your name"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                    disabled={!user || loading}
+                  />
+                </label>
+                <div className="text-xs text-brand-muted">Enter 1–3 items, comma-separated.</div>
+                <input name="wantPlayers" placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" disabled={!user || loading} />
+                <input name="wantTeams" placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" disabled={!user || loading} />
+                <input name="avoidPlayers" placeholder="Players to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" disabled={!user || loading} />
+                <input name="avoidTeams" placeholder="Teams to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" disabled={!user || loading} />
+                <button
+                  className={buttonStyles({ size: "md" })}
+                  disabled={!user || loading}
+                >
+                  Join event
+                </button>
+                {!user && <p className="text-sm text-red-500">You must be signed in to join a Secret Santa.</p>}
+              </form>
+            )}
+          </PageSection>
+        ) : (
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+            <PageSection
+              title={activeEvent?.name}
+              description={
+                activeEvent?.exchangeDate
+                  ? `Exchange: ${new Date(activeEvent.exchangeDate.seconds * 1000).toLocaleDateString()}`
+                  : "Date: TBA"
+              }
+              actions={
+                <div className="flex flex-col items-end gap-2 text-xs text-brand-muted">
+                  <span>Join code</span>
+                  <code className="rounded-brand bg-surface px-3 py-1 font-mono text-sm tracking-[0.4em]">
+                    {activeEvent?.joinCode}
+                  </code>
+                </div>
+              }
+              contentClassName="space-y-5"
+            >
+              <div className="flex flex-wrap items-center gap-2 text-xs text-brand-muted">
+                <span className="rounded-brand-full bg-brand/10 px-3 py-1">
+                  Organizer · {activeEvent?.organizerUid ?? "?"}
+                </span>
+                <span className="rounded-brand-full bg-brand/10 px-3 py-1">
+                  Members · {members.length}
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold">Members</h3>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {members.map((m) => (
+                    <span
+                      key={m.uid}
+                      className="inline-flex items-center gap-1 rounded-brand-full bg-surface px-3 py-1 text-sm text-brand-strong shadow-brand-sm"
+                    >
+                      🧑 {m.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={runDraw}
+                  className={buttonStyles({ size: "sm" })}
+                  disabled={!canDraw || loading}
+                  title={drawTooltip}
+                >
+                  Run draw
+                </button>
+                <span className="text-xs text-brand-muted">
+                  Only the organizer can run the draw. Each person sees only their own match.
+                </span>
+              </div>
+            </PageSection>
+
+            <div className="space-y-6">
+              {user ? (
+                <PageSection title="My preferences" description="Update what you hope to receive and any no-goes." contentClassName="space-y-3">
+                  <form onSubmit={saveMyPrefs} className="grid gap-3">
+                    <div className="text-xs text-brand-muted">Enter 1–3 items, comma-separated.</div>
+                    <input name="wantPlayers" defaultValue={(me?.wantPlayers ?? []).join(", ")} placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" />
+                    <input name="wantTeams" defaultValue={(me?.wantTeams ?? []).join(", ")} placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" />
+                    <input name="avoidPlayers" defaultValue={(me?.avoidPlayers ?? []).join(", ")} placeholder="Players to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" />
+                    <input name="avoidTeams" defaultValue={(me?.avoidTeams ?? []).join(", ")} placeholder="Teams to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" />
+                    <div className="flex items-center gap-3">
+                      <button className={buttonStyles({ size: "sm" })} disabled={loading}>
+                        Save
+                      </button>
+                      <span className="text-xs text-brand-muted">Everyone will see these when they draw you.</span>
+                    </div>
+                  </form>
+                </PageSection>
+              ) : null}
+
+              <PageSection title="Your match" contentClassName="space-y-3">
+                {myMatch ? (
+                  <div className="space-y-2 text-sm">
+                    <div>
+                      <div className="text-base font-semibold text-brand-strong dark:text-white">{myMatch.name}</div>
+                      <div className="text-xs text-brand-muted">{myMatch.email}</div>
+                    </div>
+                    <PreferenceList label="Wants — Players" items={myMatch.wantPlayers} />
+                    <PreferenceList label="Wants — Teams" items={myMatch.wantTeams} />
+                    <PreferenceList label="Avoid — Players" items={myMatch.avoidPlayers} />
+                    <PreferenceList label="Avoid — Teams" items={myMatch.avoidTeams} />
+                  </div>
+                ) : (
+                  <p className="text-sm text-brand-muted">
+                    No assignment yet. Ask the organizer to run the draw.
+                  </p>
+                )}
+              </PageSection>
             </div>
           </div>
-
-          {/* My preferences editor */}
-          {user && (
-            <div className="rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-4">
-              <h3 className="text-sm font-medium mb-2">My preferences</h3>
-              <form onSubmit={saveMyPrefs} className="grid gap-3">
-                <div className="text-xs text-gray-600">Enter 1–3 items, comma-separated.</div>
-                <input name="wantPlayers" defaultValue={(me?.wantPlayers ?? []).join(", ")} placeholder="Desired players (comma-separated)" className="border rounded-lg px-3 py-2" />
-                <input name="wantTeams" defaultValue={(me?.wantTeams ?? []).join(", ")} placeholder="Desired teams (comma-separated)" className="border rounded-lg px-3 py-2" />
-                <input name="avoidPlayers" defaultValue={(me?.avoidPlayers ?? []).join(", ")} placeholder="Players to avoid (comma-separated)" className="border rounded-lg px-3 py-2" />
-                <input name="avoidTeams" defaultValue={(me?.avoidTeams ?? []).join(", ")} placeholder="Teams to avoid (comma-separated)" className="border rounded-lg px-3 py-2" />
-                <div className="flex gap-2">
-                  <button className="px-3 py-2 rounded-lg bg-brand-light text-white dark:bg-brand-dark disabled:opacity-50" disabled={loading}>Save</button>
-                  <span className="text-xs text-gray-600 dark:text-gray-300">Everyone will see these when they draw you.</span>
-                </div>
-              </form>
-            </div>
-          )}
-
-          {/* My assignment with recipient prefs */}
-<div className="rounded-xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-4">
-  <h3 className="text-sm font-medium mb-2">Your match</h3>
-  {myMatch ? (
-    <div className="grid gap-2">
-      <div>
-        <div className="font-semibold">{myMatch.name}</div>
-        <div className="text-sm text-gray-600 dark:text-gray-300">{myMatch.email}</div>
-      </div>
-      <div className="text-sm mt-1">
-        <div><span className="font-medium">Wants — Players:</span> {listOrDash(myMatch.wantPlayers)}</div>
-        <div><span className="font-medium">Wants — Teams:</span> {listOrDash(myMatch.wantTeams)}</div>
-        <div><span className="font-medium">Avoid — Players:</span> {listOrDash(myMatch.avoidPlayers)}</div>
-        <div><span className="font-medium">Avoid — Teams:</span> {listOrDash(myMatch.avoidTeams)}</div>
+        )}
       </div>
     </div>
-  ) : (
-    <div className="text-gray-600 dark:text-gray-300 text-sm">
-      No assignment yet. Ask the organizer to run the draw.
-    </div>
-  )}
-</div>
+  );
+}
 
-        </div>
-      )}
+/** UI helpers */
+function PreferenceList({ label, items }: { label: string; items: string[] }) {
+  return (
+    <div className="text-sm text-brand-muted">
+      <span className="font-medium text-brand-strong dark:text-white">{label}:</span> {listOrDash(items)}
     </div>
+  );
+}
+
+function Alert({ tone, children }: { tone: "error" | "info"; children: ReactNode }) {
+  const toneStyles =
+    tone === "error"
+      ? "border-red-200 text-red-600 dark:border-red-400/40 dark:text-red-200"
+      : "border-brand/30 text-brand";
+  return (
+    <Card padding="lg" className={cn("text-sm", toneStyles)}>
+      {children}
+    </Card>
   );
 }
 

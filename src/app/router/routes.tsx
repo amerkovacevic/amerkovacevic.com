@@ -8,7 +8,6 @@ import {
   HomePage,
   LinksPage,
   PickupPage,
-  ResumePage,
   SecretSantaPage,
 } from "../../pages";
 
@@ -22,7 +21,6 @@ export const routes: RouteObject[] = [
       { path: "new", element: <CreateGamePage /> },
       { path: "links", element: <LinksPage /> },
       { path: "santa", element: <SecretSantaPage /> },
-      { path: "resume", element: <ResumePage /> },
       { path: "fm", element: <FmTeamDrawPage /> },
       { path: "bracket", element: <BracketPage /> },
     ],
