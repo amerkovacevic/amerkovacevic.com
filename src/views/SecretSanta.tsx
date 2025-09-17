@@ -21,67 +21,77 @@ type Ctx = { user: User | null };
 type EventDoc = {
   id: string;
   name: string;
-  exchangeDate?: Timestamp | null;
+  exchangeDate: Timestamp | null;
   joinCode: string;
   organizerUid: string;
-  createdAt: any;
+  createdAt: unknown;
 };
 
 type Member = { uid: string; name: string; email: string };
 
 export default function SecretSanta() {
   const { user } = useOutletContext<Ctx>();
+
   const [tab, setTab] = useState<"create" | "join" | "event">("create");
   const [activeEvent, setActiveEvent] = useState<EventDoc | null>(null);
+
   const [members, setMembers] = useState<Member[]>([]);
   const [myMatch, setMyMatch] = useState<Member | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  // live members + my assignment
+  // Subscribe to members; also fetch my assignment once
   useEffect(() => {
     if (!activeEvent) return;
+
     const unsub = onSnapshot(
       collection(db, "santaEvents", activeEvent.id, "members"),
       (snap) => {
-        const list = snap.docs.map((d) => {
-          const data = d.data() as any;
-          return { uid: d.id, name: data.name, email: data.email } as Member;
+        const list: Member[] = snap.docs.map((d) => {
+          const data = d.data() as { name?: string; email?: string } | undefined;
+          return {
+            uid: d.id,
+            name: data?.name ?? "Unknown",
+            email: data?.email ?? "",
+          };
         });
         setMembers(list);
       }
     );
+
+    // fetch my assignment (if any)
     (async () => {
       if (!user) return;
-      const myAssignRef = doc(
-        db,
-        "santaEvents",
-        activeEvent.id,
-        "assignments",
-        user.uid
-      );
-      const my = await getDoc(myAssignRef);
-      if (my.exists()) {
-        const recUid = (my.data() as any).recipientUid as string;
-        const rec = await getDoc(
-          doc(db, "santaEvents", activeEvent.id, "members", recUid)
-        );
-        if (rec.exists()) {
-          const d = rec.data() as any;
-          setMyMatch({ uid: rec.id, name: d.name, email: d.email });
-        }
-      } else {
+      const myRef = doc(db, "santaEvents", activeEvent.id, "assignments", user.uid);
+      const mySnap = await getDoc(myRef);
+      if (!mySnap.exists()) {
         setMyMatch(null);
+        return;
       }
+      const recUid = (mySnap.data() as { recipientUid: string } | undefined)?.recipientUid;
+      if (!recUid) {
+        setMyMatch(null);
+        return;
+      }
+      const recSnap = await getDoc(doc(db, "santaEvents", activeEvent.id, "members", recUid));
+      if (!recSnap.exists()) {
+        setMyMatch(null);
+        return;
+      }
+      const rd = recSnap.data() as { name?: string; email?: string } | undefined;
+      setMyMatch({ uid: recSnap.id, name: rd?.name ?? "Unknown", email: rd?.email ?? "" });
     })();
+
     return () => unsub();
   }, [activeEvent?.id, user?.uid]);
 
   const canDraw = useMemo(
-    () => !!activeEvent && user?.uid === activeEvent.organizerUid && members.length >= 2,
-    [activeEvent, user?.uid, members.length]
+    () => Boolean(activeEvent && user && user.uid === activeEvent.organizerUid && members.length >= 2),
+    [activeEvent, user, members.length]
   );
 
+  // Create an event (organizer auto-joins)
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) {
@@ -93,152 +103,217 @@ export default function SecretSanta() {
       date: HTMLInputElement;
     };
     const name = form.name.value.trim();
+    if (!name) {
+      setErr("Please enter a name.");
+      return;
+    }
     const dateStr = form.date.value;
+    const exchangeDate = dateStr ? Timestamp.fromDate(new Date(dateStr)) : null;
 
-    const joinCode = makeCode(6);
     setLoading(true);
     setErr(null);
     try {
-      const ref = await addDoc(collection(db, "santaEvents"), {
+      const joinCode = makeCode(6);
+      const eventRef = await addDoc(collection(db, "santaEvents"), {
         name,
-        exchangeDate: dateStr ? Timestamp.fromDate(new Date(dateStr)) : null,
+        exchangeDate,
         joinCode,
         organizerUid: user.uid,
         createdAt: serverTimestamp(),
       });
 
-      // organizer auto-joins
-      await setDoc(doc(db, "santaEvents", ref.id, "members", user.uid), {
+      // organizer joins
+      await setDoc(doc(db, "santaEvents", eventRef.id, "members", user.uid), {
         name: user.displayName ?? "Anonymous",
         email: user.email ?? "",
       });
 
       setActiveEvent({
-        id: ref.id,
+        id: eventRef.id,
         name,
-        exchangeDate: dateStr ? Timestamp.fromDate(new Date(dateStr)) : null,
+        exchangeDate,
         joinCode,
         organizerUid: user.uid,
         createdAt: null,
       });
       setTab("event");
-    } catch (e: any) {
-      setErr(e.message);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Failed to create event.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Join via code
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user) return setErr("Please sign in.");
+    if (!user) {
+      setErr("Please sign in.");
+      return;
+    }
     const form = e.currentTarget as HTMLFormElement & {
       code: HTMLInputElement;
       displayName: HTMLInputElement;
     };
     const code = form.code.value.trim().toUpperCase();
-    const displayName = form.displayName.value.trim() || user.displayName || "Anonymous";
+    const displayName = (form.displayName.value || user.displayName || "Anonymous").trim();
+    if (!code) {
+      setErr("Enter a join code.");
+      return;
+    }
+
     setLoading(true);
     setErr(null);
     try {
       const q = query(collection(db, "santaEvents"), where("joinCode", "==", code));
       const snap = await getDocs(q);
       if (snap.empty) throw new Error("No event found for that code.");
-      const evRef = snap.docs[0];
-      await setDoc(doc(db, "santaEvents", evRef.id, "members", user.uid), {
-        name: displayName,
-        email: user.email ?? "",
-      }, { merge: true });
-      const evData = evRef.data() as any;
+      const evSnap = snap.docs[0];
+      if (!evSnap) throw new Error("Event not found."); // TS guard
+
+      // add/merge me into members
+      await setDoc(
+        doc(db, "santaEvents", evSnap.id, "members", user.uid),
+        { name: displayName, email: user.email ?? "" },
+        { merge: true }
+      );
+
+      const evData = evSnap.data() as {
+        name?: string;
+        exchangeDate?: Timestamp | null;
+        joinCode?: string;
+        organizerUid?: string;
+        createdAt?: unknown;
+      } | undefined;
+
       setActiveEvent({
-        id: evRef.id,
-        name: evData.name,
-        exchangeDate: evData.exchangeDate ?? null,
-        joinCode: evData.joinCode,
-        organizerUid: evData.organizerUid,
-        createdAt: evData.createdAt,
+        id: evSnap.id,
+        name: evData?.name ?? "Event",
+        exchangeDate: evData?.exchangeDate ?? null,
+        joinCode: evData?.joinCode ?? code,
+        organizerUid: evData?.organizerUid ?? "",
+        createdAt: evData?.createdAt ?? null,
       });
       setTab("event");
-    } catch (e: any) {
-      setErr(e.message);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Failed to join event.");
     } finally {
       setLoading(false);
     }
   };
 
-  const runDraw = async () => {
-    if (!activeEvent || !canDraw) return;
-    setLoading(true);
-    setErr(null);
-    try {
-      const snap = await getDocs(collection(db, "santaEvents", activeEvent.id, "members"));
-      const people: Member[] = snap.docs.map((d) => {
-        const data = d.data() as any;
-        return { uid: d.id, name: data.name, email: data.email };
-      });
-      if (people.length < 2) throw new Error("Need at least 2 members.");
+  // Run the draw (organizer only)
+// Run the draw (organizer only)
+const runDraw = async () => {
+  if (!activeEvent || !canDraw) return;
+  setLoading(true);
+  setErr(null);
+  try {
+    const snap = await getDocs(collection(db, "santaEvents", activeEvent.id, "members"));
+    const people: Member[] = snap.docs.map((d) => {
+      const data = d.data() as { name?: string; email?: string } | undefined;
+      return { uid: d.id, name: data?.name ?? "Unknown", email: data?.email ?? "" };
+    });
+    if (people.length < 2) throw new Error("Need at least 2 members.");
 
-      const givers = [...people];
-      const receivers = shuffle([...people]);
+    const givers: Member[] = [...people];
+    let receivers: Member[] = shuffle([...people]);
 
-      // fix self-assignments
-      for (let tries = 0; tries < 10; tries++) {
-        const selfHit = givers.some((g, i) => g.uid === receivers[i].uid);
-        if (!selfHit) break;
-        receivers.push(receivers.shift()!);
+    // helper: detect any self-assignments safely (no unchecked index access)
+    const hasSelfAssignments = (A: Member[], B: Member[]) => {
+      const n = Math.min(A.length, B.length);
+      for (let i = 0; i < n; i++) {
+        const a = A[i];
+        const b = B[i];
+        if (!a || !b) return true; // treat missing as invalid pairing
+        if (a.uid === b.uid) return true;
       }
-      if (givers.some((g, i) => g.uid === receivers[i].uid)) {
-        const n = receivers.length;
-        [receivers[n - 1], receivers[n - 2]] = [receivers[n - 2], receivers[n - 1]];
+      return false;
+    };
+
+    // rotate to avoid self-assignments (bounded tries)
+    for (let tries = 0; tries < 12 && hasSelfAssignments(givers, receivers); tries++) {
+      const first = receivers.shift();
+      if (first) receivers.push(first);
+    }
+
+    // final swap safeguard if any self-pair remains
+    if (hasSelfAssignments(givers, receivers)) {
+      const n = receivers.length;
+      if (n >= 2) {
+        const a = receivers[n - 1];
+        const b = receivers[n - 2];
+        if (a && b) {
+          receivers[n - 1] = b;
+          receivers[n - 2] = a;
+        }
       }
+    }
 
-      await Promise.all(
-        givers.map((g, i) =>
-          setDoc(
-            doc(db, "santaEvents", activeEvent.id, "assignments", g.uid),
-            { recipientUid: receivers[i].uid, assignedAt: serverTimestamp() },
-            { merge: true }
-          )
-        )
-      );
+    // sanity: ensure we still have a 1:1 list
+    if (receivers.length !== givers.length) {
+      throw new Error("Internal pairing error: list lengths differ.");
+    }
 
-      if (user) {
-        const my = await getDoc(doc(db, "santaEvents", activeEvent.id, "assignments", user.uid));
-        if (my.exists()) {
-          const recUid = (my.data() as any).recipientUid as string;
-          const rec = await getDoc(doc(db, "santaEvents", activeEvent.id, "members", recUid));
-          if (rec.exists()) {
-            const d = rec.data() as any;
-            setMyMatch({ uid: rec.id, name: d.name, email: d.email });
+    // write assignments (narrow each receiver before use)
+    await Promise.all(
+      givers.map((g, i) => {
+        const r = receivers[i];
+        if (!r) throw new Error("Internal pairing error: missing receiver.");
+        return setDoc(
+          doc(db, "santaEvents", activeEvent.id, "assignments", g.uid),
+          { recipientUid: r.uid, assignedAt: serverTimestamp() },
+          { merge: true }
+        );
+      })
+    );
+
+    // refresh my match if I'm in the event
+    if (user) {
+      const my = await getDoc(doc(db, "santaEvents", activeEvent.id, "assignments", user.uid));
+      if (my.exists()) {
+        const recUid = (my.data() as { recipientUid?: string })?.recipientUid;
+        if (recUid) {
+          const recSnap = await getDoc(doc(db, "santaEvents", activeEvent.id, "members", recUid));
+          if (recSnap.exists()) {
+            const d = recSnap.data() as { name?: string; email?: string } | undefined;
+            setMyMatch({ uid: recSnap.id, name: d?.name ?? "Unknown", email: d?.email ?? "" });
           }
         }
       }
-    } catch (e: any) {
-      setErr(e.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (e) {
+    setErr(e instanceof Error ? e.message : "Failed to run draw.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div>
-      {/* Header card */}
+      {/* Header */}
       <div className="rounded-2xl p-5 md:p-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
         <h1 className="text-2xl md:text-3xl font-bold">Secret Santa — Soccer Jerseys</h1>
         <p className="mt-1 text-white/80">Create a group, invite with a code, and auto-assign matches.</p>
       </div>
 
+      {/* Tabs */}
       {!activeEvent && (
         <div className="mt-4 flex gap-2">
           <button
             onClick={() => setTab("create")}
-            className={`px-3 py-1.5 rounded-lg border ${tab==="create" ? "bg-brand-light text-white dark:bg-brand-dark" : "hover:bg-gray-50 dark:hover:bg-white/10"}`}
+            className={`px-3 py-1.5 rounded-lg border ${
+              tab === "create" ? "bg-brand-light text-white dark:bg-brand-dark" : "hover:bg-gray-50 dark:hover:bg-white/10"
+            }`}
           >
             Create event
           </button>
           <button
             onClick={() => setTab("join")}
-            className={`px-3 py-1.5 rounded-lg border ${tab==="join" ? "bg-brand-light text-white dark:bg-brand-dark" : "hover:bg-gray-50 dark:hover:bg-white/10"}`}
+            className={`px-3 py-1.5 rounded-lg border ${
+              tab === "join" ? "bg-brand-light text-white dark:bg-brand-dark" : "hover:bg-gray-50 dark:hover:bg-white/10"
+            }`}
           >
             Join with code
           </button>
@@ -265,7 +340,10 @@ export default function SecretSanta() {
               className="mt-1 border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand dark:bg-gray-900 dark:border-gray-800"
             />
           </label>
-          <button className="px-3 py-2 rounded-lg bg-brand-light text-white hover:bg-brand dark:bg-brand-dark dark:hover:bg-brand" disabled={!user || loading}>
+          <button
+            className="px-3 py-2 rounded-lg bg-brand-light text-white hover:bg-brand dark:bg-brand-dark dark:hover:bg-brand"
+            disabled={!user || loading}
+          >
             Create & get join code
           </button>
           {!user && <div className="text-sm text-red-600">Sign in to create an event.</div>}
@@ -286,7 +364,10 @@ export default function SecretSanta() {
             placeholder="Your display name"
             className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand dark:bg-gray-900 dark:border-gray-800"
           />
-          <button className="px-3 py-2 rounded-lg bg-brand-light text-white hover:bg-brand dark:bg-brand-dark dark:hover:bg-brand" disabled={!user || loading}>
+          <button
+            className="px-3 py-2 rounded-lg bg-brand-light text-white hover:bg-brand dark:bg-brand-dark dark:hover:bg-brand"
+            disabled={!user || loading}
+          >
             Join event
           </button>
           {!user && <div className="text-sm text-red-600">Sign in to join.</div>}
@@ -369,6 +450,7 @@ export default function SecretSanta() {
   );
 }
 
+/** Helpers */
 function makeCode(len = 6) {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let out = "";
@@ -376,10 +458,14 @@ function makeCode(len = 6) {
   return out;
 }
 
-function shuffle<T>(arr: T[]) {
-  for (let i = arr.length - 1; i > 0; i--) {
+function shuffle<T>(arr: T[]): T[] {
+  const a = arr.slice(); // don't mutate the caller's array
+  for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    const ai = a[i]!; // safe: 0 <= i < a.length
+    const aj = a[j]!; // safe: 0 <= j <= i < a.length
+    a[i] = aj;
+    a[j] = ai;
   }
-  return arr;
+  return a;
 }
