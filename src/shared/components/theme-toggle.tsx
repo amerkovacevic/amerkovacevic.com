@@ -13,7 +13,7 @@ export function ThemeToggle({ className }: { className?: string }) {
     return (
       <div
         className={cn(
-          "h-8 w-16 animate-pulse rounded-brand-full bg-border-light",
+          "h-12 w-[8.5rem] animate-pulse rounded-full bg-border-light/70",
           className
         )}
         aria-hidden
@@ -31,43 +31,54 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-checked={isDark}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       className={cn(
-        "relative inline-flex h-12 w-24 items-center justify-center rounded-full border border-transparent px-1 transition-all duration-500",
+        "group relative inline-flex h-12 w-[8.5rem] items-center overflow-hidden rounded-full border border-border-light/70 px-2 text-[0.65rem] font-semibold uppercase tracking-[0.22em] transition-all duration-500",
         isDark
-          ? "bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-slate-100"
-          : "bg-gradient-to-r from-sky-100 via-white to-sky-100 text-slate-700",
-        "shadow-[0_12px_30px_rgba(15,23,42,0.12)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent",
+          ? "bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 text-brand-foreground shadow-[0_14px_34px_rgba(15,23,42,0.42)] dark:border-border-dark"
+          : "bg-gradient-to-r from-white via-sky-50 to-sky-100 text-brand-strong shadow-[0_18px_40px_rgba(56,189,248,0.28)]",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent",
         className
       )}
     >
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute left-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center text-lg transition-opacity duration-500",
-          isDark ? "opacity-40" : "opacity-100"
+          "pointer-events-none absolute inset-0 opacity-80 blur-[38px] transition-opacity duration-500",
+          isDark
+            ? "bg-gradient-to-r from-brand-accent/10 via-brand/30 to-brand-accent/5"
+            : "bg-gradient-to-r from-brand/20 via-brand-accent/30 to-white/50"
         )}
-      >
-        ☀️
-      </span>
+      />
+
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute right-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center text-lg transition-opacity duration-500",
-          isDark ? "opacity-100" : "opacity-40"
+          "pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full border border-white/60 bg-white/90 shadow-[0_10px_26px_rgba(59,130,246,0.25)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/10 dark:bg-slate-900/90 dark:shadow-[0_12px_28px_rgba(15,23,42,0.45)]",
+          isDark ? "translate-x-full" : "translate-x-0"
         )}
-      >
-        🌙
-      </span>
+      />
+
       <span
-        aria-hidden
         className={cn(
-          "pointer-events-none absolute inset-y-1 left-1 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white shadow-[0_10px_25px_rgba(14,116,144,0.25)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-white/10 dark:bg-slate-900",
-          isDark ? "translate-x-12" : "translate-x-0"
+          "relative z-10 flex flex-1 items-center justify-center gap-1 transition-colors duration-500",
+          isDark ? "text-white/45" : "text-brand-strong"
         )}
       >
-        <span
-          className="pointer-events-none h-6 w-6 rounded-full bg-gradient-to-br from-sky-200/60 to-white shadow-inner dark:from-slate-700/60 dark:to-slate-900/80"
-          aria-hidden
-        />
+        <span aria-hidden className="text-base">
+          ☀️
+        </span>
+        Light
+      </span>
+
+      <span
+        className={cn(
+          "relative z-10 flex flex-1 items-center justify-center gap-1 transition-colors duration-500",
+          isDark ? "text-brand-foreground" : "text-slate-400"
+        )}
+      >
+        <span aria-hidden className="text-base">
+          🌙
+        </span>
+        Dark
       </span>
     </button>
   );
