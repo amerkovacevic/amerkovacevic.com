@@ -31,13 +31,50 @@
 
 body {
   font-family: var(--font-brand);
-  background: var(--color-surface);
+  background: radial-gradient(
+      circle at 10% 20%,
+      rgba(56, 189, 248, 0.18),
+      transparent 45%
+    ),
+    radial-gradient(circle at 80% 0%, rgba(14, 165, 233, 0.15), transparent 55%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.04), rgba(255, 255, 255, 0));
+  background-color: var(--color-surface);
+  background-attachment: fixed;
   color: var(--color-brand-strong);
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: linear-gradient(
+      115deg,
+      rgba(148, 163, 184, 0.12) 0%,
+      rgba(148, 163, 184, 0) 45%
+    ),
+    url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.22'%3E%3Cpath d='M80 0L86.6 20H106.6L90 32.4L96.6 52.4L80 40L63.4 52.4L70 32.4L53.4 20H73.4L80 0Z' fill='%2338bdf8'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: cover, 220px;
+  opacity: 0.9;
+  pointer-events: none;
 }
 
 .dark body {
-  background: var(--color-surface-contrast);
+  background: radial-gradient(
+      circle at 15% 15%,
+      rgba(56, 189, 248, 0.12),
+      transparent 40%
+    ),
+    radial-gradient(circle at 85% 20%, rgba(59, 130, 246, 0.16), transparent 50%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.92));
   color: var(--color-brand-foreground);
+}
+
+.dark body::before {
+  opacity: 0.3;
+  filter: blur(0.5px);
 }
 
 @layer base {
