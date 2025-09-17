@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { PageHero } from "../../shared/components/page";
+import { PageHero, PageSection } from "../../shared/components/page";
 import { cn } from "../../shared/lib/classnames";
 
 type LinkItem = {
@@ -77,6 +77,7 @@ export default function Links() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-10">
       <PageHero
+        icon="🔗"
         title={
           <span className="flex flex-col gap-3">
             <span className="text-balance bg-gradient-to-r from-brand via-brand-accent to-emerald-400 bg-clip-text text-transparent">
@@ -84,41 +85,47 @@ export default function Links() {
             </span>
           </span>
         }
-        // description="Curated portals to say hello, follow my work, or drop a quick message."
-        // className="shadow-brand"
+        description="Curated portals to say hello, follow my work, or drop a quick message."
       />
 
-      <section className="space-y-4">
-        <div className="grid gap-3">
-          {links.map((link) => (
-            <a
-              key={link.url}
-              href={link.url}
-              target={link.url.startsWith("/") ? "_self" : "_blank"}
-              rel={link.url.startsWith("/") ? undefined : "noreferrer"}
-              className="group relative flex items-center justify-between overflow-hidden rounded-[1.75rem] border border-border-light/70 bg-surface/90 p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-brand dark:border-border-dark/70 dark:bg-surface-overlayDark/85"
-            >
-              <span className="flex items-center gap-4">
-                <span
-                  aria-hidden
-                  className={cn(
-                    "grid h-12 w-12 place-items-center rounded-full text-white shadow-brand-sm transition-transform duration-300 group-hover:scale-105",
-                    link.iconWrapperClassName
-                  )}
-                >
-                  {link.icon}
-                </span>
-                <span className={cn("text-lg font-semibold text-brand-strong dark:text-brand-foreground", link.textClassName)}>
-                  {link.title}
-                </span>
+      <PageSection
+        title="Connect"
+        description="All my public links in one tidy list."
+        contentClassName="grid gap-3"
+      >
+        {links.map((link) => (
+          <a
+            key={link.url}
+            href={link.url}
+            target={link.url.startsWith("/") ? "_self" : "_blank"}
+            rel={link.url.startsWith("/") ? undefined : "noreferrer"}
+            className="group relative flex items-center justify-between overflow-hidden rounded-[1.75rem] border border-border-light/70 bg-surface/90 p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-brand dark:border-border-dark/70 dark:bg-surface-overlayDark/85"
+          >
+            <span className="flex items-center gap-4">
+              <span
+                aria-hidden
+                className={cn(
+                  "grid h-12 w-12 place-items-center rounded-full text-white shadow-brand-sm transition-transform duration-300 group-hover:scale-105",
+                  link.iconWrapperClassName
+                )}
+              >
+                {link.icon}
               </span>
-              <span className="text-brand-muted transition-transform duration-300 group-hover:translate-x-1 dark:text-brand-subtle">
-                →
+              <span
+                className={cn(
+                  "text-lg font-semibold text-brand-strong dark:text-brand-foreground",
+                  link.textClassName
+                )}
+              >
+                {link.title}
               </span>
-            </a>
-          ))}
-        </div>
-      </section>
+            </span>
+            <span className="text-brand-muted transition-transform duration-300 group-hover:translate-x-1 dark:text-brand-subtle">
+              →
+            </span>
+          </a>
+        ))}
+      </PageSection>
     </div>
   );
 }

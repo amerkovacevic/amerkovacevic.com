@@ -380,9 +380,9 @@ export default function FMTeamDraw() {
 /* ---------- UI bits ---------- */
 function EmptyState({ text }: { text: string }) {
   return (
-    <div className="rounded-xl border border-dashed border-border-light p-6 text-center dark:border-gray-800">
+    <div className="rounded-brand-xl border border-dashed border-border-light/70 bg-surface/90 p-6 text-center shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-overlayDark/80">
       <div className="text-3xl">📝</div>
-      <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">{text}</div>
+      <div className="mt-2 text-sm text-brand-muted dark:text-white/70">{text}</div>
     </div>
   );
 }
@@ -401,10 +401,14 @@ function ChipList({
   disabled?: boolean;
 }) {
   if (!items.length) {
-    return <div className="text-xs text-gray-500">{emptyText || "—"}</div>;
+    return (
+      <div className="rounded-brand border border-dashed border-border-light/70 bg-surface px-3 py-2 text-xs text-brand-muted dark:border-border-dark/60 dark:bg-surface-overlayDark">
+        {emptyText || "—"}
+      </div>
+    );
   }
   return (
-    <div className="flex flex-wrap gap-2 max-h-44 overflow-auto pr-1">
+    <div className="flex max-h-44 flex-wrap gap-2 overflow-auto pr-1">
       {items.map((it) => {
         const active = selected.includes(it);
         return (
@@ -413,16 +417,15 @@ function ChipList({
             onClick={() => onToggle(it)}
             disabled={disabled}
             className={cn(
-              "rounded-brand-full px-3 py-1 text-xs font-medium transition disabled:opacity-40",
+              "rounded-brand-full border px-3 py-1 text-xs font-medium transition disabled:opacity-40",
               active
-                ? "bg-brand text-white shadow-brand dark:bg-white dark:text-brand-strong"
-                : "border border-border-light bg-surface hover:border-brand/40 dark:border-gray-700 dark:bg-surface-overlayDark"
+                ? "border-brand bg-brand text-white shadow-brand-sm dark:border-brand/60 dark:bg-brand/30"
+                : "border-border-light bg-surface text-brand-muted hover:border-brand/40 hover:text-brand-strong dark:border-border-dark dark:bg-surface-overlayDark dark:text-brand-subtle"
             )}
             title={it}
           >
             {it}
           </button>
-
         );
       })}
     </div>

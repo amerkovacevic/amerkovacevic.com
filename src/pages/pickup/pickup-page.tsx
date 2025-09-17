@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { db } from "../../shared/lib/firebase";
 import {
+  Timestamp,
   collection,
   query,
   where,
@@ -9,7 +10,6 @@ import {
   doc,
   setDoc,
   serverTimestamp,
-  getDocs,
 } from "firebase/firestore";
 import { useOutletContext, Link } from "react-router-dom";
 import type { User } from "firebase/auth";
@@ -24,7 +24,7 @@ type Ctx = { user: User | null };
 type Game = {
   id: string;
   title: string;
-  dateTime: any;
+  dateTime: Timestamp | number;
   fieldName: string;
   maxPlayers: number;
   organizerUid: string;
@@ -68,11 +68,9 @@ export default function Pickup() {
   }, []);
 
   const nextGame = games[0] ?? null;
-  const nextGameMs = nextGame
-    ? nextGame.dateTime?.seconds
-      ? nextGame.dateTime.seconds * 1000
-      : Number(nextGame.dateTime)
-    : null;
+  const nextGameDate = useMemo(() => toDate(nextGame?.dateTime ?? null), [
+    nextGame?.dateTime,
+  ]);
 
   return (
     <div className="space-y-8">
@@ -91,9 +89,9 @@ export default function Pickup() {
             <StatPill>
               {totalSpots ? `${totalSpots} total spots` : "Add your game"}
             </StatPill>
-            {nextGameMs ? (
+            {nextGameDate ? (
               <StatPill>
-                Next: {new Date(nextGameMs).toLocaleString([], {
+                Next: {nextGameDate.toLocaleString([], {
                   weekday: "short",
                   month: "short",
                   day: "numeric",
@@ -131,11 +129,9 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
     "none"
   );
 
-  const ms = game.dateTime?.seconds
-    ? game.dateTime.seconds * 1000
-    : Number(game.dateTime);
+  const gameDate = useMemo(() => toDate(game.dateTime), [game.dateTime]);
   const dateStr = useMemo(() => {
-    const d = new Date(ms);
+    const d = gameDate ?? new Date();
     const day = d.toLocaleDateString(undefined, {
       weekday: "short",
       month: "short",
@@ -146,28 +142,26 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
       minute: "2-digit",
     });
     return `${day} • ${time}`;
-  }, [ms]);
+  }, [gameDate]);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const rsvpsCol = collection(db, "games", game.id, "rsvps");
-      const all = await getDocs(rsvpsCol);
-      const going = all.docs.filter(
-        (d) => (d.data() as any).status === "going"
-      ).length;
-      if (!cancelled) setGoingCount(going);
-
-      if (user) {
-        const mine = all.docs.find((d) => d.id === user.uid);
-        setMyStatus(mine ? (mine.data() as any).status : "none");
-      } else {
-        setMyStatus("none");
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    const rsvpsCol = collection(db, "games", game.id, "rsvps");
+    const unsubscribe = onSnapshot(rsvpsCol, (snap) => {
+      let going = 0;
+      let my = "none" as "going" | "maybe" | "out" | "none";
+      snap.forEach((d) => {
+        const status = (d.data() as any)?.status as
+          | "going"
+          | "maybe"
+          | "out"
+          | undefined;
+        if (status === "going") going += 1;
+        if (user && d.id === user.uid && status) my = status;
+      });
+      setGoingCount(going);
+      setMyStatus(user ? my : "none");
+    });
+    return () => unsubscribe();
   }, [game.id, user?.uid]);
 
   const full = goingCount >= game.maxPlayers;
@@ -185,19 +179,16 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
       alert("This game is full.");
       return;
     }
-    await setDoc(
-      doc(db, "games", game.id, "rsvps", user.uid),
-      { status, joinedAt: serverTimestamp() },
-      { merge: true }
-    );
-    setMyStatus(status);
-
-    const rsvpsCol = collection(db, "games", game.id, "rsvps");
-    const all = await getDocs(rsvpsCol);
-    const going = all.docs.filter(
-      (d) => (d.data() as any).status === "going"
-    ).length;
-    setGoingCount(going);
+    try {
+      await setDoc(
+        doc(db, "games", game.id, "rsvps", user.uid),
+        { status, joinedAt: serverTimestamp() },
+        { merge: true }
+      );
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update RSVP. Please try again.");
+    }
   };
 
   return (
@@ -308,4 +299,13 @@ function EmptyState() {
       <Link to="/new" className={cn(buttonStyles({ size: "sm" }), "mt-4 inline-flex")}>Create game</Link>
     </Card>
   );
+}
+
+function toDate(value: Timestamp | number | null | undefined) {
+  if (!value && value !== 0) return null;
+  if (value instanceof Timestamp) return value.toDate();
+  if (typeof value === "number") return new Date(value);
+  if (typeof (value as any)?.toDate === "function")
+    return (value as { toDate: () => Date }).toDate();
+  return null;
 }
