@@ -79,41 +79,66 @@ function seedToRounds(seeds: string[], withThirdPlace: boolean): Bracket {
 
 function updateAdvancement(bracket: Bracket) {
   for (let r = 1; r < bracket.rounds.length; r++) {
-    const prev = bracket.rounds[r - 1]!;
-    const roundR = bracket.rounds[r]!;
-    for (let i = 0; i < roundR.matches.length; i++) {
-      const sourceA = prev.matches[i * 2];
-      const sourceB = prev.matches[i * 2 + 1];
-      const m = roundR.matches[i];
-      if (!m) continue;
-      const oldP1 = m.p1;
-      const oldP2 = m.p2;
-      m.p1 = sourceA?.winner ?? null;
-      m.p2 = sourceB?.winner ?? null;
-      if (m.p1 !== oldP1 || m.p2 !== oldP2) {
-        m.s1 = null; m.s2 = null;
-        m.winner = (sourceA?.winner && !sourceB?.winner)
-          ? sourceA!.winner!
-          : (!sourceA?.winner && sourceB?.winner)
-            ? sourceB!.winner!
-            : null;
+    const prevRound = bracket.rounds[r - 1];
+    const round = bracket.rounds[r];
+    if (!prevRound || !round) continue;
+    for (let i = 0; i < round.matches.length; i++) {
+      const match = round.matches[i];
+      if (!match) continue;
+      const sourceA = prevRound.matches[i * 2] ?? null;
+      const sourceB = prevRound.matches[i * 2 + 1] ?? null;
+      const nextP1 = sourceA?.winner ?? null;
+      const nextP2 = sourceB?.winner ?? null;
+      const changed = match.p1 !== nextP1 || match.p2 !== nextP2;
+      match.p1 = nextP1;
+      match.p2 = nextP2;
+      if (changed) {
+        match.s1 = null;
+        match.s2 = null;
+      }
+      if (match.p1 && !match.p2) {
+        match.winner = match.p1;
+      } else if (!match.p1 && match.p2) {
+        match.winner = match.p2;
+      } else if (match.p1 && match.p2 && match.s1 !== null && match.s2 !== null && match.s1 !== match.s2) {
+        match.winner = match.s1 > match.s2 ? match.p1 : match.p2;
+      } else if (!match.p1 && !match.p2) {
+        match.winner = null;
+      } else if (changed) {
+        match.winner = null;
       }
     }
   }
 
   if (bracket.thirdPlace) {
-    const semi = bracket.rounds.find(r => r.name.toLowerCase().includes("semi")) || null;
-    if (semi) {
-      const losers: (string | null)[] = [];
-      for (const m of semi.matches) {
-        if (m.s1 !== null && m.s2 !== null && m.p1 && m.p2) losers.push(m.s1 > m.s2 ? m.p2 : m.p1);
-        else losers.push(null);
+    const semiRound = bracket.rounds.length >= 2 ? bracket.rounds[bracket.rounds.length - 2] ?? null : null;
+    const losers: (string | null)[] = [];
+    if (semiRound) {
+      for (const match of semiRound.matches) {
+        if (match.p1 && match.p2 && match.winner) {
+          losers.push(match.winner === match.p1 ? match.p2! : match.p1!);
+        } else if (match.p1 && match.p2 && match.s1 !== null && match.s2 !== null && match.s1 !== match.s2) {
+          losers.push(match.s1 > match.s2 ? match.p2! : match.p1!);
+        } else {
+          losers.push(null);
+        }
       }
-      bracket.thirdPlace.p1 = losers[0] ?? null;
-      bracket.thirdPlace.p2 = losers[1] ?? null;
-      bracket.thirdPlace.s1 = null;
-      bracket.thirdPlace.s2 = null;
-      bracket.thirdPlace.winner = null;
+    }
+
+    const tp = bracket.thirdPlace;
+    const nextP1 = losers[0] ?? null;
+    const nextP2 = losers[1] ?? null;
+    const participantsChanged = tp.p1 !== nextP1 || tp.p2 !== nextP2;
+    tp.p1 = nextP1;
+    tp.p2 = nextP2;
+    if (participantsChanged) {
+      tp.s1 = null;
+      tp.s2 = null;
+      tp.winner = null;
+    } else if (tp.p1 && tp.p2 && tp.s1 !== null && tp.s2 !== null && tp.s1 !== tp.s2) {
+      tp.winner = tp.s1 > tp.s2 ? tp.p1 : tp.p2;
+    } else if (!tp.p1 || !tp.p2) {
+      tp.winner = null;
     }
   }
 }
@@ -149,40 +174,45 @@ function computePlacings(b: Bracket | null): {
   first: string | null;
   second: string | null;
   third: string | null;
-  fourth: string | null;
   semifinalLosers: string[];
 } {
-  if (!b || b.rounds.length === 0) return { first: null, second: null, third: null, fourth: null, semifinalLosers: [] };
+  if (!b || b.rounds.length === 0) {
+    return { first: null, second: null, third: null, semifinalLosers: [] };
+  }
+
   const final = b.rounds[b.rounds.length - 1]?.matches?.[0];
   const first = final?.winner ?? null;
+
   let second: string | null = null;
-  if (final && final.p1 && final.p2 && final.s1 !== null && final.s2 !== null) {
-    second = first === final.p1 ? final.p2 : final.p1;
+  if (final && final.p1 && final.p2) {
+    if (final.s1 !== null && final.s2 !== null && final.s1 !== final.s2) {
+      second = final.s1 > final.s2 ? final.p2 : final.p1;
+    } else if (final.winner) {
+      second = final.winner === final.p1 ? final.p2 : final.p1;
+    }
   }
+
+  const semiRound = b.rounds.length >= 2 ? b.rounds[b.rounds.length - 2] ?? null : null;
+  const semifinalLosers: string[] = [];
+  if (semiRound) {
+    for (const match of semiRound.matches) {
+      if (match.p1 && match.p2 && match.winner) {
+        semifinalLosers.push(match.winner === match.p1 ? match.p2! : match.p1!);
+      } else if (match.p1 && match.p2 && match.s1 !== null && match.s2 !== null && match.s1 !== match.s2) {
+        semifinalLosers.push(match.s1 > match.s2 ? match.p2! : match.p1!);
+      }
+    }
+  }
+
   let third: string | null = null;
-  let fourth: string | null = null;
-  let semifinalLosers: string[] = [];
-  const semi = b.rounds.find(r => r.name.toLowerCase().includes("semi")) || null;
   if (b.thirdPlace) {
     const tp = b.thirdPlace;
-    if (tp && tp.p1 && tp.p2 && tp.s1 !== null && tp.s2 !== null) {
-      third = tp.winner;
-      fourth = third === tp.p1 ? tp.p2 : tp.p1;
-    } else if (semi) {
-      for (const m of semi.matches) {
-        if (m.p1 && m.p2 && m.s1 !== null && m.s2 !== null) {
-          semifinalLosers.push(m.s1 > m.s2 ? m.p2 : m.p1);
-        }
-      }
-    }
-  } else if (semi) {
-    for (const m of semi.matches) {
-      if (m.p1 && m.p2 && m.s1 !== null && m.s2 !== null) {
-        semifinalLosers.push(m.s1 > m.s2 ? m.p2 : m.p1);
-      }
+    if (tp && tp.p1 && tp.p2 && tp.s1 !== null && tp.s2 !== null && tp.s1 !== tp.s2) {
+      third = tp.s1 > tp.s2 ? tp.p1 : tp.p2;
     }
   }
-  return { first, second, third, fourth, semifinalLosers };
+
+  return { first, second, third, semifinalLosers };
 }
 
 export default function Bracket() {
@@ -221,17 +251,38 @@ export default function Bracket() {
   }
   function clearBracket() { setBracket(null); persist({ bracket: null }); }
 
+  function toggleThirdPlace() {
+    const next = !withThirdPlace;
+    setWithThirdPlace(next);
+    let updated: Bracket | null = bracket;
+    if (bracket) {
+      const clone = structuredClone(bracket) as Bracket;
+      clone.thirdPlace = next
+        ? clone.thirdPlace ?? { id: "ThirdPlace", p1: null, p2: null, s1: null, s2: null, winner: null }
+        : null;
+      if (next) {
+        updateAdvancement(clone);
+      }
+      updated = clone;
+      setBracket(clone);
+    }
+    persist({ thirdPlace: next, bracket: updated });
+  }
+
   function setScore(rIdx: number, mIdx: number, s1: number | null, s2: number | null) {
     if (!bracket) return;
     const b = structuredClone(bracket) as Bracket;
     const match = b.rounds[rIdx]?.matches[mIdx];
     if (!match) return;
-    const prevWinner = match.winner;
     match.s1 = s1; match.s2 = s2;
-    if (s1 !== null && s2 !== null && match.p1 && match.p2) {
-      match.winner = s1 === s2 ? prevWinner : (s1 > s2 ? match.p1 : match.p2);
-    } else {
-      match.winner = prevWinner;
+    if (match.p1 && !match.p2) {
+      match.winner = match.p1;
+    } else if (!match.p1 && match.p2) {
+      match.winner = match.p2;
+    } else if (match.p1 && match.p2 && s1 !== null && s2 !== null) {
+      match.winner = s1 === s2 ? null : s1 > s2 ? match.p1 : match.p2;
+    } else if (!match.p1 || !match.p2) {
+      match.winner = null;
     }
     updateAdvancement(b);
     setBracket(b); persist({ bracket: b });
@@ -260,7 +311,6 @@ export default function Bracket() {
     <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 md:p-6">
       <PageHero
         icon="🏆"
-        eyebrow="Game night"
         title="FIFA Tournament Bracket"
         description="Quick single-elimination brackets for friends, roommates, and weekend tournaments."
         stats={
@@ -304,15 +354,15 @@ export default function Bracket() {
             <motion.button
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => setWithThirdPlace((v) => !v)}
+              onClick={toggleThirdPlace}
               type="button"
               className={cn(
-                buttonStyles({ size: "sm" }),
-                "rounded-brand-full",
-                withThirdPlace ? "bg-emerald-600 text-white hover:bg-emerald-700" : ""
+                buttonStyles({ size: "sm", variant: "secondary" }),
+                "rounded-brand-full border-0 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-brand-sm",
+                withThirdPlace ? "ring-2 ring-emerald-300/70" : "opacity-80 hover:opacity-100"
               )}
             >
-              <Medal className="h-4 w-4" /> 3rd place match
+              <Medal className="h-4 w-4" /> {withThirdPlace ? "3rd place on" : "Enable 3rd place"}
             </motion.button>
           </div>
         }
@@ -397,18 +447,35 @@ function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | n
       </p>
     );
   }
-  const { first, second, third, fourth, semifinalLosers } = placements;
+  const { first, second, third, semifinalLosers } = placements;
+  const awaitingThird = hasThird && !third && semifinalLosers.length >= 2;
+  const thirdLabel = hasThird
+    ? third ?? (awaitingThird ? `${semifinalLosers[0]} vs ${semifinalLosers[1]}` : "TBD")
+    : semifinalLosers.length
+      ? semifinalLosers.join(" & ")
+      : "—";
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <h3 className="text-sm font-semibold text-brand-muted">Standings (live)</h3>
-      <ul className="space-y-1 text-sm text-brand-strong dark:text-white">
-        <li>🥇 <span className="font-medium">1st:</span> {first ?? "—"}</li>
-        <li>🥈 <span className="font-medium">2nd:</span> {second ?? "—"}</li>
-        <li>🥉 <span className="font-medium">3rd:</span> {hasThird ? (third ?? "TBD") : (semifinalLosers.length ? "TBD" : "—")}</li>
-        <li>🎗️ <span className="font-medium">4th:</span> {hasThird ? (fourth ?? "TBD") : (semifinalLosers.length ? "TBD" : "—")}</li>
+      <ul className="space-y-2 text-sm text-brand-strong dark:text-white">
+        <li className="flex items-center justify-between rounded-brand-full border border-border-light/60 bg-white/80 px-3 py-2 shadow-brand-sm backdrop-blur-sm dark:border-border-dark/60 dark:bg-white/10">
+          <span className="inline-flex items-center gap-2 font-medium"><span>🥇</span> Champion</span>
+          <span>{first ?? "—"}</span>
+        </li>
+        <li className="flex items-center justify-between rounded-brand-full border border-border-light/60 bg-white/80 px-3 py-2 shadow-brand-sm backdrop-blur-sm dark:border-border-dark/60 dark:bg-white/10">
+          <span className="inline-flex items-center gap-2 font-medium"><span>🥈</span> Finalist</span>
+          <span>{second ?? "—"}</span>
+        </li>
+        <li className="flex items-center justify-between rounded-brand-full border border-border-light/60 bg-white/80 px-3 py-2 shadow-brand-sm backdrop-blur-sm dark:border-border-dark/60 dark:bg-white/10">
+          <span className="inline-flex items-center gap-2 font-medium"><span>🥉</span> 3rd place</span>
+          <span>{thirdLabel}</span>
+        </li>
       </ul>
-      {!hasThird && semifinalLosers.length > 0 && (
-        <div className="text-xs text-brand-muted">Semifinalists: {semifinalLosers.join(", ")}</div>
+      {semifinalLosers.length > 0 && (
+        <div className="rounded-brand border border-dashed border-brand/30 bg-brand/5 px-3 py-2 text-xs uppercase tracking-[0.28em] text-brand-muted dark:border-white/20 dark:bg-white/5">
+          Semifinalists: {semifinalLosers.join(" · ")}
+        </div>
       )}
     </div>
   );
@@ -482,9 +549,27 @@ function BracketVertical({ bracket, setScore, resetScores }: { bracket: Bracket;
   return (
     <div className="space-y-6">
       {bracket.rounds.map((round, rIdx) => (
-        <div key={rIdx} className="rounded-2xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-4 md:p-5">
-          <h3 className="mb-3 text-sm font-semibold text-brand-muted">{round.name}</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div
+          key={rIdx}
+          className="relative overflow-hidden rounded-[1.75rem] border border-border-light/60 bg-white/90 p-4 shadow-brand-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-white/5 md:p-5"
+        >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 hover:opacity-100"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(59,130,246,0.12), transparent 45%), radial-gradient(circle at 90% 10%, rgba(14,165,233,0.18), transparent 60%)",
+            }}
+          />
+          <div className="relative flex items-center justify-between gap-3">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.32em] text-brand-muted dark:text-white/60">
+              {round.name}
+            </h3>
+            <span className="rounded-brand-full border border-brand/10 bg-brand/5 px-2 py-1 text-[10px] font-medium uppercase tracking-[0.32em] text-brand-muted dark:border-white/10 dark:bg-white/5">
+              Round {rIdx + 1}
+            </span>
+          </div>
+          <div className="relative mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {round.matches.map((m, mIdx) => (
               <MatchCard key={m.id} match={m} onScore={(s1, s2) => setScore(rIdx, mIdx, s1, s2)} onReset={() => resetScores(rIdx, mIdx)} />
             ))}
@@ -493,8 +578,18 @@ function BracketVertical({ bracket, setScore, resetScores }: { bracket: Bracket;
       ))}
 
       {typeof bracket.thirdPlace !== "undefined" && (
-        <div className="rounded-2xl border bg-white dark:bg-gray-900 dark:border-gray-800 p-4 md:p-5">
-          <h3 className="mb-3 text-sm font-semibold text-brand-muted">3rd Place</h3>
+        <div className="relative overflow-hidden rounded-[1.75rem] border border-border-light/60 bg-white/90 p-4 shadow-brand-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-white/5 md:p-5">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 hover:opacity-100"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(16,185,129,0.14), transparent 45%), radial-gradient(circle at 10% 10%, rgba(56,189,248,0.16), transparent 60%)",
+            }}
+          />
+          <h3 className="relative mb-3 text-xs font-semibold uppercase tracking-[0.32em] text-brand-muted dark:text-white/60">
+            3rd place match
+          </h3>
           {bracket.thirdPlace ? (
             <MatchCard match={bracket.thirdPlace} onScore={() => {}} onReset={() => {}} readOnly={!bracket.thirdPlace.p1 || !bracket.thirdPlace.p2} />
           ) : (
@@ -518,30 +613,109 @@ function MatchCard({ match, onScore, onReset, readOnly }: { match: Match; onScor
   const p2 = match.p2 ?? "—";
 
   return (
-    <div className={"relative rounded-2xl border p-3 md:p-4 shadow-brand-sm transition hover:shadow-brand " + (match.winner ? "ring-1 ring-brand" : "")}>
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-[1.5rem] border border-border-light/60 bg-white/85 p-3 text-sm shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-white/10 md:p-4",
+        match.winner ? "ring-1 ring-brand/60" : null
+      )}
+    >
       {match.winner && (
         <AnimatePresence>
-          <motion.div key={match.winner} initial={{ opacity: 0 }} animate={{ opacity: 0.12 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }} className="absolute inset-0 rounded-2xl bg-brand pointer-events-none" />
+          <motion.div
+            key={match.winner}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.16 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            className="pointer-events-none absolute inset-0 rounded-[1.5rem] bg-brand"
+          />
         </AnimatePresence>
       )}
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs text-brand-muted">Match {match.id}</span>
-        <button className="text-xs text-brand-muted underline-offset-2 transition hover:text-brand hover:underline" onClick={onReset} disabled={readOnly}>Clear</button>
+      <div className="relative mb-3 flex items-center justify-between gap-3">
+        <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-muted dark:text-white/60">
+          Match {match.id}
+        </span>
+        <button
+          className="text-xs font-medium text-brand-muted underline-offset-2 transition hover:text-brand hover:underline disabled:opacity-40"
+          onClick={onReset}
+          disabled={readOnly}
+        >
+          Clear
+        </button>
       </div>
-      <div className="grid grid-cols-[1fr,48px] items-center gap-2">
-        <motion.div layout initial={false} className={"rounded-lg px-2 py-1 " + (match.winner === p1 ? "bg-brand/10 dark:bg-brand/20" : "bg-surface/70 dark:bg-surface-overlayDark/60")}> 
+      <div className="relative grid grid-cols-[1fr,3.25rem] items-center gap-2">
+        <motion.div
+          layout
+          initial={false}
+          className={cn(
+            "rounded-brand-lg border px-3 py-2 text-left shadow-brand-sm",
+            match.winner === p1
+              ? "border-brand/40 bg-brand/10 text-brand-strong dark:border-brand/60 dark:bg-brand/25 dark:text-white"
+              : "border-border-light/60 bg-white/70 text-brand-strong dark:border-border-dark/60 dark:bg-white/5 dark:text-white"
+          )}
+        >
           <AnimatePresence mode="popLayout">
-            <motion.div key={p1 || "empty1"} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }} className="truncate text-sm">{p1}</motion.div>
+            <motion.div
+              key={p1 || "empty1"}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="truncate"
+            >
+              {p1}
+            </motion.div>
           </AnimatePresence>
         </motion.div>
-        <input inputMode="numeric" pattern="[0-9]*" value={s1} onChange={(e) => setS1(e.target.value.replace(/\D+/g, ""))} onBlur={() => onScore(s1 === "" ? null : +s1, s2 === "" ? null : +s2)} className="w-12 rounded-md border px-2 py-1 text-sm text-center bg-transparent disabled:opacity-60" disabled={readOnly || !match.p1} placeholder="-" />
-        <motion.div layout initial={false} className={"rounded-lg px-2 py-1 " + (match.winner === p2 ? "bg-brand/10 dark:bg-brand/20" : "bg-surface/70 dark:bg-surface-overlayDark/60")}>
+        <input
+          inputMode="numeric"
+          pattern="[0-9]*"
+          value={s1}
+          onChange={(e) => setS1(e.target.value.replace(/\D+/g, ""))}
+          onBlur={() => onScore(s1 === "" ? null : +s1, s2 === "" ? null : +s2)}
+          className="h-11 rounded-brand-lg border border-border-light/70 bg-white/90 px-3 text-center text-base font-semibold text-brand-strong shadow-brand-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/30 disabled:opacity-50 dark:border-border-dark/60 dark:bg-white/10 dark:text-white"
+          disabled={readOnly || !match.p1}
+          placeholder="-"
+        />
+        <motion.div
+          layout
+          initial={false}
+          className={cn(
+            "rounded-brand-lg border px-3 py-2 text-left shadow-brand-sm",
+            match.winner === p2
+              ? "border-brand/40 bg-brand/10 text-brand-strong dark:border-brand/60 dark:bg-brand/25 dark:text-white"
+              : "border-border-light/60 bg-white/70 text-brand-strong dark:border-border-dark/60 dark:bg-white/5 dark:text-white"
+          )}
+        >
           <AnimatePresence mode="popLayout">
-            <motion.div key={p2 || "empty2"} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }} className="truncate text-sm">{p2}</motion.div>
+            <motion.div
+              key={p2 || "empty2"}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="truncate"
+            >
+              {p2}
+            </motion.div>
           </AnimatePresence>
         </motion.div>
-        <input inputMode="numeric" pattern="[0-9]*" value={s2} onChange={(e) => setS2(e.target.value.replace(/\D+/g, ""))} onBlur={() => onScore(s1 === "" ? null : +s1, s2 === "" ? null : +s2)} className="w-12 rounded-md border px-2 py-1 text-sm text-center bg-transparent disabled:opacity-60" disabled={readOnly || !match.p2} placeholder="-" />
+        <input
+          inputMode="numeric"
+          pattern="[0-9]*"
+          value={s2}
+          onChange={(e) => setS2(e.target.value.replace(/\D+/g, ""))}
+          onBlur={() => onScore(s1 === "" ? null : +s1, s2 === "" ? null : +s2)}
+          className="h-11 rounded-brand-lg border border-border-light/70 bg-white/90 px-3 text-center text-base font-semibold text-brand-strong shadow-brand-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/30 disabled:opacity-50 dark:border-border-dark/60 dark:bg-white/10 dark:text-white"
+          disabled={readOnly || !match.p2}
+          placeholder="-"
+        />
       </div>
+      {match.winner ? (
+        <div className="mt-3 text-xs font-semibold uppercase tracking-[0.32em] text-brand-muted dark:text-white/60">
+          Winner: {match.winner}
+        </div>
+      ) : null}
     </div>
   );
 }

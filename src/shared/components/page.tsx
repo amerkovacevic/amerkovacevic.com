@@ -5,7 +5,6 @@ import { Card } from "./ui/card";
 
 export function PageHero({
   icon,
-  eyebrow,
   title,
   description,
   actions,
@@ -13,7 +12,6 @@ export function PageHero({
   className,
 }: {
   icon?: ReactNode;
-  eyebrow?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
@@ -23,43 +21,39 @@ export function PageHero({
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-[1.75rem] border border-border-light bg-gradient-to-br from-brand/95 via-brand to-brand-accent/80 text-white shadow-brand",
-        "px-6 py-7 sm:px-8 sm:py-9",
+        "relative overflow-hidden rounded-[2rem] border border-border-light/70 bg-surface/80 px-6 py-8 text-brand-strong shadow-brand-sm transition-all duration-300 dark:border-border-dark/60 dark:bg-surface-overlayDark/80 sm:px-8 sm:py-10",
         className
       )}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-80"
-      >
-        <div className="absolute -top-24 -left-16 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -bottom-28 -right-12 h-56 w-56 rounded-full bg-brand-accent/40 blur-3xl" />
-        <div className="absolute left-1/3 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/8 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 opacity-90" style={{
+          background:
+            "radial-gradient(circle at 12% 20%, rgba(14,165,233,0.18), transparent 55%), radial-gradient(circle at 80% 25%, rgba(59,130,246,0.18), transparent 65%), linear-gradient(135deg, rgba(15,23,42,0.08), rgba(15,23,42,0))",
+        }} />
+        <div className="absolute -right-12 -top-16 h-40 w-40 rounded-full bg-brand-accent/20 blur-[120px]" />
+        <div className="absolute -bottom-20 left-12 h-48 w-48 rounded-full bg-white/25 blur-[140px] dark:bg-brand/20" />
       </div>
-      <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div className="space-y-4">
-          {eyebrow ? (
-            <span className="inline-flex items-center gap-2 rounded-brand-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70">
-              {eyebrow}
-            </span>
-          ) : null}
-          <div className="flex flex-col gap-3 text-balance">
-            <div className="flex items-center gap-3 text-3xl font-semibold sm:text-4xl">
-              {icon ? <span className="text-4xl sm:text-5xl" aria-hidden>{icon}</span> : null}
-              <span>{title}</span>
-            </div>
-            {description ? (
-              <p className="max-w-2xl text-sm text-white/80 sm:text-base">{description}</p>
+      <div className="relative flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <div className="space-y-5 text-balance">
+          <div className="flex items-center gap-4 text-3xl font-semibold sm:text-4xl">
+            {icon ? (
+              <span className="grid h-14 w-14 place-items-center rounded-[1.35rem] bg-white/80 text-4xl shadow-brand-sm dark:bg-surface/30" aria-hidden>
+                {icon}
+              </span>
             ) : null}
+            <span className="leading-tight text-brand-strong dark:text-white">{title}</span>
           </div>
+          {description ? (
+            <p className="max-w-2xl text-sm text-brand-muted dark:text-white/75 sm:text-base">{description}</p>
+          ) : null}
           {stats ? (
-            <div className="flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.2em] text-white/70">
+            <div className="flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.24em] text-brand-muted/90 dark:text-white/60">
               {stats}
             </div>
           ) : null}
         </div>
         {actions ? (
-          <div className="flex shrink-0 flex-col items-start gap-2 text-sm md:items-end">
+          <div className="flex shrink-0 flex-col items-start gap-3 text-sm md:items-end">
             {actions}
           </div>
         ) : null}
@@ -85,20 +79,30 @@ export function PageSection({
 }) {
   return (
     <section className={cn("relative", className)}>
-      <Card padding="lg" className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand/5 via-transparent to-brand-accent/5 opacity-0 transition-opacity duration-200 hover:opacity-100" aria-hidden />
-        <div className="relative flex flex-col gap-5">
+      <Card
+        padding="lg"
+        className="relative overflow-hidden border border-border-light/70 bg-surface/80 shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-surface-overlayDark/85"
+      >
+        <div
+          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 hover:opacity-100"
+          aria-hidden
+          style={{
+            background:
+              "linear-gradient(140deg, rgba(56,189,248,0.14), transparent 45%), radial-gradient(circle at 90% 20%, rgba(14,165,233,0.18), transparent 60%)",
+          }}
+        />
+        <div className="relative flex flex-col gap-6">
           {(title || description || actions) && (
-            <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="space-y-1 text-balance">
                 {title ? (
                   <h2 className="text-lg font-semibold text-brand-strong dark:text-brand-foreground">{title}</h2>
                 ) : null}
                 {description ? (
-                  <p className="text-sm text-brand-muted dark:text-brand-subtle">{description}</p>
+                  <p className="text-sm text-brand-muted dark:text-white/70">{description}</p>
                 ) : null}
               </div>
-              {actions ? <div className="flex shrink-0 gap-2">{actions}</div> : null}
+              {actions ? <div className="flex shrink-0 flex-wrap gap-2">{actions}</div> : null}
             </header>
           )}
           <div className={cn("flex-1", contentClassName)}>{children}</div>
@@ -110,7 +114,7 @@ export function PageSection({
 
 export function StatPill({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-brand-full bg-white/12 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/80">
+    <span className="inline-flex items-center gap-2 rounded-brand-full border border-brand/20 bg-brand/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-strong/80 shadow-brand-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-white/80">
       {children}
     </span>
   );
