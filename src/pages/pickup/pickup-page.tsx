@@ -78,7 +78,6 @@ export default function Pickup() {
     <div className="space-y-8">
       <PageHero
         icon="⚽"
-        eyebrow="Community"
         title="Pickup Soccer"
         description="Create a game, share the link, and let friends RSVP in one click. Keep track of spots remaining in real time."
         actions={

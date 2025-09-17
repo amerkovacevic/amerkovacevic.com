@@ -54,40 +54,82 @@ export default function RootLayout() {
   return (
     <div className="relative flex min-h-screen flex-col gap-12">
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/2 top-[-18rem] h-[28rem] w-[60rem] -translate-x-1/2 rounded-[50%] bg-brand/5 blur-[140px]" />
-        <div className="absolute bottom-[-15rem] right-[-8rem] h-[24rem] w-[36rem] rounded-full bg-brand-accent/10 blur-[120px]" />
+        <div className="absolute left-1/2 top-[-18rem] h-[28rem] w-[60rem] -translate-x-1/2 rounded-[50%] bg-brand/6 blur-[140px]" />
+        <div className="absolute bottom-[-15rem] right-[-8rem] h-[24rem] w-[36rem] rounded-full bg-brand-accent/12 blur-[120px]" />
       </div>
 
       <header className="page-container pt-8">
-        <div className="relative overflow-hidden rounded-brand-xl border border-border-light bg-surface-overlay px-5 py-4 shadow-brand-sm backdrop-blur-xl transition-shadow duration-300 hover:shadow-brand">
-          <div className="absolute inset-0 bg-gradient-to-r from-brand/5 via-transparent to-brand-accent/10 opacity-80" aria-hidden />
+        <div className="relative overflow-hidden rounded-[2.25rem] border border-border-light/70 bg-surface/70 px-6 py-5 shadow-brand-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-brand dark:bg-surface-overlayDark/70">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-80"
+            aria-hidden
+            style={{
+              background:
+                "linear-gradient(120deg, rgba(56,189,248,0.14), transparent 40%), radial-gradient(circle at 20% 20%, rgba(59,130,246,0.18), transparent 60%)",
+            }}
+          />
           <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <Link to="/" className="inline-flex items-center gap-2 text-xl font-semibold tracking-tight text-brand-strong">
-              <span className="flex h-9 w-9 items-center justify-center rounded-brand-full bg-brand/10 text-lg text-brand">⚡</span>
-              AK Tools
+            <Link
+              to="/"
+              className="group inline-flex items-center gap-4 rounded-[1.75rem] bg-white/80 px-4 py-3 text-left text-brand-strong shadow-brand-sm ring-1 ring-white/40 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:bg-surface-overlayDark/80 dark:text-white dark:ring-white/10"
+            >
+              <span className="grid h-12 w-12 place-items-center rounded-[1.4rem] bg-gradient-to-br from-brand to-brand-strong text-lg font-semibold text-white shadow-brand">
+                AK
+              </span>
+              <span className="flex flex-col leading-tight">
+                <span className="text-lg font-semibold tracking-tight">AK Tools</span>
+                <span className="text-[11px] font-medium uppercase tracking-[0.32em] text-brand-muted/90 transition-colors duration-300 group-hover:text-brand-strong/80 dark:text-white/60">
+                  Amer Kovacevic
+                </span>
+              </span>
             </Link>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-3 xs:flex-row xs:items-center xs:justify-end">
               <ThemeToggle />
               {user ? (
                 <Button
                   onClick={handleSignOut}
-                  variant="secondary"
-                  size="sm"
-                  className="group"
-                  leftIcon={<ExitIcon />}
+                  variant="ghost"
+                  size="md"
+                  className="group relative min-w-[9.5rem] overflow-hidden bg-gradient-to-r from-brand via-brand-strong to-brand-accent text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
                   aria-label="Sign out"
                 >
-                  <span className="hidden xs:inline">Sign out</span>
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    style={{
+                      background:
+                        "linear-gradient(120deg, rgba(255,255,255,0.18), transparent 45%), radial-gradient(circle at 80% 30%, rgba(125,211,252,0.24), transparent 55%)",
+                    }}
+                  />
+                  <span className="relative inline-flex items-center justify-center gap-2">
+                    <span className="grid h-7 w-7 place-items-center rounded-brand-full bg-white/15 text-white">
+                      <ExitIcon className="h-4 w-4" />
+                    </span>
+                    <span className="hidden text-sm font-semibold xs:inline">Sign out</span>
+                  </span>
                 </Button>
               ) : (
                 <Button
                   onClick={handleSignIn}
-                  size="sm"
-                  className="group"
-                  leftIcon={<GoogleG />}
+                  variant="ghost"
+                  size="md"
+                  className="group relative min-w-[9.5rem] overflow-hidden bg-gradient-to-r from-[#4285F4] via-[#34A853] to-[#EA4335] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
                   aria-label="Sign in with Google"
                 >
-                  <span className="hidden xs:inline">Sign in</span>
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    style={{
+                      background:
+                        "linear-gradient(120deg, rgba(255,255,255,0.2), transparent 45%), radial-gradient(circle at 15% 25%, rgba(66,133,244,0.35), transparent 55%)",
+                    }}
+                  />
+                  <span className="relative inline-flex items-center justify-center gap-2">
+                    <span className="grid h-7 w-7 place-items-center rounded-brand-full bg-white/15">
+                      <GoogleG className="h-4 w-4" />
+                    </span>
+                    <span className="hidden text-sm font-semibold xs:inline">Sign in</span>
+                  </span>
                 </Button>
               )}
             </div>
@@ -96,7 +138,19 @@ export default function RootLayout() {
       </header>
 
       <main className="page-container flex-1 pb-16">
-        <Outlet context={{ user }} />
+        <div className="relative overflow-hidden rounded-[2.75rem] border border-border-light/60 bg-surface/75 px-4 py-8 shadow-brand-sm backdrop-blur-xl dark:border-border-dark/70 dark:bg-surface-overlayDark/80 sm:px-8 sm:py-10">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at 20% 20%, rgba(56,189,248,0.16), transparent 60%), radial-gradient(circle at 75% 40%, rgba(59,130,246,0.22), transparent 55%)",
+            }}
+          />
+          <div className="relative">
+            <Outlet context={{ user }} />
+          </div>
+        </div>
       </main>
 
       <footer className="page-container pb-14">
