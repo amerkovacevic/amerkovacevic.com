@@ -71,17 +71,9 @@ export default function RootLayout() {
           <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <Link
               to="/"
-              className="group inline-flex items-center gap-4 rounded-[1.75rem] bg-white/80 px-4 py-3 text-left text-brand-strong shadow-brand-sm ring-1 ring-white/40 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:bg-surface-overlayDark/80 dark:text-white dark:ring-white/10"
+              className="inline-flex items-center rounded-brand-full border border-transparent bg-white/80 px-6 py-3 text-sm font-semibold tracking-[0.26em] text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-brand-strong/80 dark:bg-surface-overlayDark/80 dark:text-white"
             >
-              <span className="grid h-12 w-12 place-items-center rounded-[1.4rem] bg-gradient-to-br from-brand to-brand-strong text-lg font-semibold text-white shadow-brand">
-                AK
-              </span>
-              <span className="flex flex-col leading-tight">
-                <span className="text-lg font-semibold tracking-tight">AK Tools</span>
-                <span className="text-[11px] font-medium uppercase tracking-[0.32em] text-brand-muted/90 transition-colors duration-300 group-hover:text-brand-strong/80 dark:text-white/60">
-                  Amer Kovacevic
-                </span>
-              </span>
+              AK TOOLS
             </Link>
             <div className="flex flex-col gap-3 xs:flex-row xs:items-center xs:justify-end">
               <ThemeToggle />
@@ -89,8 +81,8 @@ export default function RootLayout() {
                 <Button
                   onClick={handleSignOut}
                   variant="ghost"
-                  size="md"
-                  className="group relative min-w-[9.5rem] overflow-hidden bg-gradient-to-r from-brand via-brand-strong to-brand-accent text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
+                  size="lg"
+                  className="group relative h-12 w-12 min-w-0 overflow-hidden rounded-full border border-transparent bg-gradient-to-br from-brand via-brand-strong to-brand-accent text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
                   aria-label="Sign out"
                 >
                   <span
@@ -101,19 +93,18 @@ export default function RootLayout() {
                         "linear-gradient(120deg, rgba(255,255,255,0.18), transparent 45%), radial-gradient(circle at 80% 30%, rgba(125,211,252,0.24), transparent 55%)",
                     }}
                   />
-                  <span className="relative inline-flex items-center justify-center gap-2">
-                    <span className="grid h-7 w-7 place-items-center rounded-brand-full bg-white/15 text-white">
+                  <span className="relative grid h-full w-full place-items-center">
+                    <span className="grid h-8 w-8 place-items-center rounded-brand-full bg-white/20 text-white">
                       <ExitIcon className="h-4 w-4" />
                     </span>
-                    <span className="hidden text-sm font-semibold xs:inline">Sign out</span>
                   </span>
                 </Button>
               ) : (
                 <Button
                   onClick={handleSignIn}
                   variant="ghost"
-                  size="md"
-                  className="group relative min-w-[9.5rem] overflow-hidden bg-gradient-to-r from-[#4285F4] via-[#34A853] to-[#EA4335] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
+                  size="lg"
+                  className="group relative h-12 w-12 min-w-0 overflow-hidden rounded-full border border-transparent bg-gradient-to-br from-[#4285F4] via-[#34A853] to-[#EA4335] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
                   aria-label="Sign in with Google"
                 >
                   <span
@@ -124,11 +115,10 @@ export default function RootLayout() {
                         "linear-gradient(120deg, rgba(255,255,255,0.2), transparent 45%), radial-gradient(circle at 15% 25%, rgba(66,133,244,0.35), transparent 55%)",
                     }}
                   />
-                  <span className="relative inline-flex items-center justify-center gap-2">
-                    <span className="grid h-7 w-7 place-items-center rounded-brand-full bg-white/15">
+                  <span className="relative grid h-full w-full place-items-center">
+                    <span className="grid h-8 w-8 place-items-center rounded-brand-full bg-white/25">
                       <GoogleG className="h-4 w-4" />
                     </span>
-                    <span className="hidden text-sm font-semibold xs:inline">Sign in</span>
                   </span>
                 </Button>
               )}
