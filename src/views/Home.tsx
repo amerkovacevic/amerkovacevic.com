@@ -1,133 +1,92 @@
-import { useEffect, useMemo, useState } from "react";
-import { db } from "../firebase";
-import {
-  collection, query, where, orderBy, onSnapshot,
-  doc, setDoc, serverTimestamp, getDocs
-} from "firebase/firestore";
-import { useOutletContext } from "react-router-dom";
-import type { User } from "firebase/auth";
-
-type Ctx = { user: User | null };
-
-type Game = {
-  id: string;
-  title: string;
-  dateTime: any;
-  fieldName: string;
-  maxPlayers: number;
-  organizerUid: string;
-  status: "open" | "full" | "cancelled";
-};
+import { Link } from "react-router-dom";
 
 export default function Home() {
-  const { user } = useOutletContext<Ctx>();
-  const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const q = query(
-      collection(db, "games"),
-      where("status", "==", "open"),
-      orderBy("dateTime", "asc")
-    );
-    const unsub = onSnapshot(q, (snap) => {
-      const list: Game[] = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
-      setGames(list);
-      setLoading(false);
-    });
-    return unsub;
-  }, []);
-
-  if (loading) return <div>Loading…</div>;
-  if (!games.length) return <div className="text-gray-600">No upcoming games.</div>;
-
   return (
-    <div className="grid gap-4">
-      {games.map(g => <GameCard key={g.id} game={g} user={user} />)}
+    <div className="relative">
+      {/* Hero */}
+      <section className="rounded-2xl p-8 md:p-12 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
+        <div className="max-w-2xl">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            Amer Kovacevic
+          </h1>
+          <p className="mt-4 text-gray-300 text-lg">
+            Builder. Problem-solver. Small tools that make real life easier.
+          </p>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              to="/pickup"
+              className="inline-flex items-center rounded-xl px-4 py-2 bg-brand-light text-white font-medium hover:bg-brand dark:bg-brand-dark dark:hover:bg-brand"
+            >
+              ⚽ Pickup Soccer
+            </Link>
+            <a
+              href="mailto:amer@amerkovacevic.com"
+              className="inline-flex items-center rounded-xl px-4 py-2 border border-brand text-brand hover:bg-brand/10 dark:text-brand-light dark:border-brand-light"
+            >
+              ✉️ Contact
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Tools grid */}
+      <section className="mt-8 grid gap-6 md:grid-cols-3">
+        <ToolCard
+          title="Pickup Soccer"
+          emoji="⚽"
+          description="Post games, RSVP in one click, see spots left."
+          to="/pickup"
+          cta="Open"
+        />
+        <ToolCard
+          title="Secret Santa"
+          emoji="🎁"
+          description="Create a group, invite by code, auto-assign matches."
+          to="/santa"
+          cta="Open"
+        />
+        <ToolCard
+          title="Links & Resume"
+          emoji="🔗"
+          description="Social links plus a clean resume page."
+          to="/resume"
+          cta="Open"
+        />
+      </section>
+
+      <div className="mt-10 text-xs text-gray-500">
+        © {new Date().getFullYear()} AmerKovacevic.com
+      </div>
     </div>
   );
 }
 
-function GameCard({ game, user }: { game: Game; user: User | null; }) {
-  const [goingCount, setGoingCount] = useState(0);
-  const [myStatus, setMyStatus] = useState<"going"|"maybe"|"out"|"none">("none");
-  const dateStr = useMemo(() => {
-    const ms = game.dateTime?.seconds ? game.dateTime.seconds * 1000 : Number(game.dateTime);
-    return new Date(ms).toLocaleString();
-  }, [game.dateTime]);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const rsvpsCol = collection(db, "games", game.id, "rsvps");
-      const all = await getDocs(rsvpsCol);
-      const going = all.docs.filter(d => (d.data() as any).status === "going").length;
-      if (!cancelled) setGoingCount(going);
-
-      if (user) {
-        const mine = all.docs.find(d => d.id === user.uid);
-        setMyStatus(mine ? (mine.data() as any).status : "none");
-      } else {
-        setMyStatus("none");
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [game.id, user?.uid]);
-
-  const full = goingCount >= game.maxPlayers;
-
-  const setRSVP = async (status: "going"|"maybe"|"out") => {
-    if (!user) { alert("Please sign in first"); return; }
-    if (status === "going" && full) {
-      alert("This game is full.");
-      return;
-    }
-    await setDoc(
-      doc(db, "games", game.id, "rsvps", user.uid),
-      { status, joinedAt: serverTimestamp() },
-      { merge: true }
-    );
-    setMyStatus(status);
-    const rsvpsCol = collection(db, "games", game.id, "rsvps");
-    const all = await getDocs(rsvpsCol);
-    const going = all.docs.filter(d => (d.data() as any).status === "going").length;
-    setGoingCount(going);
-  };
-
+function ToolCard({
+  title,
+  emoji,
+  description,
+  to,
+  cta = "Open",
+}: {
+  title: string;
+  emoji: string;
+  description: string;
+  to: string;
+  cta?: string;
+}) {
   return (
-    <div className="border rounded-lg p-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">{game.title}</h3>
-        <span className="text-sm text-gray-600">{game.fieldName}</span>
+    <Link to={to}>
+      <div className="h-full rounded-2xl border p-5 hover:shadow-sm transition bg-white dark:bg-gray-900 dark:border-gray-800">
+        <div className="text-2xl">{emoji}</div>
+        <h3 className="mt-2 text-lg font-semibold">{title}</h3>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{description}</p>
+        <div className="mt-4">
+          <span className="inline-flex items-center rounded-lg px-3 py-1 bg-brand-light text-white border border-transparent text-sm dark:bg-brand-dark">
+            {cta}
+          </span>
+        </div>
       </div>
-      <div className="mt-1 text-sm">{dateStr}</div>
-      <div className="mt-2 text-sm">
-        <strong>{goingCount}</strong> going / {game.maxPlayers} spots
-        {full && <span className="ml-2 text-red-600 font-medium">Full</span>}
-      </div>
-
-      <div className="mt-3 flex gap-2">
-        <button
-          onClick={() => setRSVP("going")}
-          className={`px-3 py-1.5 rounded border ${myStatus==="going" ? "bg-gray-900 text-white" : ""}`}
-          disabled={!user || full}
-          title={!user ? "Sign in to RSVP" : full ? "Game is full" : ""}
-        >I’m in</button>
-        <button
-          onClick={() => setRSVP("maybe")}
-          className={`px-3 py-1.5 rounded border ${myStatus==="maybe" ? "bg-gray-900 text-white" : ""}`}
-          disabled={!user}
-        >Maybe</button>
-        <button
-          onClick={() => setRSVP("out")}
-          className={`px-3 py-1.5 rounded border ${myStatus==="out" ? "bg-gray-900 text-white" : ""}`}
-          disabled={!user}
-        >Out</button>
-      </div>
-
-      {user?.uid === game.organizerUid && (
-        <div className="mt-3 text-xs text-gray-500">You are the organizer.</div>
-      )}
-    </div>
+    </Link>
   );
 }

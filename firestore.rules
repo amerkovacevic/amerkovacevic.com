@@ -2,18 +2,29 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Helper
     function isSignedIn() { return request.auth != null; }
 
+    // -------------------------
+    // Users
+    // -------------------------
     match /users/{uid} {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && request.auth.uid == uid;
     }
 
+    // -------------------------
+    // Fields (pickup)
+    // -------------------------
     match /fields/{fieldId} {
       allow read: if true;
       allow write: if isSignedIn();
     }
 
+    // -------------------------
+    // Games (pickup)
+    // -------------------------
     match /games/{gameId} {
       allow read: if true;
 
@@ -32,5 +43,41 @@ service cloud.firestore {
       allow create, update: if isSignedIn() && request.auth.uid == uid;
       allow delete: if isSignedIn() && request.auth.uid == uid;
     }
+
+    // -------------------------
+    // Secret Santa (soccer jerseys)
+    // Path shape:
+    // /santaEvents/{eventId}
+    //   /members/{uid}
+    //   /assignments/{giverUid}
+    // -------------------------
+    match /santaEvents/{eventId} {
+      // Event document (metadata like name, budget, exchangeDate, joinCode, organizerUid)
+      // Public read is fine for simple use; switch to "isSignedIn()" if you want only signed-in users to see.
+      allow read: if isSignedIn();
+
+      // Only a signed-in user can create an event, and they must be the organizer in the document they write.
+      allow create: if isSignedIn()
+        && request.resource.data.organizerUid == request.auth.uid;
+
+      // Only the organizer can update/delete the event document.
+      allow update, delete: if isSignedIn()
+        && resource.data.organizerUid == request.auth.uid;
+
+      // Members: everyone can see who joined; each user can only write their own member doc.
+      match /members/{uid} {
+        allow read: if true;
+        allow create, update, delete: if isSignedIn() && request.auth.uid == uid;
+      }
+
+      // Assignments: each giver can read ONLY their own assignment.
+      // Only the organizer can write assignments during the draw.
+      match /assignments/{giverUid} {
+        allow read: if isSignedIn() && request.auth.uid == giverUid;
+        allow create, update, delete: if isSignedIn()
+          && get(/databases/$(database)/documents/santaEvents/$(eventId)).data.organizerUid == request.auth.uid;
+      }
+    }
+
   }
 }
