@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { Plus } from "lucide-react";
 import { db } from "../../shared/lib/firebase";
 import {
   Timestamp,
@@ -30,6 +32,8 @@ type Game = {
   organizerUid: string;
   status: "open" | "full" | "cancelled";
 };
+
+const MotionLink = motion(Link);
 
 export default function Pickup() {
   const { user } = useOutletContext<Ctx>();
@@ -78,11 +82,7 @@ export default function Pickup() {
         icon="⚽"
         title="Pickup Soccer"
         description="Create a game, share the link, and let friends RSVP in one click. Keep track of spots remaining in real time."
-        actions={
-          <Link to="/new" className={buttonStyles({ size: "sm" })}>
-            + Create game
-          </Link>
-        }
+        actions={<CreateGameButton />}
         stats={
           <>
             <StatPill>Open games · {games.length}</StatPill>
@@ -296,8 +296,26 @@ function EmptyState() {
       <p className="mt-2 text-sm text-brand-muted">
         Be the first to post one for this week.
       </p>
-      <Link to="/new" className={cn(buttonStyles({ size: "sm" }), "mt-4 inline-flex")}>Create game</Link>
+      <CreateGameButton className="mt-4" />
     </Card>
+  );
+}
+
+function CreateGameButton({ className }: { className?: string }) {
+  return (
+    <MotionLink
+      to="/new"
+      whileHover={{ y: -1 }}
+      whileTap={{ scale: 0.97 }}
+      className={cn(
+        buttonStyles({ variant: "secondary", size: "sm" }),
+        "inline-flex items-center gap-2 rounded-brand-full",
+        className
+      )}
+    >
+      <Plus className="h-4 w-4" />
+      Create game
+    </MotionLink>
   );
 }
 
