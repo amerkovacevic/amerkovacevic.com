@@ -1,3 +1,4 @@
+import { Mail } from "lucide-react";
 import { ReactNode } from "react";
 
 import { PageHero } from "../../shared/components/page";
@@ -75,11 +76,7 @@ export default function Links() {
     {
       title: "Email me",
       url: "mailto:amer@amerkovacevic.com",
-      icon: (
-        <span aria-hidden className="text-xl" role="img">
-          ✉️
-        </span>
-      ),
+      icon: <Mail aria-hidden className="h-6 w-6" />,
       iconWrapperClassName: "bg-brand/10 text-brand-strong dark:bg-white/20 dark:text-white",
       textClassName: "dark:text-brand-foreground",
     },
