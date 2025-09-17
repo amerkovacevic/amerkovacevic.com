@@ -151,7 +151,6 @@ export default function FMTeamDraw() {
     <div className="space-y-6">
       <PageHero
         icon="🎮"
-        eyebrow="Draft night"
         title="FM Team Draw"
         description={
           <>

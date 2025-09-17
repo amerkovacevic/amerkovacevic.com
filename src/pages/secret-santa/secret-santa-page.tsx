@@ -391,7 +391,6 @@ export default function SecretSanta() {
     <div className="space-y-8">
       <PageHero
         icon="🎁"
-        eyebrow="Holiday helpers"
         title="Secret Santa"
         description="Create a group, invite with a code, set preferences, and auto-assign matches."
         stats={

@@ -68,7 +68,6 @@ export default function CreateGame() {
     <div className="space-y-8">
       <PageHero
         icon="🛠️"
-        eyebrow="Organizer tools"
         title="Create a pickup game"
         description="Schedule your next session, cap the roster, and instantly share it with your crew."
         stats={
