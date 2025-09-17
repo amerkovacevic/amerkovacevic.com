@@ -187,79 +187,79 @@ export default function SecretSanta() {
     }
   };
 
-  // Join via code (with optional preferences)
-  const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!user) {
-      setErr("Please sign in.");
-      return;
-    }
-    const form = e.currentTarget as HTMLFormElement & {
-      code: HTMLInputElement;
-      displayName: HTMLInputElement;
-      wantPlayers: HTMLInputElement;
-      wantTeams: HTMLInputElement;
-      avoidPlayers: HTMLInputElement;
-      avoidTeams: HTMLInputElement;
-    };
-    const code = form.code.value.trim().toUpperCase();
-    const displayName = (form.displayName.value || user.displayName || "Anonymous").trim();
-    if (!code) {
-      setErr("Enter a join code.");
-      return;
-    }
+// Join via code (with optional preferences)
+const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  if (!user) return setErr("Please sign in.");
 
-    // Parse lists (max 3 each)
-    const wantPlayers = parseTop3(form.wantPlayers.value);
-    const wantTeams = parseTop3(form.wantTeams.value);
-    const avoidPlayers = parseTop3(form.avoidPlayers.value);
-    const avoidTeams = parseTop3(form.avoidTeams.value);
-
-    setLoading(true);
-    setErr(null);
-    try {
-      const q = query(collection(db, "santaEvents"), where("joinCode", "==", code));
-      const snap = await getDocs(q);
-      if (snap.empty) throw new Error("No event found for that code.");
-      const evSnap = snap.docs[0];
-
-      // add/merge me into members
-      await setDoc(
-        doc(db, "santaEvents", evSnap.id, "members", user.uid),
-        {
-          name: displayName,
-          email: user.email ?? "",
-          wantPlayers,
-          wantTeams,
-          avoidPlayers,
-          avoidTeams,
-        },
-        { merge: true }
-      );
-
-      const evData = evSnap.data() as {
-        name?: string;
-        exchangeDate?: Timestamp | null;
-        joinCode?: string;
-        organizerUid?: string;
-        createdAt?: unknown;
-      } | undefined;
-
-      setActiveEvent({
-        id: evSnap.id,
-        name: evData?.name ?? "Event",
-        exchangeDate: evData?.exchangeDate ?? null,
-        joinCode: evData?.joinCode ?? code,
-        organizerUid: evData?.organizerUid ?? "",
-        createdAt: evData?.createdAt ?? null,
-      });
-      setTab("event");
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Failed to join event.");
-    } finally {
-      setLoading(false);
-    }
+  const form = e.currentTarget as HTMLFormElement & {
+    code: HTMLInputElement;
+    displayName: HTMLInputElement;
+    wantPlayers: HTMLInputElement;
+    wantTeams: HTMLInputElement;
+    avoidPlayers: HTMLInputElement;
+    avoidTeams: HTMLInputElement;
   };
+
+  const code = form.code.value.trim().toUpperCase();
+  const displayName = (form.displayName.value || user.displayName || "Anonymous").trim();
+  if (!code) return setErr("Enter a join code.");
+
+  const wantPlayers = parseTop3(form.wantPlayers.value);
+  const wantTeams = parseTop3(form.wantTeams.value);
+  const avoidPlayers = parseTop3(form.avoidPlayers.value);
+  const avoidTeams = parseTop3(form.avoidTeams.value);
+
+  setLoading(true);
+  setErr(null);
+  try {
+    const q = query(collection(db, "santaEvents"), where("joinCode", "==", code));
+    const snap = await getDocs(q);
+    if (snap.empty) throw new Error("No event found for that code.");
+
+    // ✅ after the empty-check, assert the first doc exists
+    const evSnap = snap.docs[0]!;
+    const eventId = evSnap.id;
+
+    // add/merge me into members
+    await setDoc(
+      doc(db, "santaEvents", eventId, "members", user.uid),
+      {
+        name: displayName,
+        email: user.email ?? "",
+        wantPlayers,
+        wantTeams,
+        avoidPlayers,
+        avoidTeams,
+      },
+      { merge: true }
+    );
+
+    // ✅ use consistent property names
+    const evData = evSnap.data() as {
+      name?: string;
+      exchangeDate?: Timestamp | null;
+      joinCode?: string;
+      organizerUid?: string;
+      createdAt?: unknown;
+    };
+
+    setActiveEvent({
+      id: eventId,
+      name: evData.name ?? "Event",
+      exchangeDate: evData.exchangeDate ?? null,
+      joinCode: evData.joinCode ?? code,
+      organizerUid: evData.organizerUid ?? "",
+      createdAt: evData.createdAt ?? null,
+    });
+    setTab("event");
+  } catch (e) {
+    setErr(e instanceof Error ? e.message : "Failed to join event.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // Update my preferences from the event view
   const saveMyPreferences = async () => {
