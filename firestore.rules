@@ -38,9 +38,16 @@ service cloud.firestore {
         && resource.data.organizerUid == request.auth.uid;
     }
 
+    function hasValidGuests(data) {
+      return !data.keys().hasAny(["guests"]) ||
+        (data.guests is int && data.guests >= 0 && data.guests <= 3);
+    }
+
     match /games/{gameId}/rsvps/{uid} {
       allow read: if true;
-      allow create, update: if isSignedIn() && request.auth.uid == uid;
+      allow create, update: if isSignedIn()
+        && request.auth.uid == uid
+        && hasValidGuests(request.resource.data);
       allow delete: if isSignedIn() && request.auth.uid == uid;
     }
 

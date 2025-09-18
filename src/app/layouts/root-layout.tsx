@@ -148,7 +148,11 @@ function AuthControls({
       {user ? (
         <button
           onClick={onSignOut}
-          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-white text-xl shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:bg-brand-strong"
+          className={cn(
+            "inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-xl shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent",
+            "border border-border-light bg-white text-brand hover:bg-brand/10",
+            "dark:border-border-dark dark:bg-brand-strong dark:text-white dark:hover:bg-brand-strong/90"
+          )}
         >
           <span aria-hidden>🚪</span>
           <span className="sr-only">Sign out</span>

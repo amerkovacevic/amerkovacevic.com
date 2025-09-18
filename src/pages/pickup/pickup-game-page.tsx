@@ -27,6 +27,7 @@ type RSVPEntry = {
   name: string;
   status: RSVPStatus;
   joinedAt?: Timestamp | null;
+  guests?: number;
 };
 
 const STATUS_LABELS: Record<RSVPStatus, string> = {
@@ -100,12 +101,14 @@ export default function PickupGamePage() {
       snap.forEach((docSnap) => {
         const data = docSnap.data() as any;
         const status = data?.status as RSVPStatus | undefined;
+        const guests = normalizeGuests(data?.guests);
         if (status === "going" || status === "maybe" || status === "out") {
           groups[status].push({
             id: docSnap.id,
             name: (data?.name as string) || "Player",
             status,
             joinedAt: data?.joinedAt ?? null,
+            guests,
           });
         }
       });
@@ -132,17 +135,31 @@ export default function PickupGamePage() {
     });
   }, [gameDate]);
 
-  const counts = useMemo(
-    () => ({
-      going: rsvps.going.length,
-      maybe: rsvps.maybe.length,
-      out: rsvps.out.length,
-    }),
-    [rsvps]
-  );
+  const counts = useMemo(() => {
+    const sumHeads = (entries: RSVPEntry[]) =>
+      entries.reduce((total, entry) => total + 1 + (entry.guests ?? 0), 0);
+    return {
+      goingPlayers: rsvps.going.length,
+      maybePlayers: rsvps.maybe.length,
+      outPlayers: rsvps.out.length,
+      goingHeads: sumHeads(rsvps.going),
+      maybeHeads: sumHeads(rsvps.maybe),
+      outHeads: sumHeads(rsvps.out),
+    };
+  }, [rsvps]);
 
-  const spotsLeft = game ? Math.max(game.maxPlayers - counts.going, 0) : 0;
+  const spotsLeft =
+    game ? Math.max(game.maxPlayers - counts.goingHeads, 0) : 0;
   const canManage = Boolean(user && game && user.uid === game.organizerUid);
+  const duplicateGameUrl = useMemo(() => {
+    if (!game) return null;
+    const params = new URLSearchParams();
+    if (game.title) params.set("title", game.title);
+    if (game.fieldName) params.set("fieldName", game.fieldName);
+    if (game.maxPlayers) params.set("maxPlayers", String(game.maxPlayers));
+    params.set("dateTime", new Date().toISOString());
+    return `/new?${params.toString()}`;
+  }, [game]);
 
   const handleDelete = async () => {
     if (!gameId || !canManage) return;
@@ -181,21 +198,33 @@ export default function PickupGamePage() {
             : "Manage RSVPs and details for your pickup session."
         }
         actions={
-          <MotionLink
-            to="/pickup"
-            whileHover={{ y: -1 }}
-            whileTap={{ scale: 0.97 }}
-            className={buttonStyles({ variant: "secondary", size: "sm" })}
-          >
-            ← Back to games
-          </MotionLink>
+          <div className="flex flex-wrap gap-2">
+            <MotionLink
+              to="/pickup"
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              className={buttonStyles({ variant: "secondary", size: "sm" })}
+            >
+              ← Back to games
+            </MotionLink>
+            {canManage && duplicateGameUrl ? (
+              <MotionLink
+                to={duplicateGameUrl}
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className={buttonStyles({ size: "sm" })}
+              >
+                Duplicate game
+              </MotionLink>
+            ) : null}
+          </div>
         }
         stats={
           game ? (
             <>
-              <StatPill>Going · {counts.going}</StatPill>
-              <StatPill>Maybe · {counts.maybe}</StatPill>
-              <StatPill>Out · {counts.out}</StatPill>
+              <StatPill>Going · {counts.goingHeads}</StatPill>
+              <StatPill>Maybe · {counts.maybeHeads}</StatPill>
+              <StatPill>Out · {counts.outHeads}</StatPill>
               <StatPill>
                 Spots left · {spotsLeft}
               </StatPill>
@@ -232,7 +261,9 @@ export default function PickupGamePage() {
                 <DetailItem label="Max players">{game.maxPlayers}</DetailItem>
                 <DetailItem label="Status">{game.status}</DetailItem>
                 <DetailItem label="Organizer UID">{game.organizerUid}</DetailItem>
-                <DetailItem label="RSVPs so far">{counts.going + counts.maybe + counts.out}</DetailItem>
+                <DetailItem label="RSVP heads so far">
+                  {counts.goingHeads + counts.maybeHeads + counts.outHeads}
+                </DetailItem>
               </dl>
             </Card>
           </PageSection>
@@ -263,7 +294,15 @@ export default function PickupGamePage() {
                               key={entry.id}
                               className="rounded-brand bg-surface px-3 py-1 text-brand-strong shadow-brand-sm dark:bg-surface-overlayDark dark:text-white"
                             >
-                              {entry.name}
+                              <div className="flex items-center justify-between gap-3">
+                                <span>{entry.name}</span>
+                                {entry.guests ? (
+                                  <span className="inline-flex items-center gap-1 rounded-brand-full bg-brand/15 px-2 py-0.5 text-xs font-medium text-brand">
+                                    +{entry.guests} guest
+                                    {entry.guests > 1 ? "s" : ""}
+                                  </span>
+                                ) : null}
+                              </div>
                             </li>
                           ))}
                         </ul>
@@ -318,4 +357,19 @@ function DetailItem({ label, children }: { label: string; children: ReactNode })
       <dd className="font-medium text-brand-strong dark:text-white">{children}</dd>
     </div>
   );
+}
+
+function normalizeGuests(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return clampGuestValue(value);
+  }
+  if (typeof value === "string") {
+    const parsed = Number.parseInt(value, 10);
+    if (Number.isFinite(parsed)) return clampGuestValue(parsed);
+  }
+  return 0;
+}
+
+function clampGuestValue(value: number) {
+  return Math.max(0, Math.min(3, Math.trunc(value)));
 }
