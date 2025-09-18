@@ -458,21 +458,21 @@ export default function SecretSanta() {
             {tab === "create" ? (
               <form onSubmit={handleCreate} className="grid gap-4 md:max-w-xl">
                 <label className="flex flex-col gap-2 text-sm">
-                  <span className="font-medium text-brand-muted">Event name</span>
+                  <span className="font-medium text-brand-muted dark:text-brand-subtle">Event name</span>
                   <input
                     name="name"
                     placeholder="e.g., Jerseys 2025"
-                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
                     required
                     disabled={!user || loading}
                   />
                 </label>
                 <label className="flex flex-col gap-2 text-sm">
-                  <span className="font-medium text-brand-muted">Exchange date</span>
+                  <span className="font-medium text-brand-muted dark:text-brand-subtle">Exchange date</span>
                   <input
                     name="date"
                     type="date"
-                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
                     disabled={!user || loading}
                   />
                 </label>
@@ -485,7 +485,7 @@ export default function SecretSanta() {
                 {!user ? (
                   <p className="text-sm text-red-500">You must be signed in to create a Secret Santa.</p>
                 ) : (
-                  <p className="text-xs text-brand-muted">
+                  <p className="text-xs text-brand-muted dark:text-brand-subtle">
                     We’ll automatically add you as the first member so you can set your preferences below.
                   </p>
                 )}
@@ -495,29 +495,29 @@ export default function SecretSanta() {
             {tab === "join" ? (
               <form onSubmit={handleJoin} className="grid gap-4 md:max-w-xl">
                 <label className="flex flex-col gap-2 text-sm">
-                  <span className="font-medium text-brand-muted">Join code</span>
+                  <span className="font-medium text-brand-muted dark:text-brand-subtle">Join code</span>
                   <input
                     name="code"
                     placeholder="7FQK9C"
-                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong uppercase tracking-[0.4em] shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong uppercase tracking-[0.4em] shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
                     required
                     disabled={!user || loading}
                   />
                 </label>
                 <label className="flex flex-col gap-2 text-sm">
-                  <span className="font-medium text-brand-muted">Display name</span>
+                  <span className="font-medium text-brand-muted dark:text-brand-subtle">Display name</span>
                   <input
                     name="displayName"
                     placeholder="Your name"
-                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
                     disabled={!user || loading}
                   />
                 </label>
-                <div className="text-xs text-brand-muted">Enter 1–3 items, comma-separated.</div>
-                <input name="wantPlayers" placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" disabled={!user || loading} />
-                <input name="wantTeams" placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" disabled={!user || loading} />
-                <input name="avoidPlayers" placeholder="Players to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" disabled={!user || loading} />
-                <input name="avoidTeams" placeholder="Teams to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" disabled={!user || loading} />
+                <div className="text-xs text-brand-muted dark:text-brand-subtle">Enter 1–3 items, comma-separated.</div>
+                <input name="wantPlayers" placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" disabled={!user || loading} />
+                <input name="wantTeams" placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" disabled={!user || loading} />
+                <input name="avoidPlayers" placeholder="Players to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" disabled={!user || loading} />
+                <input name="avoidTeams" placeholder="Teams to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" disabled={!user || loading} />
                 <button
                   className={buttonStyles({ size: "md" })}
                   disabled={!user || loading}
@@ -538,16 +538,16 @@ export default function SecretSanta() {
                   : "Date: TBA"
               }
               actions={
-                <div className="flex flex-col items-end gap-2 text-xs text-brand-muted">
+                <div className="flex flex-col items-end gap-2 text-xs text-brand-muted dark:text-brand-subtle">
                   <span>Join code</span>
-                  <code className="rounded-brand bg-surface px-3 py-1 font-mono text-sm tracking-[0.4em]">
+                  <code className="rounded-brand bg-surface px-3 py-1 font-mono text-sm tracking-[0.4em] text-brand-strong dark:bg-surface-overlayDark dark:text-brand-foreground">
                     {activeEvent?.joinCode}
                   </code>
                 </div>
               }
               contentClassName="space-y-5"
             >
-              <div className="flex flex-wrap items-center gap-2 text-xs text-brand-muted">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-brand-muted dark:text-brand-subtle">
                 <span className="rounded-brand-full bg-brand/10 px-3 py-1">
                   Organizer · {activeEvent?.organizerUid ?? "?"}
                 </span>
@@ -579,7 +579,7 @@ export default function SecretSanta() {
                 >
                   Run draw
                 </button>
-                <span className="text-xs text-brand-muted">
+                <span className="text-xs text-brand-muted dark:text-brand-subtle">
                   Only the organizer can run the draw. Each person sees only their own match.
                 </span>
               </div>
@@ -589,16 +589,16 @@ export default function SecretSanta() {
               {user ? (
                 <PageSection title="My preferences" description="Update what you hope to receive and any no-goes." contentClassName="space-y-3">
                   <form onSubmit={saveMyPrefs} className="grid gap-3">
-                    <div className="text-xs text-brand-muted">Enter 1–3 items, comma-separated.</div>
-                    <input name="wantPlayers" defaultValue={(me?.wantPlayers ?? []).join(", ")} placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" />
-                    <input name="wantTeams" defaultValue={(me?.wantTeams ?? []).join(", ")} placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" />
-                    <input name="avoidPlayers" defaultValue={(me?.avoidPlayers ?? []).join(", ")} placeholder="Players to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" />
-                    <input name="avoidTeams" defaultValue={(me?.avoidTeams ?? []).join(", ")} placeholder="Teams to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark" />
+                    <div className="text-xs text-brand-muted dark:text-brand-subtle">Enter 1–3 items, comma-separated.</div>
+                    <input name="wantPlayers" defaultValue={(me?.wantPlayers ?? []).join(", ")} placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" />
+                    <input name="wantTeams" defaultValue={(me?.wantTeams ?? []).join(", ")} placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" />
+                    <input name="avoidPlayers" defaultValue={(me?.avoidPlayers ?? []).join(", ")} placeholder="Players to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" />
+                    <input name="avoidTeams" defaultValue={(me?.avoidTeams ?? []).join(", ")} placeholder="Teams to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" />
                     <div className="flex items-center gap-3">
                       <button className={buttonStyles({ size: "sm" })} disabled={loading}>
                         Save
                       </button>
-                      <span className="text-xs text-brand-muted">Everyone will see these when they draw you.</span>
+                      <span className="text-xs text-brand-muted dark:text-brand-subtle">Everyone will see these when they draw you.</span>
                     </div>
                   </form>
                 </PageSection>
@@ -609,7 +609,7 @@ export default function SecretSanta() {
                   <div className="space-y-2 text-sm">
                     <div>
                       <div className="text-base font-semibold text-brand-strong dark:text-white">{myMatch.name}</div>
-                      <div className="text-xs text-brand-muted">{myMatch.email}</div>
+                      <div className="text-xs text-brand-muted dark:text-brand-subtle">{myMatch.email}</div>
                     </div>
                     <PreferenceList label="Wants — Players" items={myMatch.wantPlayers} />
                     <PreferenceList label="Wants — Teams" items={myMatch.wantTeams} />
@@ -617,7 +617,7 @@ export default function SecretSanta() {
                     <PreferenceList label="Avoid — Teams" items={myMatch.avoidTeams} />
                   </div>
                 ) : (
-                  <p className="text-sm text-brand-muted">
+                  <p className="text-sm text-brand-muted dark:text-brand-subtle">
                     No assignment yet. Ask the organizer to run the draw.
                   </p>
                 )}
@@ -633,7 +633,7 @@ export default function SecretSanta() {
 /** UI helpers */
 function PreferenceList({ label, items }: { label: string; items: string[] }) {
   return (
-    <div className="text-sm text-brand-muted">
+    <div className="text-sm text-brand-muted dark:text-brand-subtle">
       <span className="font-medium text-brand-strong dark:text-white">{label}:</span> {listOrDash(items)}
     </div>
   );

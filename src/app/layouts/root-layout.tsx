@@ -84,7 +84,7 @@ export default function RootLayout() {
               />
             </div>
             <nav
-              className="order-last -mx-2 flex items-center gap-2 overflow-x-auto pb-1 md:order-none md:mx-0 md:flex-1 md:justify-center"
+              className="order-last flex items-center gap-2 overflow-x-auto pb-1 px-1 md:order-none md:flex-1 md:justify-center md:px-0"
               aria-label="Primary navigation"
             >
               {NAV_LINKS.map((link) => (
