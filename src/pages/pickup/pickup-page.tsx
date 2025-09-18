@@ -31,6 +31,7 @@ export type Game = {
   maxPlayers: number;
   organizerUid: string;
   status: "open" | "full" | "cancelled";
+  guests?: number | null;
 };
 
 const MotionLink = motion(Link);
@@ -129,6 +130,8 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
   const [myStatus, setMyStatus] = useState<"going" | "maybe" | "out" | "none">(
     "none"
   );
+  const [guestCount, setGuestCount] = useState(0);
+  const [myGuestSnapshot, setMyGuestSnapshot] = useState(0);
 
   const gameDate = useMemo(() => toDate(game.dateTime), [game.dateTime]);
   const dateStr = useMemo(() => {
@@ -150,22 +153,36 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
     const unsubscribe = onSnapshot(rsvpsCol, (snap) => {
       let going = 0;
       let my = "none" as "going" | "maybe" | "out" | "none";
+      let myGuests = 0;
       snap.forEach((d) => {
         const status = (d.data() as any)?.status as
           | "going"
           | "maybe"
           | "out"
           | undefined;
-        if (status === "going") going += 1;
-        if (user && d.id === user.uid && status) my = status;
+        const guests = normalizeGuests((d.data() as any)?.guests);
+        if (status === "going") going += 1 + guests;
+        if (user && d.id === user.uid) {
+          my = status ?? "none";
+          myGuests = status === "going" ? guests : 0;
+        }
       });
       setGoingCount(going);
-      setMyStatus(user ? my : "none");
+      if (user) {
+        setMyStatus(my);
+        setGuestCount(my === "going" ? myGuests : 0);
+        setMyGuestSnapshot(my === "going" ? myGuests : 0);
+      } else {
+        setMyStatus("none");
+        setGuestCount(0);
+        setMyGuestSnapshot(0);
+      }
     });
     return () => unsubscribe();
   }, [game.id, user?.uid]);
 
-  const full = goingCount >= game.maxPlayers;
+  const spotsLeft = Math.max(game.maxPlayers - goingCount, 0);
+  const full = spotsLeft <= 0;
   const pct = Math.max(
     0,
     Math.min(100, Math.round((goingCount / game.maxPlayers) * 100))
@@ -176,9 +193,14 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
       alert("Please sign in first");
       return;
     }
-    if (status === "going" && full) {
-      alert("This game is full.");
-      return;
+    const guests = normalizeGuests(status === "going" ? guestCount : 0);
+    if (status === "going") {
+      const currentWithoutMe =
+        goingCount - (myStatus === "going" ? 1 + myGuestSnapshot : 0);
+      if (currentWithoutMe + 1 + guests > game.maxPlayers) {
+        alert("Not enough spots remaining for you and your guests.");
+        return;
+      }
     }
     try {
       const name =
@@ -187,12 +209,48 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
         "Player";
       await setDoc(
         doc(db, "games", game.id, "rsvps", user.uid),
-        { status, joinedAt: serverTimestamp(), name },
+        {
+          status,
+          guests,
+          joinedAt: serverTimestamp(),
+          name,
+        },
         { merge: true }
       );
+      if (status !== "going") {
+        setGuestCount(0);
+        setMyGuestSnapshot(0);
+      }
     } catch (error) {
       console.error(error);
       alert("Failed to update RSVP. Please try again.");
+    }
+  };
+
+  const handleGuestChange = async (value: number) => {
+    const guests = normalizeGuests(value);
+    setGuestCount(guests);
+    if (!user || myStatus !== "going") return;
+
+    const currentWithoutMe =
+      goingCount - (myStatus === "going" ? 1 + myGuestSnapshot : 0);
+    if (currentWithoutMe + 1 + guests > game.maxPlayers) {
+      alert("Not enough spots remaining for your guest selection.");
+      setGuestCount(myGuestSnapshot);
+      return;
+    }
+
+    try {
+      await setDoc(
+        doc(db, "games", game.id, "rsvps", user.uid),
+        { guests },
+        { merge: true }
+      );
+      setMyGuestSnapshot(guests);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update guest count. Please try again.");
+      setGuestCount(myGuestSnapshot);
     }
   };
 
@@ -221,7 +279,7 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
             <div className="font-semibold text-brand">{goingCount}</div>
             <div className="text-xs uppercase tracking-[0.18em] text-brand-muted dark:text-brand-subtle">of {game.maxPlayers} spots</div>
             <div className="mt-1 text-xs text-brand-subtle">
-              {full ? "Roster full" : `${game.maxPlayers - goingCount} spots left`}
+              {full ? "Roster full" : `${spotsLeft} spots left`}
             </div>
             {user?.uid === game.organizerUid ? (
               <MotionLink
@@ -264,6 +322,24 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
           >
             I’m in
           </MotionButton>
+          {user ? (
+            <label className="flex items-center gap-2 text-xs text-brand-muted dark:text-brand-subtle">
+              Guests
+              <select
+                value={guestCount}
+                onChange={(event) =>
+                  handleGuestChange(Number(event.target.value))
+                }
+                className="h-8 rounded-brand border border-border-light bg-surface px-2 text-sm font-medium text-brand-strong focus:outline-none focus:ring-2 focus:ring-brand dark:border-border-dark dark:bg-surface-overlayDark dark:text-brand-foreground"
+              >
+                {[0, 1, 2, 3].map((count) => (
+                  <option key={count} value={count}>
+                    {count}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <MotionButton
             type="button"
             whileHover={{ y: -1 }}
@@ -356,4 +432,23 @@ export function toDate(value: Timestamp | number | null | undefined) {
   if (typeof (value as any)?.toDate === "function")
     return (value as { toDate: () => Date }).toDate();
   return null;
+}
+
+function normalizeGuests(value: unknown) {
+  if (typeof value === "number") {
+    if (Number.isFinite(value)) {
+      return clampGuestValue(value);
+    }
+    return 0;
+  }
+  if (typeof value === "string") {
+    const parsed = Number.parseInt(value, 10);
+    if (Number.isFinite(parsed)) return clampGuestValue(parsed);
+  }
+  return 0;
+}
+
+function clampGuestValue(value: number) {
+  const clamped = Math.max(0, Math.min(3, Math.trunc(value)));
+  return clamped;
 }
