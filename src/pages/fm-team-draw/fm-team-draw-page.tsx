@@ -5,7 +5,7 @@ import { PageHero, PageSection, StatPill } from "../../shared/components/page";
 import { buttonStyles } from "../../shared/components/ui/button";
 import { cn } from "../../shared/lib/classnames";
 
-/** clubs.json shape */
+// Data model for the scraped Football Manager clubs dataset.
 type Team = {
   id: string;
   name: string;
@@ -21,17 +21,19 @@ const TEAMS: Team[] = Array.isArray((data as any)?.clubs)
 
 type DrawRow = { id: string; name: string; team?: Team; locked?: boolean };
 
+// Random team assigner with optional league/nation filters and a suspenseful
+// reveal animation for each participant.
 export default function FMTeamDraw() {
-  // Inputs/list
+  // Participant list and bulk name input area.
   const [bulkNames, setBulkNames] = useState("");
   const [list, setList] = useState<DrawRow[]>([]);
   const [err, setErr] = useState<string | null>(null);
 
-  // Suspense / animation
+  // Animation state: tracks active rolling text and overall draw state.
   const [isDrawing, setIsDrawing] = useState(false);
-  const [rolling, setRolling] = useState<Record<string, string>>({}); // rowId -> temp rolling text
+  const [rolling, setRolling] = useState<Record<string, string>>({});
 
-  // Filters
+  // Filter state derived from the dataset and user selections.
   const leagues = useMemo(
     () => Array.from(new Set(TEAMS.map((t) => t.league))).sort(),
     []
@@ -48,6 +50,7 @@ export default function FMTeamDraw() {
   const [lastDrawLeague, setLastDrawLeague] = useState<string | null>(null);
 
   const pool = useMemo(() => {
+    // Build the eligible team pool respecting filters and free-text search.
     const q = search.trim().toLowerCase();
     return TEAMS.filter((t) => {
       if (selLeagues.length && !selLeagues.includes(t.league)) return false;
@@ -60,7 +63,7 @@ export default function FMTeamDraw() {
     });
   }, [selLeagues, selNations, search]);
 
-  // helpers
+  // Async utility helpers for animation pacing and random choices.
   function delay(ms: number) { return new Promise((res) => setTimeout(res, ms)); }
   function pick<T>(arr: T[]) { return arr[Math.floor(Math.random() * arr.length)]!; }
 
@@ -78,7 +81,7 @@ export default function FMTeamDraw() {
   const toggleLock = (id: string) =>
     setList((cur) => cur.map((r) => (r.id === id ? { ...r, locked: !r.locked } : r)));
 
-  // UNIQUE assignments w/ suspense reveal
+  // Main draw routine: ensures unique teams per participant and animates the reveal.
   const assign = async () => {
     if (isDrawing) return;
     setErr(null);
@@ -449,7 +452,7 @@ export default function FMTeamDraw() {
   );
 }
 
-/* ---------- UI bits ---------- */
+// Empty list callout shown when no participants have been added yet.
 function EmptyState({ text }: { text: string }) {
   return (
     <div className="rounded-brand-xl border border-dashed border-border-light/70 bg-surface/90 p-6 text-center shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-overlayDark/80">
@@ -459,6 +462,7 @@ function EmptyState({ text }: { text: string }) {
   );
 }
 
+// Scrollable chip selector used for both league and nation filters.
 function ChipList({
   items,
   selected,
@@ -504,10 +508,11 @@ function ChipList({
   );
 }
 
-/* ---------- utils ---------- */
+// Short random id to track participant rows locally.
 function uid() {
   return Math.random().toString(36).slice(2, 9);
 }
+// Fisher–Yates shuffle for randomizing both people and team pools.
 function shuffle<T>(arr: T[]): T[] {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -519,7 +524,7 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-/* ---------- tiny confetti (no deps) ---------- */
+// Lightweight celebratory animation built with the Web Animations API.
 function confettiBurst() {
   const N = 80;
   for (let i = 0; i < N; i++) {
@@ -550,5 +555,3 @@ function confettiBurst() {
   }
 }
 
-/* ---------- brandy buttons ---------- */
-// removed legacy Btn helper in favour of buttonStyles

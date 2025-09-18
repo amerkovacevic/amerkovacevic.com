@@ -12,6 +12,7 @@ import {
   SecretSantaPage,
 } from "../../pages";
 
+// Application routes wire feature pages into the shared RootLayout shell.
 export const routes: RouteObject[] = [
   {
     path: "/",

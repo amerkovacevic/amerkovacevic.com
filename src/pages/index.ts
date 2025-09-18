@@ -1,3 +1,4 @@
+// Central export hub so routes can import every page from a single module.
 export { default as HomePage } from "./home/home-page";
 export { default as PickupPage } from "./pickup/pickup-page";
 export { default as PickupGamePage } from "./pickup/pickup-game-page";

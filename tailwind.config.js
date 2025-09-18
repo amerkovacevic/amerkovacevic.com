@@ -1,3 +1,5 @@
+// Tailwind pulls design tokens from the shared JSON file so design changes
+// stay consistent between utility classes and React components.
 import tokens from "./src/shared/design/tokens.json" assert { type: "json" };
 
 const brand = tokens.colors.brand;

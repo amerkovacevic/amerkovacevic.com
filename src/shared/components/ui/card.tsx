@@ -16,6 +16,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   padding?: CardPadding;
 }
 
+// Styled container component used across marketing sections.
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, padding = "md", ...props }, ref) => {
     return (

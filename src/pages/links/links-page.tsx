@@ -3,6 +3,8 @@ import { ReactNode } from "react";
 import { PageHero, PageSection } from "../../shared/components/page";
 import { cn } from "../../shared/lib/classnames";
 
+// Contact landing page with custom icons and quick links to public profiles.
+
 type LinkItem = {
   title: string;
   url: string;
@@ -11,6 +13,7 @@ type LinkItem = {
   textClassName?: string;
 };
 
+// Minimal inline SVG icons keep bundle size small without external packages.
 function InstagramIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -53,6 +56,7 @@ function LinkedinIcon({ className }: { className?: string }) {
 }
 
 export default function Links() {
+  // The list is tiny enough to live inline; each entry renders a CTA tile.
   const links: LinkItem[] = [
     {
       title: "GitHub",

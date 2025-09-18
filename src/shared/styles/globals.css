@@ -1,3 +1,4 @@
+/* Base Tailwind layers plus site-wide background + token variables. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

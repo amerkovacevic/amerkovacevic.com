@@ -7,6 +7,7 @@ import { ThemeToggle } from "../../shared/components/theme-toggle";
 import { auth, googleProvider } from "../../shared/lib/firebase";
 import { cn } from "../../shared/lib/classnames";
 
+// Lightweight Google "G" icon for the auth button to avoid extra assets.
 function GoogleG({ className = "h-4 w-4" }: { className?: string }) {
   return (
     <svg
@@ -23,9 +24,11 @@ function GoogleG({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
+// Shared page chrome with authentication controls and footer links.
 export default function RootLayout() {
   const [user, setUser] = useState<User | null>(null);
 
+  // Keep layout state aligned with Firebase auth changes.
   useEffect(() => onAuthStateChanged(auth, setUser), []);
 
   const handleSignIn = async () => {
@@ -131,6 +134,7 @@ export default function RootLayout() {
   );
 }
 
+// Reusable auth + theme controls shown in both mobile and desktop headers.
 function AuthControls({
   user,
   onSignIn,

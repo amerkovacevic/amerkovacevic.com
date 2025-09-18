@@ -21,8 +21,13 @@ import { buttonStyles } from "../../shared/components/ui/button";
 import { Card } from "../../shared/components/ui/card";
 import { cn } from "../../shared/lib/classnames";
 
+// Pickup surfaces all open community games, keeps the roster updated via
+// Firestore listeners, and lets signed-in users manage their RSVP status.
+
 type Ctx = { user: User | null };
 
+// Snapshot of a pickup game document; `dateTime` may already be materialized
+// into a JS timestamp depending on where the data originated.
 export type Game = {
   id: string;
   title: string;
@@ -49,6 +54,8 @@ export default function Pickup() {
   );
 
   useEffect(() => {
+    // Subscribe to live updates for all open games so the lobby reacts instantly
+    // when another player signs up.
     const q = query(
       collection(db, "games"),
       where("status", "==", "open"),
@@ -125,6 +132,7 @@ export default function Pickup() {
   );
 }
 
+// GameCard renders a single lobby entry and exposes RSVP controls.
 function GameCard({ game, user }: { game: Game; user: User | null }) {
   const [goingCount, setGoingCount] = useState(0);
   const [myStatus, setMyStatus] = useState<"going" | "maybe" | "out" | "none">(
@@ -149,6 +157,8 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
   }, [gameDate]);
 
   useEffect(() => {
+    // Listen to the RSVP subcollection so seats remaining update in real time
+    // without reloading the whole page.
     const rsvpsCol = collection(db, "games", game.id, "rsvps");
     const unsubscribe = onSnapshot(rsvpsCol, (snap) => {
       let going = 0;
@@ -189,6 +199,8 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
   );
 
   const setRSVP = async (status: "going" | "maybe" | "out") => {
+    // Guardrails ensure anonymous users cannot mutate Firestore and that
+    // we respect the roster size.
     if (!user) {
       alert("Please sign in first");
       return;
@@ -228,6 +240,8 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
   };
 
   const handleGuestChange = async (value: number) => {
+    // Persist guest counts on change so the organizer always has the latest
+    // headcount without additional save buttons.
     const guests = normalizeGuests(value);
     setGuestCount(guests);
     if (!user || myStatus !== "going") return;
@@ -376,6 +390,7 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
   );
 }
 
+// Skeleton card shown while Firestore fetches the game list.
 function LoadingState() {
   return (
     <Card padding="lg" className="animate-pulse text-sm text-brand-muted dark:text-brand-subtle">
@@ -384,6 +399,7 @@ function LoadingState() {
   );
 }
 
+// Friendly error message when the games query fails.
 function ErrorState({ message }: { message: string }) {
   return (
     <Card padding="lg" className="text-sm text-red-500">
@@ -392,6 +408,7 @@ function ErrorState({ message }: { message: string }) {
   );
 }
 
+// Prompt when no games are scheduled yet.
 function EmptyState() {
   return (
     <Card padding="lg" className="text-center">
@@ -407,6 +424,7 @@ function EmptyState() {
   );
 }
 
+// Shared CTA used both in the hero and empty state.
 function CreateGameButton({ className }: { className?: string }) {
   return (
     <MotionLink
@@ -425,6 +443,8 @@ function CreateGameButton({ className }: { className?: string }) {
   );
 }
 
+// Utility to coerce Firestore timestamps, epoch numbers, or nullish values
+// into a plain Date object when possible.
 export function toDate(value: Timestamp | number | null | undefined) {
   if (!value && value !== 0) return null;
   if (value instanceof Timestamp) return value.toDate();
@@ -434,6 +454,8 @@ export function toDate(value: Timestamp | number | null | undefined) {
   return null;
 }
 
+// Guest selections come from <select> elements; normalize whatever shape we
+// receive into a safe integer between 0 and 3.
 function normalizeGuests(value: unknown) {
   if (typeof value === "number") {
     if (Number.isFinite(value)) {

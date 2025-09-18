@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import { cn } from "../lib/classnames";
 import { Card } from "./ui/card";
 
+// Layout primitives reused across marketing-style pages.
 export function PageHero({
   icon,
   title,
@@ -95,6 +96,7 @@ export function PageHero({
   );
 }
 
+// Reusable card section wrapper with optional header and actions.
 export function PageSection({
   title,
   description,
@@ -145,6 +147,7 @@ export function PageSection({
   );
 }
 
+// Capsule-shaped badge for highlighting quick stats.
 export function StatPill({ children }: { children: ReactNode }) {
   return (
     <span className="inline-flex items-center gap-2 rounded-brand-full border border-brand/20 bg-brand/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-strong/80 shadow-brand-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/10 dark:text-white/80">

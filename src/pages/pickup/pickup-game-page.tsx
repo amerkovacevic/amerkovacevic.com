@@ -19,6 +19,9 @@ import { Card } from "../../shared/components/ui/card";
 import type { Game } from "./pickup-page";
 import { toDate } from "./pickup-page";
 
+// Organizer view for a single pickup game. It streams game + RSVP updates,
+// exposes duplication tooling, and allows deleting the entire event safely.
+
 type Ctx = { user: User | null };
 type RSVPStatus = "going" | "maybe" | "out";
 
@@ -58,6 +61,8 @@ export default function PickupGamePage() {
   });
 
   useEffect(() => {
+    // Watch the game document for live edits or deletions so the organizer can
+    // react immediately if someone else updates the listing.
     if (!gameId) {
       setErr("Game not found.");
       setLoading(false);
@@ -90,6 +95,7 @@ export default function PickupGamePage() {
   }, [gameId]);
 
   useEffect(() => {
+    // Group RSVPs by status to power the management dashboard sections.
     if (!gameId) return;
     const ref = collection(db, "games", gameId, "rsvps");
     const unsub = onSnapshot(ref, (snap) => {
@@ -136,6 +142,7 @@ export default function PickupGamePage() {
   }, [gameDate]);
 
   const counts = useMemo(() => {
+    // Pre-compute totals to avoid recomputing inside the render tree.
     const sumHeads = (entries: RSVPEntry[]) =>
       entries.reduce((total, entry) => total + 1 + (entry.guests ?? 0), 0);
     return {
@@ -162,6 +169,8 @@ export default function PickupGamePage() {
   }, [game]);
 
   const handleDelete = async () => {
+    // Deletes every RSVP document and the game itself in a single batch so no
+    // orphaned data is left behind.
     if (!gameId || !canManage) return;
     const confirmed = window.confirm(
       "Delete this game and all RSVP data? This cannot be undone."
@@ -348,6 +357,7 @@ export default function PickupGamePage() {
   );
 }
 
+// Semantic definition list row used in the detail summary grid.
 function DetailItem({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="space-y-1">
@@ -359,6 +369,7 @@ function DetailItem({ label, children }: { label: string; children: ReactNode })
   );
 }
 
+// RSVP docs may store guests as strings or numbers; normalize to a safe int.
 function normalizeGuests(value: unknown) {
   if (typeof value === "number" && Number.isFinite(value)) {
     return clampGuestValue(value);
