@@ -44,6 +44,8 @@ export default function FMTeamDraw() {
   const [selLeagues, setSelLeagues] = useState<string[]>([]);
   const [selNations, setSelNations] = useState<string[]>([]);
   const [search, setSearch] = useState("");
+  const [singleLeagueMode, setSingleLeagueMode] = useState(false);
+  const [lastDrawLeague, setLastDrawLeague] = useState<string | null>(null);
 
   const pool = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -86,7 +88,47 @@ export default function FMTeamDraw() {
 
     // Exclude teams already taken by locked rows
     const taken = new Set(list.filter((r) => r.locked && r.team).map((r) => r.team!.id));
-    const available = pool.filter((t) => !taken.has(t.id));
+    let available = pool.filter((t) => !taken.has(t.id));
+    let chosenLeague: string | null = null;
+
+    if (singleLeagueMode) {
+      const lockedLeagues = new Set(
+        list.filter((r) => r.locked && r.team).map((r) => r.team!.league)
+      );
+      if (lockedLeagues.size > 1) {
+        setErr("Locked assignments span multiple leagues. Unlock some entries or disable single-league mode.");
+        return;
+      }
+
+      const teamsByLeague = new Map<string, Team[]>();
+      for (const team of available) {
+        const cur = teamsByLeague.get(team.league);
+        if (cur) cur.push(team);
+        else teamsByLeague.set(team.league, [team]);
+      }
+
+      const preferredLeagues =
+        lockedLeagues.size === 1
+          ? Array.from(lockedLeagues).filter((lg) => teamsByLeague.has(lg))
+          : selLeagues.length
+          ? selLeagues.filter((lg) => teamsByLeague.has(lg))
+          : Array.from(teamsByLeague.keys());
+
+      const eligible = preferredLeagues
+        .map((league) => ({ league, teams: teamsByLeague.get(league)! }))
+        .filter(({ teams }) => teams.length >= unlocked.length);
+
+      if (!eligible.length) {
+        setErr(
+          "Not enough teams within a single league to complete the draw. Adjust your filters or disable single-league mode."
+        );
+        return;
+      }
+
+      const selection = lockedLeagues.size === 1 ? eligible[0]! : pick(eligible);
+      chosenLeague = selection.league;
+      available = selection.teams;
+    }
 
     if (available.length < unlocked.length) {
       setErr(
@@ -107,6 +149,7 @@ export default function FMTeamDraw() {
     // Suspense animation: reveal one-by-one
     setIsDrawing(true);
     try {
+      setLastDrawLeague(chosenLeague);
       for (const person of shuffledPeople) {
         const endTime = Date.now() + 1000 + Math.random() * 400; // 1.0–1.4s roll
         while (Date.now() < endTime) {
@@ -132,8 +175,10 @@ export default function FMTeamDraw() {
     }
   };
 
-  const clearTeams = () =>
+  const clearTeams = () => {
+    setLastDrawLeague(null);
     setList((cur) => cur.map((r) => ({ ...r, team: undefined, locked: false })));
+  };
 
   const copyResults = async () => {
     const lines = list.map((r) =>
@@ -366,6 +411,32 @@ export default function FMTeamDraw() {
               Reset assignments
             </button>
           </div>
+
+          <label className="flex items-start gap-2 text-sm text-brand-strong dark:text-white/80">
+            <input
+              type="checkbox"
+              checked={singleLeagueMode}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setSingleLeagueMode(checked);
+                if (!checked) setLastDrawLeague(null);
+              }}
+              disabled={isDrawing}
+              className="mt-1"
+            />
+            <span>
+              Keep everyone in the same league
+              <span className="block text-[11px] font-normal text-brand-muted">
+                Randomly pick one eligible league (respecting locks) and assign all unlocked players within it.
+              </span>
+            </span>
+          </label>
+
+          {singleLeagueMode && lastDrawLeague && (
+            <div className="text-[11px] text-brand-muted">
+              Last draw league: <strong>{lastDrawLeague}</strong>
+            </div>
+          )}
 
           {"meta" in (data as any) && (
             <div className="text-[11px] text-brand-muted">
