@@ -1,5 +1,8 @@
 /// <reference types="vite/client" />
 
+// Describe the Firebase variables we expect at build time so TypeScript
+// catches missing or misspelled keys before shipping.
+
 interface ImportMetaEnv {
   readonly VITE_FIREBASE_API_KEY: string;
   readonly VITE_FIREBASE_AUTH_DOMAIN: string;

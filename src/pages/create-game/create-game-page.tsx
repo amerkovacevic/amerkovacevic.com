@@ -14,9 +14,15 @@ import {
 import { PageHero, PageSection, StatPill } from "../../shared/components/page";
 import { buttonStyles } from "../../shared/components/ui/button";
 
+// CreateGame is the admin-facing form that persists pickup matches to
+// Firestore and redirects back to the public listing once the document exists.
+
 type Ctx = { user: User | null };
 
+// When cloning from older games we nudge the date one week into the future.
 const DATE_SHIFT_DAYS = 7;
+
+// Convert a Date into the browser-friendly value for a datetime-local input.
 
 function toLocalDateTimeInput(date: Date) {
   const offsetMs = date.getTimezoneOffset() * 60 * 1000;
@@ -31,6 +37,8 @@ export default function CreateGame() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Support pre-filling the form via query params so existing games can be
+  // cloned with minimal typing.
   const titlePrefill = searchParams.get("title")?.trim() ?? "";
   const fieldPrefill = searchParams.get("fieldName")?.trim() ?? "";
   const maxPlayersPrefill = (() => {
@@ -85,6 +93,8 @@ export default function CreateGame() {
       return;
     }
 
+    // Disable inputs while Firestore requests resolve so users cannot submit
+    // duplicate games.
     setBusy(true);
     setError(null);
     try {

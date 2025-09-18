@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 
+// Static catalogue of tools surfaced on the landing page.
 const APPS = [
   {
     id: "pickup",
@@ -41,6 +42,7 @@ const APPS = [
 
 type App = (typeof APPS)[number];
 
+// HomePage showcases every mini-app and routes users when a card is selected.
 export default function HomePage() {
   return (
     <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -51,6 +53,7 @@ export default function HomePage() {
   );
 }
 
+// Individual app card handles keyboard interaction so the grid stays accessible.
 function AppCard({ app }: { app: App }) {
   const navigate = useNavigate();
 

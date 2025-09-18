@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 type Theme = "light" | "dark";
 type Ctx = { theme: Theme; toggle: () => void; set: (t: Theme) => void };
 
+// Share theme state across the entire SPA.
 const ThemeContext = createContext<Ctx | null>(null);
 
 function getSystemPref(): Theme {

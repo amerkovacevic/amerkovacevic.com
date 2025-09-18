@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { useTheme } from "../../app/providers";
 import { cn } from "../lib/classnames";
 
+// Toggle between dark/light themes with an animated pill control.
 export function ThemeToggle({ className }: { className?: string }) {
   const { theme, toggle } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  // Avoid hydration mismatches by rendering a placeholder until the client mounts.
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {

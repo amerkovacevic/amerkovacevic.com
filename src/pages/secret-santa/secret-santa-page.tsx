@@ -22,6 +22,9 @@ import { buttonStyles } from "../../shared/components/ui/button";
 import { Card } from "../../shared/components/ui/card";
 import { cn } from "../../shared/lib/classnames";
 
+// Secret Santa orchestrates event lifecycle: creation, membership, preference
+// capture, and match assignments stored in Firestore collections.
+
 type Ctx = { user: User | null };
 
 type EventDoc = {
@@ -57,7 +60,7 @@ export default function SecretSanta() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  // --- LOCAL HELPERS ---
+  // Convert a comma-separated input into a clean list capped to a few entries.
   const normList = (s: string, max = 3) =>
     s
       .split(",")
@@ -65,7 +68,7 @@ export default function SecretSanta() {
       .filter(Boolean)
       .slice(0, max);
 
-  // Restore event
+  // Restore the last viewed event from localStorage so organizers rejoin fast.
   useEffect(() => {
     const saved = localStorage.getItem("santaEventId");
     if (saved) {
@@ -74,7 +77,7 @@ export default function SecretSanta() {
     }
   }, []);
 
-  // Subscribe to event
+  // Subscribe to the selected event document for name/date updates.
   useEffect(() => {
     if (!eventId) return;
     const ref = doc(db, "santaEvents", eventId);
@@ -96,7 +99,7 @@ export default function SecretSanta() {
     return () => unsub();
   }, [eventId]);
 
-  // Members + my assignment
+  // Stream member roster changes into local state.
   useEffect(() => {
     if (!activeEvent) return;
 
@@ -123,6 +126,7 @@ export default function SecretSanta() {
   }, [activeEvent?.id]);
 
   useEffect(() => {
+    // Track the signed-in user's assignment document to display their match.
     if (!activeEvent || !user) {
       setRecipientUid(null);
       setMyMatch(null);
@@ -148,6 +152,7 @@ export default function SecretSanta() {
   }, [activeEvent?.id, user?.uid]);
 
   useEffect(() => {
+    // Lookup the full member record for the assigned recipient when it flips.
     if (!recipientUid) {
       setMyMatch(null);
       return;
@@ -156,7 +161,7 @@ export default function SecretSanta() {
     setMyMatch(match);
   }, [members, recipientUid]);
 
-  // Derived
+  // Derived flags that simplify conditional UI logic.
   const isOrganizer = useMemo(
     () => Boolean(activeEvent && user && user.uid === activeEvent.organizerUid),
     [activeEvent, user]
@@ -164,7 +169,7 @@ export default function SecretSanta() {
   const hasEnoughMembers = members.length >= 2;
   const canDraw = isOrganizer && hasEnoughMembers;
 
-  // Create event (organizer auto-joins, can edit prefs in-event)
+  // Create event (organizer auto-joins and can edit prefs immediately).
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) return setErr("Please sign in.");
@@ -189,7 +194,7 @@ export default function SecretSanta() {
         createdAt: serverTimestamp(),
       });
 
-      // organizer joins immediately (blank prefs; they can edit below)
+      // Organizer joins immediately so they can update preferences right away.
       await setDoc(doc(db, "santaEvents", eventRef.id, "members", user.uid), {
         name: user.displayName ?? "Anonymous",
         email: user.email ?? "",
@@ -209,7 +214,7 @@ export default function SecretSanta() {
     }
   };
 
-  // Join (with preferences)
+  // Join flow lets guests submit wishlists as they enter.
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) {
@@ -273,8 +278,7 @@ export default function SecretSanta() {
     }
   };
 
-
-  // Update my preferences (inline editor in event view)
+  // Update my preferences (inline editor in event view).
   const saveMyPrefs = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!activeEvent || !user) return;
@@ -306,7 +310,7 @@ export default function SecretSanta() {
     }
   };
 
-  // Draw (unchanged pairing logic)
+  // Draw assigns each member a recipient while avoiding self-assignments.
   const runDraw = async () => {
     if (!activeEvent || !isOrganizer) return;
     setLoading(true);
@@ -362,7 +366,7 @@ export default function SecretSanta() {
         })
       );
 
-      // Refresh my match display
+      // Refresh my match display so the organizer sees their assignment too.
       if (user) {
         const my = await getDoc(doc(db, "santaEvents", activeEvent.id, "assignments", user.uid));
         if (my.exists()) {
@@ -631,7 +635,7 @@ export default function SecretSanta() {
   );
 }
 
-/** UI helpers */
+// Presentation-only helpers to keep the main component readable.
 function PreferenceList({ label, items }: { label: string; items: string[] }) {
   return (
     <div className="text-sm text-brand-muted dark:text-brand-subtle">
@@ -652,11 +656,12 @@ function Alert({ tone, children }: { tone: "error" | "info"; children: ReactNode
   );
 }
 
-/** Helpers */
+// Format preference arrays for display, falling back to an em dash.
 function listOrDash(arr: string[]) {
   return arr && arr.length ? arr.join(", ") : "—";
 }
 
+// Generate a high-contrast alphanumeric join code with ambiguous characters removed.
 function makeCode(len = 6) {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let out = "";
@@ -664,6 +669,7 @@ function makeCode(len = 6) {
   return out;
 }
 
+// Fisher–Yates shuffle used when assigning recipients randomly.
 function shuffle<T>(arr: T[]): T[] {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {

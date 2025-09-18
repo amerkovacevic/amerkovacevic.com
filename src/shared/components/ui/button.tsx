@@ -36,6 +36,7 @@ export interface ButtonStyleOptions {
   className?: string;
 }
 
+// Compose Tailwind classes for button variants and share between <button> and links.
 export function buttonStyles({ variant = "primary", size = "md", className }: ButtonStyleOptions = {}) {
   return cn(
     "inline-flex items-center justify-center gap-2 rounded-brand-full font-medium transition-all duration-200",
@@ -54,6 +55,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   rightIcon?: ReactNode;
 }
 
+// Forward-ref button component that consumes the shared style generator.
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     { className, variant = "primary", size = "md", leftIcon, rightIcon, children, type = "button", ...props },

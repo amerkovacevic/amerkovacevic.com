@@ -9,6 +9,9 @@ import { buttonStyles } from "../../shared/components/ui/button";
 import { Card } from "../../shared/components/ui/card";
 import { cn } from "../../shared/lib/classnames";
 
+// Single-elimination bracket generator with local persistence and live standings.
+
+// Bracket tree primitives used throughout the module.
 type Match = {
   id: string;
   p1: string | null;
@@ -23,6 +26,7 @@ type Bracket = { rounds: Round[]; thirdPlace?: Match | null };
 
 const STORAGE_KEY = "fifa-bracket";
 
+// Restore saved state from localStorage so tournaments survive refreshes.
 function load(): { players: string[]; thirdPlace: boolean; bracket: Bracket | null } {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -33,14 +37,17 @@ function load(): { players: string[]; thirdPlace: boolean; bracket: Bracket | nu
   }
 }
 
+// Persist the current bracket snapshot.
 function save(state: { players: string[]; thirdPlace: boolean; bracket: Bracket | null }) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
+// Expand the player count to the nearest power of two to calculate byes.
 function nextPowerOfTwo(n: number) {
   return Math.pow(2, Math.ceil(Math.log2(Math.max(1, n))));
 }
 
+// Build the full bracket structure from an ordered list of seeds.
 function seedToRounds(seeds: string[], withThirdPlace: boolean): Bracket {
   const totalSlots = nextPowerOfTwo(seeds.length);
   const byes = totalSlots - seeds.length;
@@ -77,6 +84,7 @@ function seedToRounds(seeds: string[], withThirdPlace: boolean): Bracket {
   return { rounds, thirdPlace };
 }
 
+// Propagate winners forward and reset downstream scores when matchups change.
 function updateAdvancement(bracket: Bracket) {
   for (let r = 1; r < bracket.rounds.length; r++) {
     const prevRound = bracket.rounds[r - 1];
@@ -143,12 +151,14 @@ function updateAdvancement(bracket: Bracket) {
   }
 }
 
+// Extract the champion name for the banner + standings panel.
 function getFinalWinner(b: Bracket | null): string | null {
   if (!b || b.rounds.length === 0) return null;
   const finalMatch = b.rounds[b.rounds.length - 1]?.matches?.[0];
   return finalMatch?.winner ?? null;
 }
 
+// Generate a markdown-friendly summary for clipboard sharing.
 function buildSummary(b: Bracket): string {
   const lines: string[] = [];
   for (let r = 0; r < b.rounds.length; r++) {
@@ -170,6 +180,7 @@ function buildSummary(b: Bracket): string {
   return lines.join("\n");
 }
 
+// Derive podium placements and semifinal losers for the standings panel.
 function computePlacings(b: Bracket | null): {
   first: string | null;
   second: string | null;
@@ -215,14 +226,15 @@ function computePlacings(b: Bracket | null): {
   return { first, second, third, semifinalLosers };
 }
 
+// Main bracket experience: handles player management, draws, and rendering UI.
 export default function Bracket() {
   const snapshot = load();
   const [players, setPlayers] = useState<string[]>(snapshot.players ?? []);
   const [withThirdPlace, setWithThirdPlace] = useState<boolean>(snapshot.thirdPlace ?? false);
   const [bracket, setBracket] = useState<Bracket | null>(snapshot.bracket);
-  /* layout removed */
   const [copied, setCopied] = useState(false);
 
+  // Persist helper keeps localStorage up to date with minimal boilerplate.
   function persist(next: Partial<{ players: string[]; thirdPlace: boolean; bracket: Bracket | null }>) {
     const s = { players, thirdPlace: withThirdPlace, bracket, ...next };
     save(s as any);
@@ -239,11 +251,13 @@ export default function Bracket() {
     const next = cleanPlayers.filter((_, i) => i !== idx);
     setPlayers(next); persist({ players: next });
   }
+  // Fisher–Yates shuffle for seed order.
   function randomize() {
     const arr = [...cleanPlayers];
     for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const tmp = arr[i]!; arr[i] = arr[j]!; arr[j] = tmp; }
     setPlayers(arr); persist({ players: arr });
   }
+  // Generate the bracket tree from the current player list.
   function buildBracket() {
     if (cleanPlayers.length < 2) return;
     const b = seedToRounds(cleanPlayers, withThirdPlace);
@@ -251,6 +265,7 @@ export default function Bracket() {
   }
   function clearBracket() { setBracket(null); persist({ bracket: null }); }
 
+  // Toggle optional third-place match while preserving existing scores.
   function toggleThirdPlace() {
     const next = !withThirdPlace;
     setWithThirdPlace(next);
@@ -296,12 +311,14 @@ export default function Bracket() {
     updateAdvancement(b);
     setBracket(b); persist({ bracket: b });
   }
+  // Handle pasted comma/newline separated lists of entrants.
   function pasteList(raw: string) {
     const tokens = raw.split(/[\n,]+/g).map(s => s.trim()).filter(Boolean);
     const deduped = Array.from(new Set([...cleanPlayers, ...tokens]));
     setPlayers(deduped); persist({ players: deduped });
   }
 
+  // Compute podium details for the standings sidebar.
   const placements = computePlacings(bracket);
 
   const playerCount = cleanPlayers.length;
@@ -439,6 +456,7 @@ export default function Bracket() {
   );
 }
 
+// Displays champion/runner-up standings as soon as results are entered.
 function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | null; placements: ReturnType<typeof computePlacings>; hasThird: boolean; }) {
   if (!bracket) {
     return (
@@ -481,6 +499,7 @@ function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | n
   );
 }
 
+// Editable roster management widget for adding/removing entrants.
 function PlayerList({ players, onAdd, onRemove, onPaste }: { players: string[]; onAdd: (name: string) => void; onRemove: (idx: number) => void; onPaste: (raw: string) => void; }) {
   const [name, setName] = useState("");
   return (
@@ -544,7 +563,7 @@ function PlayerList({ players, onAdd, onRemove, onPaste }: { players: string[]; 
     </div>
   );
 }
-/** Vertical layout (stacked rounds, simple grid) */
+// Renders the bracket rounds in a stacked layout for clarity on small screens.
 function BracketVertical({ bracket, setScore, resetScores }: { bracket: Bracket; setScore: (rIdx: number, mIdx: number, s1: number | null, s2: number | null) => void; resetScores: (rIdx: number, mIdx: number) => void; }) {
   return (
     <div className="space-y-6">
@@ -601,6 +620,7 @@ function BracketVertical({ bracket, setScore, resetScores }: { bracket: Bracket;
   );
 }
 
+// Score editor for a single match; updates propagate via updateAdvancement.
 function MatchCard({ match, onScore, onReset, readOnly }: { match: Match; onScore: (s1: number | null, s2: number | null) => void; onReset: () => void; readOnly?: boolean; }) {
   const [s1, setS1] = useState<string>(match.s1?.toString() ?? "");
   const [s2, setS2] = useState<string>(match.s2?.toString() ?? "");
