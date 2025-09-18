@@ -203,7 +203,7 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
         <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h3 className="text-lg font-semibold text-brand-strong dark:text-white">{game.title}</h3>
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-brand-muted">
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-brand-muted dark:text-brand-subtle">
               <span className="inline-flex items-center gap-1 rounded-brand-full bg-surface/70 px-3 py-1">
                 📍 {game.fieldName}
               </span>
@@ -219,7 +219,7 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
           </div>
           <div className="text-right text-sm">
             <div className="font-semibold text-brand">{goingCount}</div>
-            <div className="text-xs uppercase tracking-[0.18em] text-brand-muted">of {game.maxPlayers} spots</div>
+            <div className="text-xs uppercase tracking-[0.18em] text-brand-muted dark:text-brand-subtle">of {game.maxPlayers} spots</div>
             <div className="mt-1 text-xs text-brand-subtle">
               {full ? "Roster full" : `${game.maxPlayers - goingCount} spots left`}
             </div>
@@ -302,7 +302,7 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
 
 function LoadingState() {
   return (
-    <Card padding="lg" className="animate-pulse text-sm text-brand-muted">
+    <Card padding="lg" className="animate-pulse text-sm text-brand-muted dark:text-brand-subtle">
       Loading games…
     </Card>
   );
@@ -323,7 +323,7 @@ function EmptyState() {
       <h3 className="mt-3 text-lg font-semibold text-brand-strong dark:text-white">
         No upcoming games
       </h3>
-      <p className="mt-2 text-sm text-brand-muted">
+      <p className="mt-2 text-sm text-brand-muted dark:text-brand-subtle">
         Be the first to post one for this week.
       </p>
       <CreateGameButton className="mt-4" />

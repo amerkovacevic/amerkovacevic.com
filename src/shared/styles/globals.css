@@ -42,6 +42,7 @@ body {
   background-attachment: fixed;
   color: var(--color-brand-strong);
   min-height: 100vh;
+  overflow-x: hidden;
   position: relative;
 }
 

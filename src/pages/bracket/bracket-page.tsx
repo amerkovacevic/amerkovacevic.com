@@ -442,7 +442,7 @@ export default function Bracket() {
 function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | null; placements: ReturnType<typeof computePlacings>; hasThird: boolean; }) {
   if (!bracket) {
     return (
-      <p className="text-sm text-brand-muted">
+      <p className="text-sm text-brand-muted dark:text-brand-subtle">
         Add players and click <span className="font-medium text-brand-strong">Generate</span> to create a bracket.
       </p>
     );
@@ -457,7 +457,7 @@ function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | n
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-brand-muted">Standings (live)</h3>
+      <h3 className="text-sm font-semibold text-brand-muted dark:text-brand-subtle">Standings (live)</h3>
       <ul className="space-y-2 text-sm text-brand-strong dark:text-white">
         <li className="flex items-center justify-between rounded-brand-full border border-border-light/60 bg-white/80 px-3 py-2 shadow-brand-sm backdrop-blur-sm dark:border-border-dark/60 dark:bg-white/10">
           <span className="inline-flex items-center gap-2 font-medium"><span>🥇</span> Champion</span>
@@ -495,7 +495,7 @@ function PlayerList({ players, onAdd, onRemove, onPaste }: { players: string[]; 
               setName("");
             }
           }}
-          className="flex-1 rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+          className="flex-1 rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
           placeholder="Add player (e.g., Amer)"
         />
         <button
@@ -511,7 +511,7 @@ function PlayerList({ players, onAdd, onRemove, onPaste }: { players: string[]; 
       </div>
       <textarea
         placeholder="Or paste a list (comma or new lines)"
-        className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+        className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
         rows={3}
         onPaste={(e) => {
           const txt = e.clipboardData.getData("text");
@@ -532,7 +532,7 @@ function PlayerList({ players, onAdd, onRemove, onPaste }: { players: string[]; 
             <span className="truncate text-brand-strong dark:text-white">{p}</span>
             <button
               type="button"
-              className="rounded-brand-full p-1 text-brand-muted transition hover:bg-brand/10 hover:text-brand"
+              className="rounded-brand-full p-1 text-brand-muted transition hover:bg-brand/10 hover:text-brand dark:text-brand-subtle dark:hover:text-brand-foreground"
               onClick={() => onRemove(i)}
               title="Remove"
             >
@@ -593,7 +593,7 @@ function BracketVertical({ bracket, setScore, resetScores }: { bracket: Bracket;
           {bracket.thirdPlace.p1 && bracket.thirdPlace.p2 ? (
             <MatchCard match={bracket.thirdPlace} onScore={() => {}} onReset={() => {}} readOnly={!bracket.thirdPlace.p1 || !bracket.thirdPlace.p2} />
           ) : (
-            <div className="text-sm text-brand-muted">Decide semifinals to populate 3rd place.</div>
+            <div className="text-sm text-brand-muted dark:text-brand-subtle">Decide semifinals to populate 3rd place.</div>
           )}
         </div>
       ) : null}
@@ -636,7 +636,7 @@ function MatchCard({ match, onScore, onReset, readOnly }: { match: Match; onScor
           Match {match.id}
         </span>
         <button
-          className="text-xs font-medium text-brand-muted underline-offset-2 transition hover:text-brand hover:underline disabled:opacity-40"
+          className="text-xs font-medium text-brand-muted underline-offset-2 transition hover:text-brand hover:underline disabled:opacity-40 dark:text-brand-subtle dark:hover:text-brand-foreground"
           onClick={onReset}
           disabled={readOnly}
         >
