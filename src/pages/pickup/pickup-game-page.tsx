@@ -143,6 +143,15 @@ export default function PickupGamePage() {
 
   const spotsLeft = game ? Math.max(game.maxPlayers - counts.going, 0) : 0;
   const canManage = Boolean(user && game && user.uid === game.organizerUid);
+  const duplicateGameUrl = useMemo(() => {
+    if (!game) return null;
+    const params = new URLSearchParams();
+    if (game.title) params.set("title", game.title);
+    if (game.fieldName) params.set("fieldName", game.fieldName);
+    if (game.maxPlayers) params.set("maxPlayers", String(game.maxPlayers));
+    params.set("dateTime", new Date().toISOString());
+    return `/new?${params.toString()}`;
+  }, [game]);
 
   const handleDelete = async () => {
     if (!gameId || !canManage) return;
@@ -181,14 +190,26 @@ export default function PickupGamePage() {
             : "Manage RSVPs and details for your pickup session."
         }
         actions={
-          <MotionLink
-            to="/pickup"
-            whileHover={{ y: -1 }}
-            whileTap={{ scale: 0.97 }}
-            className={buttonStyles({ variant: "secondary", size: "sm" })}
-          >
-            ← Back to games
-          </MotionLink>
+          <div className="flex flex-wrap gap-2">
+            <MotionLink
+              to="/pickup"
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              className={buttonStyles({ variant: "secondary", size: "sm" })}
+            >
+              ← Back to games
+            </MotionLink>
+            {canManage && duplicateGameUrl ? (
+              <MotionLink
+                to={duplicateGameUrl}
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className={buttonStyles({ size: "sm" })}
+              >
+                Duplicate game
+              </MotionLink>
+            ) : null}
+          </div>
         }
         stats={
           game ? (
