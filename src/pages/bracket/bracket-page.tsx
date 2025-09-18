@@ -495,7 +495,7 @@ function PlayerList({ players, onAdd, onRemove, onPaste }: { players: string[]; 
               setName("");
             }
           }}
-          className="flex-1 rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+          className="flex-1 rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
           placeholder="Add player (e.g., Amer)"
         />
         <button
@@ -511,7 +511,7 @@ function PlayerList({ players, onAdd, onRemove, onPaste }: { players: string[]; 
       </div>
       <textarea
         placeholder="Or paste a list (comma or new lines)"
-        className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+        className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
         rows={3}
         onPaste={(e) => {
           const txt = e.clipboardData.getData("text");

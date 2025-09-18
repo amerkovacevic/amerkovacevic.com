@@ -224,7 +224,7 @@ export default function FMTeamDraw() {
               value={bulkNames}
               onChange={(e) => setBulkNames(e.target.value)}
               placeholder="Enter names (comma or newline separated)"
-              className="h-28 w-full rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+              className="h-28 w-full rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
             />
             <button
               onClick={addNames}
@@ -337,7 +337,7 @@ export default function FMTeamDraw() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search team / league / nation…"
-              className="w-full rounded-brand border border-border-light bg-surface px-3 py-2 pl-9 text-sm shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark"
+              className="w-full rounded-brand border border-border-light bg-surface px-3 py-2 pl-9 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
               disabled={isDrawing}
             />
             <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted">🔎</span>
