@@ -1,5 +1,5 @@
-import { FormEvent, useState } from "react";
-import { useOutletContext, useNavigate, Link } from "react-router-dom";
+import { FormEvent, useMemo, useState } from "react";
+import { useOutletContext, useNavigate, Link, useSearchParams } from "react-router-dom";
 import type { User } from "firebase/auth";
 import { db } from "../../shared/lib/firebase";
 import {
@@ -16,11 +16,47 @@ import { buttonStyles } from "../../shared/components/ui/button";
 
 type Ctx = { user: User | null };
 
+const DATE_SHIFT_DAYS = 7;
+
+function toLocalDateTimeInput(date: Date) {
+  const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+  const local = new Date(date.getTime() - offsetMs);
+  return local.toISOString().slice(0, 16);
+}
+
 export default function CreateGame() {
   const { user } = useOutletContext<Ctx>();
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const titlePrefill = searchParams.get("title")?.trim() ?? "";
+  const fieldPrefill = searchParams.get("fieldName")?.trim() ?? "";
+  const maxPlayersPrefill = (() => {
+    const raw = searchParams.get("maxPlayers");
+    if (!raw) return "";
+    const parsed = parseInt(raw, 10);
+    if (!Number.isFinite(parsed)) return "";
+    return String(Math.min(30, Math.max(2, parsed)));
+  })();
+  const dateParamRaw = searchParams.get("dateTime");
+  const datePrefill = useMemo(() => {
+    if (!dateParamRaw) return "";
+    const parsed = new Date(dateParamRaw);
+    if (Number.isNaN(parsed.getTime())) return "";
+    const shifted = new Date(
+      parsed.getTime() + DATE_SHIFT_DAYS * 24 * 60 * 60 * 1000
+    );
+    return toLocalDateTimeInput(shifted);
+  }, [dateParamRaw]);
+
+  const hasPrefillNotice = Boolean(
+    titlePrefill ||
+      fieldPrefill ||
+      maxPlayersPrefill ||
+      dateParamRaw
+  );
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -98,6 +134,13 @@ export default function CreateGame() {
         }
       />
 
+      {hasPrefillNotice ? (
+        <p className="text-sm text-brand-muted dark:text-brand-subtle">
+          We prefilled these details from a previous game—double-check anything you
+          need before publishing.
+        </p>
+      ) : null}
+
       <PageSection
         title="Game details"
         description="Fill out the essentials. We’ll auto-save the field for next time and ping your friends as soon as it’s live."
@@ -114,6 +157,7 @@ export default function CreateGame() {
               <input
                 name="title"
                 placeholder="7v7 at Tower Grove"
+                defaultValue={titlePrefill}
                 className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
                 required
               />
@@ -124,6 +168,7 @@ export default function CreateGame() {
               <input
                 name="dateTime"
                 type="datetime-local"
+                defaultValue={datePrefill}
                 className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark dark:text-white"
                 required
               />
@@ -134,6 +179,7 @@ export default function CreateGame() {
               <input
                 name="fieldName"
                 placeholder="Imo’s Soccer Park"
+                defaultValue={fieldPrefill}
                 className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
                 required
               />
@@ -146,7 +192,7 @@ export default function CreateGame() {
                 type="number"
                 min={2}
                 max={30}
-                defaultValue={14}
+                defaultValue={maxPlayersPrefill || "14"}
 
                 className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark dark:text-white"
                 required
