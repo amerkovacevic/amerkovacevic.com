@@ -1,10 +1,20 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { Github, Instagram, Linkedin } from "lucide-react";
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
 
 import { ThemeToggle } from "../../shared/components/theme-toggle";
 import { auth, googleProvider } from "../../shared/lib/firebase";
+import { cn } from "../../shared/lib/classnames";
+
+const NAV_LINKS = [
+  { to: "/", label: "Home" },
+  { to: "/pickup", label: "Pickup Soccer" },
+  { to: "/santa", label: "Secret Santa" },
+  { to: "/fm", label: "FM Team Draw" },
+  { to: "/bracket", label: "Bracket Generator" },
+  { to: "/links", label: "Contact" },
+] as const;
 
 function GoogleG({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -35,6 +45,13 @@ export default function RootLayout() {
     await signOut(auth);
   };
 
+  const navLinkClassName = ({ isActive }: { isActive: boolean }) =>
+    cn(
+      "inline-flex items-center whitespace-nowrap rounded-full border border-border-light/70 bg-white/80 px-4 py-2 text-sm font-medium text-brand-muted shadow-brand-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/35 hover:text-brand-strong dark:border-border-dark/70 dark:bg-slate-900/70 dark:text-brand-subtle dark:hover:border-brand/40 dark:hover:text-brand-foreground",
+      isActive &&
+        "border-brand/50 bg-brand text-white shadow-[0_14px_34px_rgba(56,189,248,0.28)] hover:text-white dark:border-brand-accent/70"
+    );
+
   return (
     <div className="relative flex min-h-screen flex-col gap-12">
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
@@ -51,33 +68,38 @@ export default function RootLayout() {
               background: "rgba(56,189,248,0.14)",
             }}
           />
-          <div className="relative flex flex-wrap items-center justify-between gap-4">
-            <Link
-              to="/"
-              className="inline-flex items-center rounded-brand-full border border-transparent bg-white/80 px-6 py-3 text-sm font-semibold tracking-[0.26em] text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-brand-strong/80 dark:bg-surface-overlayDark/80 dark:text-white"
-            >
-              AK TOOLS
-            </Link>
-            <div className="flex items-center gap-3">
-              <ThemeToggle className="shrink-0" />
-              {user ? (
-                <button
-                  onClick={handleSignOut}
-                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-white text-xl shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:bg-brand-strong"
-                >
-                  <span aria-hidden>🚪</span>
-                  <span className="sr-only">Sign out</span>
-                </button>
-              ) : (
-                <button
-                  onClick={handleSignIn}
-                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-brand shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:border-border-dark dark:bg-slate-900"
-                >
-                  <GoogleG className="h-5 w-5" />
-                  <span className="sr-only">Sign in with Google</span>
-                </button>
-              )}
+          <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center justify-between gap-3">
+              <Link
+                to="/"
+                className="inline-flex items-center rounded-brand-full border border-transparent bg-white/80 px-6 py-3 text-sm font-semibold tracking-[0.26em] text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-brand-strong/80 dark:bg-surface-overlayDark/80 dark:text-white"
+              >
+                AK TOOLS
+              </Link>
+              <AuthControls
+                user={user}
+                onSignIn={handleSignIn}
+                onSignOut={handleSignOut}
+                className="md:hidden"
+              />
             </div>
+            <nav
+              className="order-last -mx-2 flex items-center gap-2 overflow-x-auto pb-1 md:order-none md:mx-0 md:flex-1 md:justify-center"
+              aria-label="Primary navigation"
+            >
+              {NAV_LINKS.map((link) => (
+                <NavLink key={link.to} to={link.to} className={navLinkClassName}
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </nav>
+            <AuthControls
+              user={user}
+              onSignIn={handleSignIn}
+              onSignOut={handleSignOut}
+              className="hidden md:flex"
+            />
           </div>
         </div>
       </header>
@@ -132,6 +154,41 @@ export default function RootLayout() {
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function AuthControls({
+  user,
+  onSignIn,
+  onSignOut,
+  className,
+}: {
+  user: User | null;
+  onSignIn: () => Promise<void>;
+  onSignOut: () => Promise<void>;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex items-center gap-3", className)}>
+      <ThemeToggle className="shrink-0" />
+      {user ? (
+        <button
+          onClick={onSignOut}
+          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-white text-xl shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:bg-brand-strong"
+        >
+          <span aria-hidden>🚪</span>
+          <span className="sr-only">Sign out</span>
+        </button>
+      ) : (
+        <button
+          onClick={onSignIn}
+          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-brand shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:border-border-dark dark:bg-slate-900"
+        >
+          <GoogleG className="h-5 w-5" />
+          <span className="sr-only">Sign in with Google</span>
+        </button>
+      )}
     </div>
   );
 }
