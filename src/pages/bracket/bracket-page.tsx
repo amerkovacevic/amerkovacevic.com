@@ -442,8 +442,8 @@ export default function Bracket() {
 function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | null; placements: ReturnType<typeof computePlacings>; hasThird: boolean; }) {
   if (!bracket) {
     return (
-      <p className="text-sm text-brand-muted dark:text-brand-subtle">
-        Add players and click <span className="font-medium text-brand-strong">Generate</span> to create a bracket.
+      <p className="text-sm text-brand-muted dark:text-white/70">
+        Add players and click <span className="font-medium text-brand-strong dark:text-white">Generate</span> to create a bracket.
       </p>
     );
   }
@@ -457,7 +457,7 @@ function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | n
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-brand-muted dark:text-brand-subtle">Standings (live)</h3>
+      <h3 className="text-sm font-semibold text-brand-muted dark:text-white/70">Standings (live)</h3>
       <ul className="space-y-2 text-sm text-brand-strong dark:text-white">
         <li className="flex items-center justify-between rounded-brand-full border border-border-light/60 bg-white/80 px-3 py-2 shadow-brand-sm backdrop-blur-sm dark:border-border-dark/60 dark:bg-white/10">
           <span className="inline-flex items-center gap-2 font-medium"><span>🥇</span> Champion</span>
@@ -473,7 +473,7 @@ function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | n
         </li>
       </ul>
       {semifinalLosers.length > 0 && (
-        <div className="rounded-brand border border-dashed border-brand/30 bg-brand/5 px-3 py-2 text-xs uppercase tracking-[0.28em] text-brand-muted dark:border-white/20 dark:bg-white/5">
+        <div className="rounded-brand border border-dashed border-brand/30 bg-brand/5 px-3 py-2 text-xs uppercase tracking-[0.28em] text-brand-muted dark:border-white/20 dark:bg-white/5 dark:text-white/70">
           Semifinalists: {semifinalLosers.join(" · ")}
         </div>
       )}
@@ -495,7 +495,7 @@ function PlayerList({ players, onAdd, onRemove, onPaste }: { players: string[]; 
               setName("");
             }
           }}
-          className="flex-1 rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
+          className="flex-1 rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
           placeholder="Add player (e.g., Amer)"
         />
         <button
@@ -511,7 +511,7 @@ function PlayerList({ players, onAdd, onRemove, onPaste }: { players: string[]; 
       </div>
       <textarea
         placeholder="Or paste a list (comma or new lines)"
-        className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
+        className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
         rows={3}
         onPaste={(e) => {
           const txt = e.clipboardData.getData("text");

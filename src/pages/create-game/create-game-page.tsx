@@ -114,7 +114,7 @@ export default function CreateGame() {
               <input
                 name="title"
                 placeholder="7v7 at Tower Grove"
-                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
+                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
                 required
               />
             </label>
@@ -124,7 +124,7 @@ export default function CreateGame() {
               <input
                 name="dateTime"
                 type="datetime-local"
-                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
+                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark dark:text-white"
                 required
               />
             </label>
@@ -134,7 +134,7 @@ export default function CreateGame() {
               <input
                 name="fieldName"
                 placeholder="Imo’s Soccer Park"
-                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
+                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
                 required
               />
             </label>
@@ -147,7 +147,8 @@ export default function CreateGame() {
                 min={2}
                 max={30}
                 defaultValue={14}
-                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
+
+                className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark dark:text-white"
                 required
               />
             </label>

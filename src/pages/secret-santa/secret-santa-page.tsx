@@ -462,7 +462,7 @@ export default function SecretSanta() {
                   <input
                     name="name"
                     placeholder="e.g., Jerseys 2025"
-                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
                     required
                     disabled={!user || loading}
                   />
@@ -472,7 +472,7 @@ export default function SecretSanta() {
                   <input
                     name="date"
                     type="date"
-                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark dark:text-white"
                     disabled={!user || loading}
                   />
                 </label>
@@ -499,7 +499,8 @@ export default function SecretSanta() {
                   <input
                     name="code"
                     placeholder="7FQK9C"
-                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong uppercase tracking-[0.4em] shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
+
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong uppercase tracking-[0.4em] shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
                     required
                     disabled={!user || loading}
                   />
@@ -509,15 +510,15 @@ export default function SecretSanta() {
                   <input
                     name="displayName"
                     placeholder="Your name"
-                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
                     disabled={!user || loading}
                   />
                 </label>
-                <div className="text-xs text-brand-muted dark:text-brand-subtle">Enter 1–3 items, comma-separated.</div>
-                <input name="wantPlayers" placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" disabled={!user || loading} />
-                <input name="wantTeams" placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" disabled={!user || loading} />
-                <input name="avoidPlayers" placeholder="Players to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" disabled={!user || loading} />
-                <input name="avoidTeams" placeholder="Teams to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" disabled={!user || loading} />
+                <div className="text-xs text-brand-muted">Enter 1–3 items, comma-separated.</div>
+                <input name="wantPlayers" placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" disabled={!user || loading} />
+                <input name="wantTeams" placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" disabled={!user || loading} />
+                <input name="avoidPlayers" placeholder="Players to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" disabled={!user || loading} />
+                <input name="avoidTeams" placeholder="Teams to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" disabled={!user || loading} />
                 <button
                   className={buttonStyles({ size: "md" })}
                   disabled={!user || loading}
@@ -589,11 +590,11 @@ export default function SecretSanta() {
               {user ? (
                 <PageSection title="My preferences" description="Update what you hope to receive and any no-goes." contentClassName="space-y-3">
                   <form onSubmit={saveMyPrefs} className="grid gap-3">
-                    <div className="text-xs text-brand-muted dark:text-brand-subtle">Enter 1–3 items, comma-separated.</div>
-                    <input name="wantPlayers" defaultValue={(me?.wantPlayers ?? []).join(", ")} placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" />
-                    <input name="wantTeams" defaultValue={(me?.wantTeams ?? []).join(", ")} placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" />
-                    <input name="avoidPlayers" defaultValue={(me?.avoidPlayers ?? []).join(", ")} placeholder="Players to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" />
-                    <input name="avoidTeams" defaultValue={(me?.avoidTeams ?? []).join(", ")} placeholder="Teams to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-subtle/80 dark:bg-surface-overlayDark dark:text-brand-foreground dark:placeholder:text-brand-subtle" />
+                    <div className="text-xs text-brand-muted">Enter 1–3 items, comma-separated.</div>
+                    <input name="wantPlayers" defaultValue={(me?.wantPlayers ?? []).join(", ")} placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" />
+                    <input name="wantTeams" defaultValue={(me?.wantTeams ?? []).join(", ")} placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" />
+                    <input name="avoidPlayers" defaultValue={(me?.avoidPlayers ?? []).join(", ")} placeholder="Players to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" />
+                    <input name="avoidTeams" defaultValue={(me?.avoidTeams ?? []).join(", ")} placeholder="Teams to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" />
                     <div className="flex items-center gap-3">
                       <button className={buttonStyles({ size: "sm" })} disabled={loading}>
                         Save
