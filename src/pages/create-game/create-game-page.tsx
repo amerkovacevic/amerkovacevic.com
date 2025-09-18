@@ -110,7 +110,7 @@ export default function CreateGame() {
           ) : null}
           <div className="grid gap-4 md:grid-cols-2">
             <label className="flex flex-col gap-2 text-sm">
-              <span className="font-medium text-brand-muted">Title</span>
+              <span className="font-medium text-brand-muted dark:text-brand-subtle">Title</span>
               <input
                 name="title"
                 placeholder="7v7 at Tower Grove"
@@ -120,7 +120,7 @@ export default function CreateGame() {
             </label>
 
             <label className="flex flex-col gap-2 text-sm">
-              <span className="font-medium text-brand-muted">Date & time</span>
+              <span className="font-medium text-brand-muted dark:text-brand-subtle">Date & time</span>
               <input
                 name="dateTime"
                 type="datetime-local"
@@ -130,7 +130,7 @@ export default function CreateGame() {
             </label>
 
             <label className="flex flex-col gap-2 text-sm">
-              <span className="font-medium text-brand-muted">Field name</span>
+              <span className="font-medium text-brand-muted dark:text-brand-subtle">Field name</span>
               <input
                 name="fieldName"
                 placeholder="Imo’s Soccer Park"
@@ -140,13 +140,14 @@ export default function CreateGame() {
             </label>
 
             <label className="flex flex-col gap-2 text-sm">
-              <span className="font-medium text-brand-muted">Max players (2–30)</span>
+              <span className="font-medium text-brand-muted dark:text-brand-subtle">Max players (2–30)</span>
               <input
                 name="maxPlayers"
                 type="number"
                 min={2}
                 max={30}
                 defaultValue={14}
+
                 className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 dark:bg-surface-overlayDark dark:text-white"
                 required
               />
@@ -164,7 +165,7 @@ export default function CreateGame() {
             {!user ? (
               <p className="text-sm text-red-500">Sign in to create a game.</p>
             ) : (
-              <p className="text-sm text-brand-muted">
+              <p className="text-sm text-brand-muted dark:text-brand-subtle">
                 Need to adjust later? Visit the game in <Link to="/pickup" className="underline">Pickup Soccer</Link> and edit RSVPs live.
               </p>
             )}

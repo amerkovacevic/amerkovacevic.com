@@ -241,7 +241,7 @@ export default function FMTeamDraw() {
           ) : (
             <>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="text-sm text-brand-muted">
+                <div className="text-sm text-brand-muted dark:text-brand-subtle">
                   Total participants: <strong>{list.length}</strong>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -279,7 +279,7 @@ export default function FMTeamDraw() {
                   >
                     <div className="min-w-0">
                       <div className="font-medium text-brand-strong dark:text-white truncate">{r.name}</div>
-                      <div className="text-xs text-brand-muted truncate">
+                      <div className="text-xs text-brand-muted dark:text-brand-subtle truncate">
                         {rolling[r.id] ? (
                           <span className="animate-pulse">
                             {rolling[r.id]} <span className="opacity-60">• rolling…</span>
@@ -340,11 +340,11 @@ export default function FMTeamDraw() {
               className="w-full rounded-brand border border-border-light bg-surface px-3 py-2 pl-9 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
               disabled={isDrawing}
             />
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted">🔎</span>
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted dark:text-brand-subtle">🔎</span>
           </div>
 
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wide text-brand-muted">Leagues</div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-brand-muted dark:text-brand-subtle">Leagues</div>
             <ChipList
               items={leagues}
               selected={selLeagues}
@@ -359,7 +359,7 @@ export default function FMTeamDraw() {
           </div>
 
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wide text-brand-muted">Nations</div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-brand-muted dark:text-brand-subtle">Nations</div>
             <ChipList
               items={nations}
               selected={selNations}
@@ -373,7 +373,7 @@ export default function FMTeamDraw() {
             />
           </div>
 
-          <div className="text-xs text-brand-muted">
+          <div className="text-xs text-brand-muted dark:text-brand-subtle">
             Pool size: <strong>{pool.length}</strong> (of {TEAMS.length})
           </div>
         </PageSection>
@@ -439,7 +439,7 @@ export default function FMTeamDraw() {
           )}
 
           {"meta" in (data as any) && (
-            <div className="text-[11px] text-brand-muted">
+            <div className="text-[11px] text-brand-muted dark:text-brand-subtle">
               Dataset: {(data as any).meta?.source || "local"} · {datasetDate || "unknown date"}
             </div>
           )}

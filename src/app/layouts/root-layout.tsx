@@ -5,6 +5,7 @@ import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebas
 
 import { ThemeToggle } from "../../shared/components/theme-toggle";
 import { auth, googleProvider } from "../../shared/lib/firebase";
+import { cn } from "../../shared/lib/classnames";
 
 function GoogleG({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -51,33 +52,27 @@ export default function RootLayout() {
               background: "rgba(56,189,248,0.14)",
             }}
           />
-          <div className="relative flex flex-wrap items-center justify-between gap-4">
-            <Link
-              to="/"
-              className="inline-flex items-center rounded-brand-full border border-transparent bg-white/80 px-6 py-3 text-sm font-semibold tracking-[0.26em] text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-brand-strong/80 dark:bg-surface-overlayDark/80 dark:text-white"
-            >
-              AK TOOLS
-            </Link>
-            <div className="flex items-center gap-3">
-              <ThemeToggle className="shrink-0" />
-              {user ? (
-                <button
-                  onClick={handleSignOut}
-                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-white text-xl shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:bg-brand-strong"
-                >
-                  <span aria-hidden>🚪</span>
-                  <span className="sr-only">Sign out</span>
-                </button>
-              ) : (
-                <button
-                  onClick={handleSignIn}
-                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-brand shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:border-border-dark dark:bg-slate-900"
-                >
-                  <GoogleG className="h-5 w-5" />
-                  <span className="sr-only">Sign in with Google</span>
-                </button>
-              )}
+          <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center justify-between gap-3">
+              <Link
+                to="/"
+                className="inline-flex items-center rounded-brand-full border border-transparent bg-white/80 px-6 py-3 text-sm font-semibold tracking-[0.26em] text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-brand-strong/80 dark:bg-surface-overlayDark/80 dark:text-white"
+              >
+                AK TOOLS
+              </Link>
+              <AuthControls
+                user={user}
+                onSignIn={handleSignIn}
+                onSignOut={handleSignOut}
+                className="md:hidden"
+              />
             </div>
+            <AuthControls
+              user={user}
+              onSignIn={handleSignIn}
+              onSignOut={handleSignOut}
+              className="hidden md:flex"
+            />
           </div>
         </div>
       </header>
@@ -132,6 +127,41 @@ export default function RootLayout() {
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function AuthControls({
+  user,
+  onSignIn,
+  onSignOut,
+  className,
+}: {
+  user: User | null;
+  onSignIn: () => Promise<void>;
+  onSignOut: () => Promise<void>;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex items-center gap-3", className)}>
+      <ThemeToggle className="shrink-0" />
+      {user ? (
+        <button
+          onClick={onSignOut}
+          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-white text-xl shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:bg-brand-strong"
+        >
+          <span aria-hidden>🚪</span>
+          <span className="sr-only">Sign out</span>
+        </button>
+      ) : (
+        <button
+          onClick={onSignIn}
+          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-brand shadow-brand-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent dark:border-border-dark dark:bg-slate-900"
+        >
+          <GoogleG className="h-5 w-5" />
+          <span className="sr-only">Sign in with Google</span>
+        </button>
+      )}
     </div>
   );
 }

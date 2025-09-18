@@ -532,7 +532,7 @@ function PlayerList({ players, onAdd, onRemove, onPaste }: { players: string[]; 
             <span className="truncate text-brand-strong dark:text-white">{p}</span>
             <button
               type="button"
-              className="rounded-brand-full p-1 text-brand-muted transition hover:bg-brand/10 hover:text-brand"
+              className="rounded-brand-full p-1 text-brand-muted transition hover:bg-brand/10 hover:text-brand dark:text-brand-subtle dark:hover:text-brand-foreground"
               onClick={() => onRemove(i)}
               title="Remove"
             >
@@ -593,7 +593,7 @@ function BracketVertical({ bracket, setScore, resetScores }: { bracket: Bracket;
           {bracket.thirdPlace.p1 && bracket.thirdPlace.p2 ? (
             <MatchCard match={bracket.thirdPlace} onScore={() => {}} onReset={() => {}} readOnly={!bracket.thirdPlace.p1 || !bracket.thirdPlace.p2} />
           ) : (
-            <div className="text-sm text-brand-muted">Decide semifinals to populate 3rd place.</div>
+            <div className="text-sm text-brand-muted dark:text-brand-subtle">Decide semifinals to populate 3rd place.</div>
           )}
         </div>
       ) : null}
@@ -636,7 +636,7 @@ function MatchCard({ match, onScore, onReset, readOnly }: { match: Match; onScor
           Match {match.id}
         </span>
         <button
-          className="text-xs font-medium text-brand-muted underline-offset-2 transition hover:text-brand hover:underline disabled:opacity-40"
+          className="text-xs font-medium text-brand-muted underline-offset-2 transition hover:text-brand hover:underline disabled:opacity-40 dark:text-brand-subtle dark:hover:text-brand-foreground"
           onClick={onReset}
           disabled={readOnly}
         >
