@@ -112,11 +112,63 @@
     if (!candidate) return false;
     if (Array.isArray(candidate)) return candidate.some(looksLikePlayer);
     if (typeof candidate !== "object") return false;
-    const rating = pickNumber(candidate, ["rating", "overallRating", "ovr", "totalRating", "statsRating"]);
-    const name = pickString(candidate, ["name", "commonName", "firstName", "lastName", "playerName"]);
-    const team = pickString(candidate, ["club", "team", "teamName", "clubName", "clubAbbr"]);
-    const league = pickString(candidate, ["league", "leagueName", "leagueFullName"]);
-    return Boolean(rating && name && (team || league));
+
+    const rating = pickNumber(candidate, [
+      "rating",
+      "overallRating",
+      "ovr",
+      "totalRating",
+      "statsRating",
+    ]);
+
+    const name =
+      pickString(candidate, [
+        "name",
+        "commonName",
+        "preferredName",
+        "firstName",
+        "lastName",
+        "playerName",
+      ]) || buildNameFromParts(candidate);
+
+    if (!rating || !name) return false;
+
+    if (
+      pickString(candidate, [
+        "club",
+        "team",
+        "teamName",
+        "clubName",
+        "clubAbbr",
+        "teamAbbr",
+      ])
+    ) {
+      return true;
+    }
+
+    if (
+      pickString(candidate, ["league", "leagueName", "leagueFullName", "leagueAbbr"]) ||
+      pickNumber(candidate, ["leagueId", "league", "leagueIdNumeric"])
+    ) {
+      return true;
+    }
+
+    if (pickNumber(candidate, ["definitionId", "id", "itemId", "resourceId", "assetId"])) {
+      return true;
+    }
+
+    if (pickString(candidate, ["preferredPosition", "bestPosition", "position", "role"])) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function buildNameFromParts(source) {
+    const first = pickString(source, ["commonName", "preferredName", "firstName", "name"]);
+    const last = pickString(source, ["lastName", "surname", "playerName"]);
+    if (first && last) return `${first} ${last}`;
+    return first || last || "";
   }
 
   function ingestPlayer(raw) {
