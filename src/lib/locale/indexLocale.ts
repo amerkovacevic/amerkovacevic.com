@@ -6,7 +6,7 @@ export type LocaleMaps = {
 };
 
 const KEYWORD_BUCKETS: Record<keyof LocaleMaps, string[]> = {
-  players: ["player", "players", "athlete", "athletes", "item", "items"],
+  players: ["player", "players", "athlete", "athletes", "item", "items", "legend", "icons"],
   clubs: ["club", "clubs", "team", "teams", "squad"],
   nations: ["nation", "nations", "country", "countries", "nationality"],
   leagues: ["league", "leagues", "competition", "competitions", "division", "divisions", "tournament"],
@@ -40,6 +40,9 @@ export function indexLocale(input: unknown): LocaleMaps {
     visited.add(value);
 
     if (Array.isArray(value)) {
+      if (assignIfLocaleBucket(value, path, maps)) {
+        return;
+      }
       value.forEach((entry, index) => traverse(entry, [...path, String(index)]));
       return;
     }
@@ -72,7 +75,7 @@ export const getNationName = (maps: LocaleMaps, id?: number) => lookupName(maps.
 export const getLeagueName = (maps: LocaleMaps, id?: number) => lookupName(maps.leagues, id);
 
 function assignIfLocaleBucket(value: unknown, path: string[], maps: LocaleMaps): boolean {
-  const extraction = extractNameMap(value);
+  const extraction = Array.isArray(value) ? extractNameMapFromArray(value) : extractNameMap(value);
   if (!extraction) {
     return false;
   }
@@ -119,6 +122,61 @@ function extractNameMap(value: unknown): ExtractionResult | null {
   return { map, sampleValue };
 }
 
+function extractNameMapFromArray(value: unknown[]): ExtractionResult | null {
+  const map: Record<number, string> = {};
+  let sampleValue: unknown;
+  let count = 0;
+
+  value.forEach((entry) => {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      return;
+    }
+
+    const record = entry as Record<string, unknown>;
+    const idCandidate =
+      record.id ??
+      record.playerId ??
+      record.playerid ??
+      record.resourceId ??
+      record.definitionId ??
+      record.teamid ??
+      record.teamId ??
+      record.clubId ??
+      record.clubid ??
+      record.nation ??
+      record.nationId ??
+      record.countryId ??
+      record.countryid ??
+      record.leagueId ??
+      record.leagueid ??
+      record.competitionId ??
+      record.competitionid;
+
+    const numericKey = toNumericValue(idCandidate);
+    if (numericKey === null) {
+      return;
+    }
+
+    const name = extractName(record);
+    if (!name) {
+      return;
+    }
+
+    if (sampleValue === undefined) {
+      sampleValue = record;
+    }
+
+    map[numericKey] = name;
+    count += 1;
+  });
+
+  if (!count) {
+    return null;
+  }
+
+  return { map, sampleValue };
+}
+
 function determineBucket(path: string[], sampleValue: unknown): Bucket | undefined {
   const normalizedParts = path.map((part) => part.toLowerCase());
 
@@ -136,10 +194,23 @@ function inferFromSample(sampleValue: unknown): Bucket | undefined {
   if (sampleValue && typeof sampleValue === "object") {
     const record = sampleValue as Record<string, unknown>;
     const keys = Object.keys(record).map((key) => key.toLowerCase());
-    if (keys.some((key) => key.includes("firstname") || key.includes("lastname") || key.includes("commonname"))) {
+    if (
+      keys.some((key) =>
+        key.includes("firstname") ||
+        key.includes("lastname") ||
+        key.includes("commonname") ||
+        key === "f" ||
+        key === "l" ||
+        key === "c"
+      )
+    ) {
       return "players";
     }
-    if (keys.some((key) => key.includes("team") || key.includes("club"))) {
+    if (
+      keys.some((key) =>
+        key.includes("team") || key.includes("club") || key.includes("squad") || key.includes("stadium")
+      )
+    ) {
       return "clubs";
     }
     if (keys.some((key) => key.includes("nation") || key.includes("country"))) {
@@ -171,21 +242,31 @@ function extractName(value: unknown): string | null {
   }
   if (typeof value === "object") {
     const record = value as Record<string, unknown>;
-    const direct = record.name ?? record.commonName ?? record.fullName ?? record.displayName;
+    const direct =
+      record.name ??
+      record.commonName ??
+      record.fullName ??
+      record.displayName ??
+      record.c ??
+      record.n ??
+      record.shortName;
     if (typeof direct === "string" && direct.trim()) {
       return direct.trim();
     }
-    const first = record.firstName ?? record.firstname;
-    const last = record.lastName ?? record.lastname;
+    const first = record.firstName ?? record.firstname ?? record.first ?? record.f;
+    const last = record.lastName ?? record.lastname ?? record.last ?? record.l;
     if (typeof first === "string" && typeof last === "string") {
       const combined = `${first} ${last}`.trim();
       return combined || null;
     }
-    if (typeof record.shortName === "string" && record.shortName.trim()) {
-      return record.shortName.trim();
-    }
     if (typeof record.abbreviation === "string" && record.abbreviation.trim()) {
       return record.abbreviation.trim();
+    }
+    if (typeof first === "string" && first.trim()) {
+      return first.trim();
+    }
+    if (typeof last === "string" && last.trim()) {
+      return last.trim();
     }
   }
   return null;
@@ -208,4 +289,21 @@ function toNumericKey(key: string): number | null {
     return null;
   }
   return numeric;
+}
+
+function toNumericValue(value: unknown): number | null {
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    const numeric = Number(value.trim());
+    return Number.isFinite(numeric) ? numeric : null;
+  }
+
+  return null;
 }
