@@ -2,15 +2,234 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Popup</title>
+    <title>FC 26 Club Import Tool</title>
     <style>
-      body { font: 14px system-ui; padding: 12px; width: 220px; }
-      button { padding: 8px 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
+      :root {
+        color-scheme: light dark;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        padding: 16px;
+        width: 360px;
+        background: linear-gradient(180deg, #0f172a 0%, #111827 35%, #0b1120 100%);
+        color: #e2e8f0;
+        box-sizing: border-box;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .header img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .header h1 {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .header p {
+        font-size: 12px;
+        color: rgba(226, 232, 240, 0.75);
+      }
+
+      .card {
+        background: rgba(15, 23, 42, 0.75);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 20px 35px rgba(15, 23, 42, 0.25);
+        backdrop-filter: blur(12px);
+      }
+
+      .status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        font-size: 14px;
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 9999px;
+        background: #f97316;
+        box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.25);
+      }
+
+      .status-dot.ready {
+        background: #22c55e;
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+      }
+
+      .status-message {
+        flex: 1;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      button {
+        appearance: none;
+        border: none;
+        border-radius: 9999px;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 10px 14px;
+        cursor: pointer;
+        transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+      }
+
+      button.primary {
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        color: white;
+        box-shadow: 0 12px 25px rgba(79, 70, 229, 0.35);
+      }
+
+      button.ghost {
+        background: transparent;
+        color: rgba(226, 232, 240, 0.85);
+        border: 1px solid rgba(148, 163, 184, 0.3);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      button:not(:disabled):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 18px 32px rgba(79, 70, 229, 0.45);
+      }
+
+      .instructions {
+        list-style: decimal;
+        padding-left: 18px;
+        margin: 12px 0 0;
+        color: rgba(226, 232, 240, 0.8);
+        font-size: 12px;
+        display: grid;
+        gap: 6px;
+      }
+
+      .player-count {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 13px;
+        color: rgba(226, 232, 240, 0.75);
+      }
+
+      .player-list {
+        max-height: 200px;
+        overflow-y: auto;
+        display: grid;
+        gap: 10px;
+        padding-right: 4px;
+      }
+
+      .player-row {
+        display: grid;
+        grid-template-columns: auto;
+        gap: 4px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+      }
+
+      .player-name {
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .player-meta,
+      .player-positions {
+        font-size: 12px;
+        color: rgba(226, 232, 240, 0.65);
+      }
+
+      .empty-state {
+        text-align: center;
+        font-size: 13px;
+        color: rgba(226, 232, 240, 0.6);
+        padding: 16px 8px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 9999px;
+        font-size: 12px;
+        background: rgba(37, 99, 235, 0.2);
+        color: rgba(191, 219, 254, 0.9);
+      }
     </style>
   </head>
   <body>
-    <h3>Hello, Page!</h3>
-    <button id="paint">Paint background</button>
+    <header class="header">
+      <img src="icons/icon48.png" alt="FC 26 badge" />
+      <div>
+        <h1>FC 26 Club Import Tool</h1>
+        <p>Capture your club roster from the EA FC web app.</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="status">
+        <span class="status-dot" id="status-dot"></span>
+        <div class="status-message" id="status-message">Waiting for an EA FC tab…</div>
+      </div>
+      <div class="actions">
+        <button id="copy-roster" class="primary" disabled>Copy roster export</button>
+        <button id="clear-roster" class="ghost" disabled>Clear</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="player-count">
+        <span>Captured players</span>
+        <span class="pill"><strong id="player-count">0</strong> tracked</span>
+      </div>
+      <div class="player-list" id="player-list">
+        <div class="empty-state" id="empty-state">
+          Browse your Ultimate Team club in the EA FC 26 web app to start capturing players.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">How to use</h2>
+      <ol class="instructions">
+        <li>Open <strong>https://www.ea.com</strong> and launch the EA FC 26 web app.</li>
+        <li>Navigate to your Club and browse the squads or piles you want to capture.</li>
+        <li>Keep this popup open or click the toolbar icon to refresh the captured list.</li>
+        <li>Hit <em>Copy roster export</em> to send the formatted list to your clipboard.</li>
+      </ol>
+    </section>
+
     <script src="popup.js"></script>
   </body>
 </html>
