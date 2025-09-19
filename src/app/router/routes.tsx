@@ -10,6 +10,7 @@ import {
   PickupGamePage,
   PickupPage,
   SecretSantaPage,
+  SbcSolverPage,
 } from "../../pages";
 
 export const routes: RouteObject[] = [
@@ -25,6 +26,7 @@ export const routes: RouteObject[] = [
       { path: "santa", element: <SecretSantaPage /> },
       { path: "fm", element: <FmTeamDrawPage /> },
       { path: "bracket", element: <BracketPage /> },
+      { path: "sbc", element: <SbcSolverPage /> },
     ],
   },
 ];
