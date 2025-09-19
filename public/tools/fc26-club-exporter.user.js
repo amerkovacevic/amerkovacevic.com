@@ -266,9 +266,35 @@
   function pickNumber(source, keys) {
     for (const key of keys) {
       const value = source?.[key];
-      if (typeof value === "number" && Number.isFinite(value)) return value;
-      if (typeof value === "string" && value.trim() && !Number.isNaN(Number(value))) {
-        return Number(value);
+      const extracted = extractNumber(value);
+      if (typeof extracted === "number") {
+        return extracted;
+      }
+    }
+    return undefined;
+  }
+
+  function extractNumber(value) {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return value;
+    }
+    if (typeof value === "string" && value.trim() && !Number.isNaN(Number(value))) {
+      return Number(value);
+    }
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const extracted = extractNumber(item);
+        if (typeof extracted === "number") {
+          return extracted;
+        }
+      }
+    }
+    if (value && typeof value === "object") {
+      for (const key of ["value", "val", "defaultValue", "amount"]) {
+        const extracted = extractNumber(value[key]);
+        if (typeof extracted === "number") {
+          return extracted;
+        }
       }
     }
     return undefined;
@@ -277,7 +303,48 @@
   function pickString(source, keys) {
     for (const key of keys) {
       const value = source?.[key];
-      if (typeof value === "string" && value.trim()) return value.trim();
+      const extracted = extractString(value);
+      if (typeof extracted === "string" && extracted.trim()) {
+        return extracted.trim();
+      }
+    }
+    return undefined;
+  }
+
+  function extractString(value) {
+    if (typeof value === "string" && value.trim()) {
+      return value.trim();
+    }
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const extracted = extractString(item);
+        if (typeof extracted === "string" && extracted.trim()) {
+          return extracted.trim();
+        }
+      }
+      return undefined;
+    }
+    if (value && typeof value === "object") {
+      for (const key of [
+        "value",
+        "val",
+        "name",
+        "fullName",
+        "default",
+        "defaultValue",
+        "longName",
+        "shortName",
+        "abbr",
+        "label",
+        "localized",
+        "localizedValue",
+        "text",
+      ]) {
+        const extracted = extractString(value[key]);
+        if (typeof extracted === "string" && extracted.trim()) {
+          return extracted.trim();
+        }
+      }
     }
     return undefined;
   }
