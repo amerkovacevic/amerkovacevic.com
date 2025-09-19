@@ -66,7 +66,7 @@
   function processPotentialJson(text, url) {
     if (!shouldParseUrl(url)) return;
     try {
-      const data = JSON.parse(text);
+      const data = JSON.parse(sanitizeJson(text));
       scanForPlayers(data);
     } catch (error) {
       console.debug("FC26 exporter failed to parse JSON", error);
@@ -75,9 +75,38 @@
 
   function shouldParseUrl(url) {
     if (!url) return false;
-    if (/\/ut\/game\/fifa/i.test(url)) return true;
-    if (/fc26/i.test(url) && /club|squad|pile|item/i.test(url)) return true;
+    let target = url;
+    try {
+      target = new URL(url, location.href).href;
+    } catch (error) {
+      console.debug("FC26 exporter failed to normalize URL", error);
+    }
+
+    if (/\/ut\/game\//i.test(target) && /club|squad|pile|item|player/i.test(target)) {
+      return true;
+    }
+
+    if (/fc/i.test(target) && /club|squad|pile|item|player/i.test(target)) {
+      return true;
+    }
+
+    if (/fifa/i.test(target) && /club|squad|pile|item|player/i.test(target)) {
+      return true;
+    }
+
     return false;
+  }
+
+  function sanitizeJson(text) {
+    if (typeof text !== "string") return "";
+    const trimmed = text.trimStart();
+    const guards = [")]}',", ")]}'", "while(1);", "for(;;);"];
+    for (const guard of guards) {
+      if (trimmed.startsWith(guard)) {
+        return trimmed.slice(guard.length);
+      }
+    }
+    return trimmed;
   }
 
   function scanForPlayers(node) {
