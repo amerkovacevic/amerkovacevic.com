@@ -8,29 +8,27 @@
     "default_popup": "popup.html"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background/index.js",
+    "type": "module"
   },
   "permissions": ["activeTab", "tabs", "contextMenus"],
   "host_permissions": [
-    "https://ea.com/*",
-    "https://*.ea.com/*"
+    "https://www.ea.com/*ea-sports-fc/ultimate-team/web-app/*"
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://ea.com/*",
-        "https://*.ea.com/*"
+        "https://www.ea.com/*ea-sports-fc/ultimate-team/web-app/*"
       ],
-      "js": ["content.js"],
+      "js": ["loadContent.js", "content/proxy.js"],
       "run_at": "document_start"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["injected.js"],
+      "resources": ["content/intercept.js"],
       "matches": [
-        "https://ea.com/*",
-        "https://*.ea.com/*"
+        "https://www.ea.com/*ea-sports-fc/ultimate-team/web-app/*"
       ]
     }
   ],

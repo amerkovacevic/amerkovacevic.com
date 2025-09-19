@@ -1,3 +1,4 @@
 node_modules
 dist
+!/public/tools/club-import-tool/dist
 .env
