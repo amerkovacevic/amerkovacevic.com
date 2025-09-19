@@ -1,5 +1,7 @@
 import { ChangeEvent, useMemo, useState } from "react";
 
+import { translateClubJsonToReadable, type ReadablePlayer } from "../../lib/club/translate";
+import { indexLocale, type LocaleMaps } from "../../lib/locale/indexLocale";
 import { PageHero, PageSection, StatPill } from "../../shared/components/page";
 import { Button, buttonStyles } from "../../shared/components/ui/button";
 import { Card } from "../../shared/components/ui/card";
@@ -250,107 +252,58 @@ function parseConstraintList(value?: string): string[] {
     .filter(Boolean);
 }
 
-function normalizePlayer(input: unknown): ClubPlayer | null {
-  if (!input || typeof input !== "object") {
-    return null;
-  }
+function toClubPlayer(readable: ReadablePlayer): ClubPlayer {
+  const baseId = readable.id && readable.id.trim()
+    ? readable.id.trim()
+    : readable._ids?.resourceId !== undefined
+      ? String(readable._ids.resourceId)
+      : readable.name;
 
-  const raw = input as Record<string, unknown>;
+  const altPositions = readable.altPositions && readable.altPositions.length ? readable.altPositions : undefined;
 
-  const ratingCandidate =
-    raw.rating ?? raw.overall ?? raw.ovr ?? raw.ratingValue ?? raw.baseRating ??
-    (typeof raw.attributes === "object" && raw.attributes
-      ? (raw.attributes as Record<string, unknown>).overallRating
-      : undefined);
-  const rating = Number(ratingCandidate);
-  if (!Number.isFinite(rating)) {
-    return null;
-  }
-
-  const primaryPosition =
-    (raw.position ?? raw.preferredPosition ?? raw.bestPosition ?? raw.role ??
-      raw.cardPosition ?? raw.playerPosition) ?? "";
-
-  const altPositionsCandidate =
-    raw.altPositions ?? raw.alternatePositions ?? raw.secondaryPositions ?? raw.extraPositions ?? raw.positions;
-
-  const name =
-    (raw.name as string | undefined) ??
-    (raw.commonName as string | undefined) ??
-    (raw.preferredName as string | undefined) ??
-    (raw.firstName && raw.lastName
-      ? `${String(raw.firstName)} ${String(raw.lastName)}`
-      : undefined);
-
-  const nation = extractName(raw.nation) ?? (raw.nationName as string | undefined);
-  const league = extractName(raw.league) ?? (raw.leagueName as string | undefined);
-  const club = extractName(raw.club) ?? (raw.clubName as string | undefined);
-
-  const quantityCandidate =
-    raw.quantity ?? raw.duplicateCount ?? raw.amount ?? raw.count ?? raw.ownerQuantity;
-  const quantity = Number(quantityCandidate);
-
-  const altPositions = Array.isArray(altPositionsCandidate)
-    ? (altPositionsCandidate as unknown[])
-        .map((item) =>
-          typeof item === "string"
-            ? item
-            : typeof item === "object" && item
-              ? ((item as Record<string, unknown>).position ?? (item as Record<string, unknown>).role ?? "")
-              : ""
-        )
-        .map((value) => String(value).toUpperCase())
-        .filter(Boolean)
-    : typeof altPositionsCandidate === "string"
-      ? altPositionsCandidate
-          .split(/[\/,]|\s+/)
-          .map((value) => value.trim().toUpperCase())
-          .filter(Boolean)
-      : undefined;
-
-  const id =
-    (raw.id as string | number | undefined) ??
-    (raw.resourceId as string | number | undefined) ??
-    (raw.definitionId as string | number | undefined) ??
-    (raw.assetId as string | number | undefined) ??
-    `${name ?? "player"}-${rating}-${primaryPosition}`;
-
-  const position = String(primaryPosition || (altPositions && altPositions[0]) || "").toUpperCase();
-
-  if (!name) {
-    return null;
-  }
-
-  const normalized: ClubPlayer = {
-    id: String(id),
-    name,
-    rating,
-    position,
+  return {
+    id: baseId,
+    name: readable.name,
+    rating: readable.rating,
+    position: readable.position,
     altPositions,
-    nation: nation ?? undefined,
-    league: league ?? undefined,
-    club: club ?? undefined,
+    nation: readable.nation,
+    league: readable.league,
+    club: readable.club,
   };
-
-  if (Number.isFinite(quantity) && quantity > 1) {
-    normalized.quantity = quantity;
-  }
-
-  return normalized;
 }
 
-function extractName(value: unknown): string | undefined {
-  if (!value) return undefined;
-  if (typeof value === "string") return value;
-  if (typeof value === "object") {
-    const record = value as Record<string, unknown>;
-    return (
-      (record.name as string | undefined) ??
-      (record.fullName as string | undefined) ??
-      (record.abbreviation as string | undefined)
-    );
+function convertReadablePlayers(players: ReadablePlayer[]): ClubPlayer[] {
+  const aggregated = new Map<string, ClubPlayer>();
+
+  players.forEach((readable) => {
+    const key = deriveAggregationKey(readable);
+    const existing = aggregated.get(key);
+    if (existing) {
+      existing.quantity = (existing.quantity ?? 1) + 1;
+    } else {
+      const clubPlayer = toClubPlayer(readable);
+      aggregated.set(key, { ...clubPlayer, quantity: 1 });
+    }
+  });
+
+  return Array.from(aggregated.values()).map((player) => {
+    if (player.quantity && player.quantity > 1) {
+      return { ...player };
+    }
+    const { quantity: _quantity, ...rest } = player;
+    return { ...rest };
+  });
+}
+
+function deriveAggregationKey(readable: ReadablePlayer): string {
+  if (readable.id && readable.id.trim()) {
+    return readable.id.trim();
   }
-  return undefined;
+  if (readable._ids?.resourceId !== undefined) {
+    return `resource-${readable._ids.resourceId}`;
+  }
+  return `fallback-${readable.name}-${readable.position}-${readable.rating}`;
 }
 
 function expandPlayers(players: ClubPlayer[]): PlayerCandidate[] {
@@ -497,6 +450,14 @@ function safeJsonParse(raw: string): unknown {
   }
 }
 
+function parseLocale(raw: string): unknown | null {
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    return null;
+  }
+}
+
 function collectPlayerRecords(input: unknown): unknown[] {
   if (!input) return [];
   if (Array.isArray(input)) return input;
@@ -508,9 +469,16 @@ function collectPlayerRecords(input: unknown): unknown[] {
     if (Array.isArray(record.players)) {
       return record.players;
     }
-    return Object.values(record).flatMap((value) =>
-      Array.isArray(value) ? value : value !== undefined ? [value] : []
+    if (Array.isArray(record.items)) {
+      return record.items;
+    }
+    const nested = Object.values(record).flatMap((value) =>
+      Array.isArray(value) && value.some((entry) => entry && typeof entry === "object") ? value : []
     );
+    if (nested.length) {
+      return nested;
+    }
+    return [record];
   }
   return [];
 }
@@ -520,7 +488,9 @@ function collectPlayerRecords(input: unknown): unknown[] {
 export default function SbcSolverPage() {
   const [clubPlayers, setClubPlayers] = useState<ClubPlayer[]>([]);
   const [rawClubInput, setRawClubInput] = useState("");
+  const [rawLocaleInput, setRawLocaleInput] = useState("");
   const [clubImportError, setClubImportError] = useState<string | null>(null);
+  const [localeError, setLocaleError] = useState<string | null>(null);
   const [slots, setSlots] = useState<SbcSlot[]>(() => buildDefaultSlots());
   const [minTeamRating, setMinTeamRating] = useState(84);
   const [solution, setSolution] = useState<ReturnType<typeof solveSbc> | null>(null);
@@ -542,10 +512,23 @@ export default function SbcSolverPage() {
       return;
     }
 
+    let maps: LocaleMaps | undefined;
+    if (rawLocaleInput.trim()) {
+      const parsedLocale = parseLocale(rawLocaleInput);
+      if (!parsedLocale) {
+        setLocaleError("We couldn't parse that locale JSON. We'll fall back to ID-based names.");
+      } else {
+        maps = indexLocale(parsedLocale);
+        setLocaleError(null);
+      }
+    } else {
+      setLocaleError(null);
+    }
+
     const candidateRecords = collectPlayerRecords(parsed);
-    const normalized = candidateRecords
-      .map(normalizePlayer)
-      .filter((player): player is ClubPlayer => Boolean(player));
+    const translationSource = candidateRecords.length ? candidateRecords : parsed;
+    const readablePlayers = translateClubJsonToReadable(translationSource, maps);
+    const normalized = convertReadablePlayers(readablePlayers);
 
     if (!normalized.length) {
       setClubImportError(
@@ -579,6 +562,7 @@ export default function SbcSolverPage() {
     setClubPlayers(DEMO_CLUB_PLAYERS.map((player) => ({ ...player })));
     setRawClubInput(JSON.stringify(DEMO_CLUB_PLAYERS, null, 2));
     setClubImportError(null);
+    setLocaleError(null);
     setSolution(null);
   };
 
@@ -722,13 +706,45 @@ export default function SbcSolverPage() {
         }
         contentClassName="space-y-6"
       >
-        <textarea
-          value={rawClubInput}
-          onChange={(event) => setRawClubInput(event.target.value)}
-          rows={8}
-          placeholder="Paste the club JSON response here"
-          className="w-full resize-y rounded-brand-lg border border-border-light bg-white/90 p-4 font-mono text-xs text-brand-strong shadow-brand-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand dark:border-border-dark dark:bg-surface-overlayDark dark:text-brand-foreground"
-        />
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="locale-json-input" className="block text-sm font-semibold text-brand-muted dark:text-brand-subtle">
+              Paste locale JSON from /fut/loc/companion/futweb/{"{lang}"}.json (e.g., en-US.json)
+            </label>
+            <textarea
+              id="locale-json-input"
+              value={rawLocaleInput}
+              onChange={(event) => {
+                setRawLocaleInput(event.target.value);
+                setLocaleError(null);
+              }}
+              rows={6}
+              placeholder="Optional locale mapping JSON"
+              className="w-full resize-y rounded-brand-lg border border-border-light bg-white/90 p-4 font-mono text-xs text-brand-strong shadow-brand-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand dark:border-border-dark dark:bg-surface-overlayDark dark:text-brand-foreground"
+            />
+            <p className="text-xs text-brand-muted dark:text-brand-subtle">
+              Optional: paste locale JSON to see real names. Without it, IDs will be shown.
+            </p>
+            {localeError ? (
+              <p className="rounded-brand-md border border-red-300/60 bg-red-50/80 p-2 text-xs text-red-600 dark:border-red-500/60 dark:bg-red-500/10 dark:text-red-200">
+                {localeError}
+              </p>
+            ) : null}
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="club-json-input" className="block text-sm font-semibold text-brand-muted dark:text-brand-subtle">
+              Paste club JSON → Parse
+            </label>
+            <textarea
+              id="club-json-input"
+              value={rawClubInput}
+              onChange={(event) => setRawClubInput(event.target.value)}
+              rows={8}
+              placeholder="Paste the club JSON response here"
+              className="w-full resize-y rounded-brand-lg border border-border-light bg-white/90 p-4 font-mono text-xs text-brand-strong shadow-brand-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand dark:border-border-dark dark:bg-surface-overlayDark dark:text-brand-foreground"
+            />
+          </div>
+        </div>
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="primary" onClick={handleApplyClubJson}>
             Parse pasted JSON
