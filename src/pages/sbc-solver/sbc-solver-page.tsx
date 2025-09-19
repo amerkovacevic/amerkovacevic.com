@@ -31,6 +31,7 @@ import type { Attribute, Player, Requirement, SquadConfig } from "./types";
 
 const STORAGE_KEY = "fc26-sbc-state";
 const DEFAULT_CONFIG: SquadConfig = { squadSize: 11, minTeamRating: 84, minChemistry: 0 };
+const EXTERNAL_IMPORT_STORAGE_KEY = "fc26-sbc-import";
 
 const ATTRIBUTES: { value: Attribute; label: string }[] = [
   { value: "nation", label: "Nation" },
@@ -95,11 +96,33 @@ export default function SbcSolverPage() {
     setPlayerForm(emptyPlayerForm());
   };
 
-  const handleBulkImport = () => {
-    const parsed = parseBulkPlayers(bulkText);
+  const handleBulkImport = (raw?: string) => {
+    const source = typeof raw === "string" ? raw : bulkText;
+    const parsed = parseBulkPlayers(source);
     if (!parsed.length) return;
     setPlayers((prev) => [...prev, ...parsed]);
-    setBulkText("");
+    if (typeof raw !== "string") {
+      setBulkText("");
+    }
+  };
+
+  const handleBulkImportClick = () => {
+    handleBulkImport();
+  };
+
+  const handlePrototypeImport = () => {
+    try {
+      const raw = localStorage.getItem(EXTERNAL_IMPORT_STORAGE_KEY);
+      if (!raw) {
+        alert("No FC 26 web app export found yet. Run the club exporter prototype on the EA web app first.");
+        return;
+      }
+      handleBulkImport(raw);
+      alert("Imported players from FC 26 exporter prototype. You can clear the storage key once finished.");
+    } catch (error) {
+      console.error("Failed to load prototype import", error);
+      alert("Import failed. Check the console for details.");
+    }
   };
 
   const handleAddRequirement = () => {
@@ -381,8 +404,19 @@ export default function SbcSolverPage() {
                 className="min-h-[120px] w-full rounded-brand border border-border-light bg-white/90 px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:border-border-dark dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
               />
               <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={handleBulkImport} className={buttonStyles({ variant: "secondary", size: "sm" })}>
+                <button
+                  type="button"
+                  onClick={handleBulkImportClick}
+                  className={buttonStyles({ variant: "secondary", size: "sm" })}
+                >
                   <ClipboardCopy className="h-4 w-4" aria-hidden /> Parse lines
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePrototypeImport}
+                  className={buttonStyles({ variant: "secondary", size: "sm", className: "border-dashed" })}
+                >
+                  <Sparkles className="h-4 w-4" aria-hidden /> Prototype: read FC web app export
                 </button>
                 <button
                   type="button"
