@@ -7,6 +7,7 @@
     "dev": "vite",
     "build:clubs": "node scripts/build-leagues-from-wikipedia.js",
     "build": "tsc -b && vite build",
+    "build:club-extension": "tsc -p public/tools/club-import-tool/tsconfig.json",
     "preview": "vite preview"
   },
   "dependencies": {

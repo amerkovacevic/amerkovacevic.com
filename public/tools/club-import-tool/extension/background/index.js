@@ -1,4 +1,4 @@
-import { handleClubImportMessage } from "../dist/background/handlers/club.js";
+import { handleClubImportMessage } from "./handlers/club.js";
 
 const CLUB_URL_PATTERNS = [
   "https://www.ea.com/*ea-sports-fc/ultimate-team/web-app/*",
