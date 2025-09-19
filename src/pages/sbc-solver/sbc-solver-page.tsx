@@ -9,6 +9,7 @@ import {
 import {
   AlertTriangle,
   ClipboardCopy,
+  ClipboardList,
   CircleCheck,
   CircleDashed,
   CircleX,
@@ -31,7 +32,6 @@ import type { Attribute, Player, Requirement, SquadConfig } from "./types";
 
 const STORAGE_KEY = "fc26-sbc-state";
 const DEFAULT_CONFIG: SquadConfig = { squadSize: 11, minTeamRating: 84, minChemistry: 0 };
-const EXTERNAL_IMPORT_STORAGE_KEY = "fc26-sbc-import";
 
 const ATTRIBUTES: { value: Attribute; label: string }[] = [
   { value: "nation", label: "Nation" },
@@ -96,32 +96,55 @@ export default function SbcSolverPage() {
     setPlayerForm(emptyPlayerForm());
   };
 
-  const handleBulkImport = (raw?: string) => {
+  const handleBulkImport = (raw?: string): number => {
     const source = typeof raw === "string" ? raw : bulkText;
     const parsed = parseBulkPlayers(source);
-    if (!parsed.length) return;
+    if (!parsed.length) return 0;
     setPlayers((prev) => [...prev, ...parsed]);
     if (typeof raw !== "string") {
       setBulkText("");
     }
+
+    return parsed.length;
   };
 
   const handleBulkImportClick = () => {
     handleBulkImport();
   };
 
-  const handlePrototypeImport = () => {
+  const handleClipboardImport = async () => {
+    if (!navigator.clipboard?.readText) {
+      alert("Clipboard access is not available in this browser. Paste the player list into the bulk field instead.");
+      return;
+    }
+
     try {
-      const raw = localStorage.getItem(EXTERNAL_IMPORT_STORAGE_KEY);
-      if (!raw) {
-        alert("No FC 26 web app export found yet. Run the club exporter prototype on the EA web app first.");
+      if (navigator.permissions?.query) {
+        const status = await navigator.permissions.query({ name: "clipboard-read" as PermissionName });
+        if (status.state === "denied") {
+          alert("Clipboard access was blocked. Allow clipboard permissions or paste the export manually.");
+          return;
+        }
+      }
+    } catch (error) {
+      console.debug("Clipboard permission probe failed", error);
+    }
+
+    try {
+      const raw = await navigator.clipboard.readText();
+      if (!raw.trim()) {
+        alert("Clipboard is empty. Copy your club export from the FC 26 web app first.");
         return;
       }
-      handleBulkImport(raw);
-      alert("Imported players from FC 26 exporter prototype. You can clear the storage key once finished.");
+      const imported = handleBulkImport(raw);
+      if (!imported) {
+        alert("Clipboard text didn't contain any recognizable players. Paste manually to double-check the format.");
+        return;
+      }
+      alert(`Imported ${imported} players from the clipboard.`);
     } catch (error) {
-      console.error("Failed to load prototype import", error);
-      alert("Import failed. Check the console for details.");
+      console.error("Failed to read clipboard import", error);
+      alert("Couldn't read from the clipboard. Paste the player list into the bulk field instead.");
     }
   };
 
@@ -413,10 +436,10 @@ export default function SbcSolverPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={handlePrototypeImport}
-                  className={buttonStyles({ variant: "secondary", size: "sm", className: "border-dashed" })}
+                  onClick={handleClipboardImport}
+                  className={buttonStyles({ size: "sm" })}
                 >
-                  <Sparkles className="h-4 w-4" aria-hidden /> Prototype: read FC web app export
+                  <ClipboardList className="h-4 w-4" aria-hidden /> Import players from clipboard
                 </button>
                 <button
                   type="button"

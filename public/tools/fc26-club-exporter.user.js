@@ -1,18 +1,17 @@
 // ==UserScript==
-// @name        FC 26 Club Exporter (Prototype)
+// @name        FC 26 Club Exporter
 // @namespace   https://amerkovacevic.com/
 // @version     0.1.0
-// @description Prototype helper that watches the EA FC 26 web app for club data and writes a solver-friendly roster string to localStorage.
+// @description Watches the EA FC 26 web app for club data and lets you copy a solver-friendly roster string to the clipboard.
 // @match       https://www.ea.com/*
 // @run-at      document-start
 // @grant       none
 // ==/UserScript==
 
 (function () {
-  const STORAGE_KEY = "fc26-sbc-import";
   const overlayId = "fc26-sbc-export-overlay";
   const roster = new Map();
-  let lastPersist = "";
+  let latestExport = "";
 
   const originalFetch = window.fetch;
   window.fetch = async function patchedFetch(input, init) {
@@ -155,7 +154,7 @@
     if (!normalized) return;
     const key = id || `${normalized.name}|${normalized.rating}|${normalized.club}`;
     roster.set(key, normalized);
-    persistRoster();
+    refreshExportBuffer();
   }
 
   function extractPositions(raw) {
@@ -200,7 +199,7 @@
     return { name, rating: Math.round(rating), nation, league, club, positions };
   }
 
-  function persistRoster() {
+  function refreshExportBuffer() {
     const lines = Array.from(roster.values()).map((player) => {
       const parts = [player.name, player.rating, player.nation, player.league, player.club];
       if (player.positions.length) {
@@ -209,13 +208,7 @@
       return parts.join(", ");
     });
     const payload = lines.join("\n");
-    if (payload === lastPersist) return;
-    lastPersist = payload;
-    try {
-      localStorage.setItem(STORAGE_KEY, payload);
-    } catch (error) {
-      console.warn("FC26 exporter failed to persist roster", error);
-    }
+    latestExport = payload;
   }
 
   function pickNumber(source, keys) {
@@ -259,7 +252,7 @@
     container.style.fontFamily = "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
 
     const button = document.createElement("button");
-    button.textContent = "Copy club to SBC solver";
+    button.textContent = "Copy club export";
     button.style.padding = "10px 14px";
     button.style.borderRadius = "9999px";
     button.style.border = "none";
@@ -278,9 +271,16 @@
     status.style.display = "none";
 
     button.addEventListener("click", async () => {
-      const payload = localStorage.getItem(STORAGE_KEY) || "";
+      if (!latestExport) {
+        showStatus("No club data captured yet. Browse your club first.", status);
+        return;
+      }
+      if (!navigator.clipboard?.writeText) {
+        showStatus("Clipboard API unavailable in this browser", status);
+        return;
+      }
       try {
-        await navigator.clipboard.writeText(payload);
+        await navigator.clipboard.writeText(latestExport);
         showStatus("Copied club export to clipboard", status);
       } catch (error) {
         console.warn("FC26 exporter failed to copy", error);
@@ -305,18 +305,21 @@
   function exposeApi() {
     window.fc26ClubExporter = {
       getRoster() {
-        return localStorage.getItem(STORAGE_KEY) || "";
+        return latestExport;
       },
       getPlayers() {
         return Array.from(roster.values());
       },
       copyToClipboard() {
-        const payload = localStorage.getItem(STORAGE_KEY) || "";
-        return navigator.clipboard.writeText(payload);
+        if (!latestExport) return Promise.resolve();
+        if (!navigator.clipboard?.writeText) {
+          return Promise.reject(new Error("Clipboard API unavailable"));
+        }
+        return navigator.clipboard.writeText(latestExport);
       },
       clear() {
         roster.clear();
-        localStorage.removeItem(STORAGE_KEY);
+        latestExport = "";
       },
     };
   }
