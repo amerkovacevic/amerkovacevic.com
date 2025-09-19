@@ -9,6 +9,7 @@ import {
 import {
   AlertTriangle,
   ClipboardCopy,
+  ClipboardList,
   CircleCheck,
   CircleDashed,
   CircleX,
@@ -31,7 +32,6 @@ import type { Attribute, Player, Requirement, SquadConfig } from "./types";
 
 const STORAGE_KEY = "fc26-sbc-state";
 const DEFAULT_CONFIG: SquadConfig = { squadSize: 11, minTeamRating: 84, minChemistry: 0 };
-
 const ATTRIBUTES: { value: Attribute; label: string }[] = [
   { value: "nation", label: "Nation" },
   { value: "league", label: "League" },
@@ -95,11 +95,55 @@ export default function SbcSolverPage() {
     setPlayerForm(emptyPlayerForm());
   };
 
-  const handleBulkImport = () => {
-    const parsed = parseBulkPlayers(bulkText);
-    if (!parsed.length) return;
+  const handleBulkImport = (raw?: string): number => {
+    const source = typeof raw === "string" ? raw : bulkText;
+    const parsed = parseBulkPlayers(source);
+    if (!parsed.length) return 0;
     setPlayers((prev) => [...prev, ...parsed]);
-    setBulkText("");
+    if (typeof raw !== "string") {
+      setBulkText("");
+    }
+    return parsed.length;
+  };
+
+  const handleBulkImportClick = () => {
+    handleBulkImport();
+  };
+
+  const handleClipboardImport = async () => {
+    if (!navigator.clipboard?.readText) {
+      alert("Clipboard access is not available in this browser. Paste the player list into the bulk field instead.");
+      return;
+    }
+
+    try {
+      if (navigator.permissions?.query) {
+        const status = await navigator.permissions.query({ name: "clipboard-read" as PermissionName });
+        if (status.state === "denied") {
+          alert("Clipboard access was blocked. Allow clipboard permissions or paste the export manually.");
+          return;
+        }
+      }
+    } catch (error) {
+      console.debug("Clipboard permission probe failed", error);
+    }
+
+    try {
+      const raw = await navigator.clipboard.readText();
+      if (!raw.trim()) {
+        alert("Clipboard is empty. Copy your club export from the FC 26 web app first.");
+        return;
+      }
+      const imported = handleBulkImport(raw);
+      if (!imported) {
+        alert("Clipboard text didn't contain any recognizable players. Paste manually to double-check the format.");
+        return;
+      }
+      alert(`Imported ${imported} players from the clipboard.`);
+    } catch (error) {
+      console.error("Failed to read clipboard import", error);
+      alert("Couldn't read from the clipboard. Paste the player list into the bulk field instead.");
+    }
   };
 
   const handleAddRequirement = () => {
@@ -381,8 +425,19 @@ export default function SbcSolverPage() {
                 className="min-h-[120px] w-full rounded-brand border border-border-light bg-white/90 px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:border-border-dark dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
               />
               <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={handleBulkImport} className={buttonStyles({ variant: "secondary", size: "sm" })}>
+                <button
+                  type="button"
+                  onClick={handleBulkImportClick}
+                  className={buttonStyles({ variant: "secondary", size: "sm" })}
+                >
                   <ClipboardCopy className="h-4 w-4" aria-hidden /> Parse lines
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClipboardImport}
+                  className={buttonStyles({ size: "sm" })}
+                >
+                  <ClipboardList className="h-4 w-4" aria-hidden /> Import players from clipboard
                 </button>
                 <button
                   type="button"
