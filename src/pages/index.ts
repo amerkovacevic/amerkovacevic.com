@@ -6,3 +6,4 @@ export { default as LinksPage } from "./links/links-page";
 export { default as SecretSantaPage } from "./secret-santa/secret-santa-page";
 export { default as FmTeamDrawPage } from "./fm-team-draw/fm-team-draw-page";
 export { default as BracketPage } from "./bracket/bracket-page";
+export { default as SbcSolverPage } from "./sbc-solver/sbc-solver-page";
