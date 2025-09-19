@@ -10,6 +10,7 @@ import {
   PickupGamePage,
   PickupPage,
   SecretSantaPage,
+  SbcSolverPage,
 } from "../../pages";
 
 // Application routes wire feature pages into the shared RootLayout shell.
@@ -26,6 +27,7 @@ export const routes: RouteObject[] = [
       { path: "santa", element: <SecretSantaPage /> },
       { path: "fm", element: <FmTeamDrawPage /> },
       { path: "bracket", element: <BracketPage /> },
+      { path: "sbc", element: <SbcSolverPage /> },
     ],
   },
 ];

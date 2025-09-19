@@ -32,6 +32,13 @@ const APPS = [
     emoji: "🏆",
   },
   {
+    id: "sbc",
+    name: "FC 26 SBC Solver",
+    to: "/sbc",
+    blurb: "Import your club and auto-build challenge squads.",
+    emoji: "🧩",
+  },
+  {
     id: "links",
     name: "Contact",
     to: "/links",
