@@ -32,6 +32,7 @@ import type { Attribute, Player, Requirement, SquadConfig } from "./types";
 
 const STORAGE_KEY = "fc26-sbc-state";
 const DEFAULT_CONFIG: SquadConfig = { squadSize: 11, minTeamRating: 84, minChemistry: 0 };
+
 const ATTRIBUTES: { value: Attribute; label: string }[] = [
   { value: "nation", label: "Nation" },
   { value: "league", label: "League" },
@@ -103,6 +104,7 @@ export default function SbcSolverPage() {
     if (typeof raw !== "string") {
       setBulkText("");
     }
+
     return parsed.length;
   };
 
