@@ -1,0 +1,90 @@
+{
+  "fetchedAt": "2024-10-12T22:15:31.000Z",
+  "baseUrl": "https://utas.mob.v1.fut.ea.com/ut/game/fc24",
+  "persona": "123456789",
+  "route": "utas",
+  "localeCode": "en-GB",
+  "club": {
+    "established": 2012,
+    "lastAccess": "2024-10-12T22:10:00.000Z",
+    "name": "Example City",
+    "record": {
+      "wins": 123,
+      "draws": 45,
+      "losses": 67
+    },
+    "stadium": "Stade de Example",
+    "badgeId": 12345
+  },
+  "squads": {
+    "activeSquadId": 998877,
+    "items": [
+      {
+        "id": 998877,
+        "name": "First XI",
+        "type": "club",
+        "rating": 84,
+        "chemistry": 34
+      }
+    ]
+  },
+  "pile": {
+    "count": 4,
+    "items": [
+      {
+        "id": 1001,
+        "definitionId": 237000,
+        "itemType": "player",
+        "firstName": "Alex",
+        "lastName": "Hunter",
+        "commonName": null,
+        "rating": 88,
+        "position": "ST",
+        "club": "Example FC",
+        "league": "Example League",
+        "nation": "Example Nation",
+        "tradeState": "tradeable"
+      },
+      {
+        "id": 1002,
+        "definitionId": 237100,
+        "itemType": "player",
+        "firstName": "Jamie",
+        "lastName": "Rivera",
+        "commonName": null,
+        "rating": 86,
+        "position": "CM",
+        "club": "Example FC",
+        "league": "Example League",
+        "nation": "Example Nation",
+        "tradeState": "untradeable"
+      },
+      {
+        "id": 1003,
+        "definitionId": 237200,
+        "itemType": "stadium",
+        "name": "Example Stadium",
+        "location": "Example Country"
+      },
+      {
+        "id": 1004,
+        "definitionId": 237210,
+        "itemType": "badge",
+        "name": "Example Badge"
+      }
+    ]
+  },
+  "locale": {
+    "info": {
+      "code": "en-GB",
+      "label": "English (UK)",
+      "direction": "ltr"
+    },
+    "strings": {
+      "items.player": "Player",
+      "items.contract": "Contract",
+      "items.badge": "Badge",
+      "items.stadium": "Stadium"
+    }
+  }
+}

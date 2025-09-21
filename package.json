@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build:clubs": "node scripts/build-leagues-from-wikipedia.js",
+    "scrape:ultimate-team": "node scripts/scrape-ultimate-team-club.js",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
