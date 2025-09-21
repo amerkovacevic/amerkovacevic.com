@@ -7,3 +7,4 @@ export { default as LinksPage } from "./links/links-page";
 export { default as SecretSantaPage } from "./secret-santa/secret-santa-page";
 export { default as FmTeamDrawPage } from "./fm-team-draw/fm-team-draw-page";
 export { default as BracketPage } from "./bracket/bracket-page";
+export { default as UltimateTeamPage } from "./ultimate-team/ultimate-team-page";
