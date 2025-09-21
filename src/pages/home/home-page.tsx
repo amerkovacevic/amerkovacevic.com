@@ -25,6 +25,13 @@ const APPS = [
     emoji: "🎮",
   },
   {
+    id: "ultimate-team",
+    name: "Ultimate Team Utility",
+    to: "/ultimate-team",
+    blurb: "Build squads, solve SBCs, and optimize evolutions.",
+    emoji: "⭐️",
+  },
+  {
     id: "bracket",
     name: "Bracket Generator",
     to: "/bracket",
