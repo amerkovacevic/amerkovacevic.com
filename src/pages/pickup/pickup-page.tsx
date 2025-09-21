@@ -276,14 +276,14 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
           <div>
             <h3 className="text-lg font-semibold text-brand-strong dark:text-white">{game.title}</h3>
             <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-brand-muted dark:text-brand-subtle">
-              <span className="inline-flex items-center gap-1 rounded-brand-full bg-surface/70 px-3 py-1">
+              <span className="inline-flex items-center gap-1 rounded-brand-full border border-border-light/60 bg-surface/80 px-3 py-1 text-brand-strong shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-overlayDark/80 dark:text-white">
                 📍 {game.fieldName}
               </span>
-              <span className="inline-flex items-center gap-1 rounded-brand-full bg-surface/70 px-3 py-1">
+              <span className="inline-flex items-center gap-1 rounded-brand-full border border-border-light/60 bg-surface/80 px-3 py-1 text-brand-strong shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-overlayDark/80 dark:text-white">
                 🕒 {dateStr}
               </span>
               {user?.uid === game.organizerUid && (
-                <span className="inline-flex items-center gap-1 rounded-brand-full bg-brand/15 px-3 py-1 text-brand">
+                <span className="inline-flex items-center gap-1 rounded-brand-full border border-brand/30 bg-brand/15 px-3 py-1 text-brand shadow-brand-sm dark:border-brand/50 dark:bg-brand/30 dark:text-brand-foreground">
                   👑 Organizer
                 </span>
               )}
