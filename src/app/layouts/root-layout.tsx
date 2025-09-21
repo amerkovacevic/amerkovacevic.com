@@ -59,9 +59,14 @@ export default function RootLayout() {
             <div className="flex items-center justify-between gap-3">
               <Link
                 to="/"
-                className="inline-flex items-center rounded-brand-full border border-transparent bg-white/80 px-6 py-3 text-sm font-semibold tracking-[0.26em] text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-brand-strong/80 dark:bg-surface-overlayDark/80 dark:text-white"
+                className="inline-flex items-center rounded-brand-full border border-transparent bg-white/80 px-4 py-3 text-sm font-semibold tracking-[0.26em] text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-brand-strong/80 dark:bg-surface-overlayDark/80 dark:text-white"
               >
-                AK TOOLS
+                <img
+                  src="/ak-tools-logo.svg"
+                  alt="AK Tools logo"
+                  className="h-10 w-auto"
+                  loading="lazy"
+                />
               </Link>
               <AuthControls
                 user={user}
