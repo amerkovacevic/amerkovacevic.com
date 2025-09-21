@@ -10,7 +10,7 @@ const FEATURES = [
 export default function UltimateTeamPage() {
   return (
     <div className="space-y-8">
-      <PageHero align="center" title="FUT Utility ⚽" description="Coming Soon" />
+      <PageHero align="center" title="Ultimate Team Utility" description="Coming Soon" />
 
       <PageSection title="Coming Soon">
         <ul className="mx-auto max-w-xl space-y-3 text-center text-sm text-brand-muted dark:text-white/70">

@@ -28,7 +28,7 @@ const APPS = [
     id: "ultimate-team",
     name: "Ultimate Team Utility",
     to: "/ultimate-team",
-    blurb: "Plan squads, master chemistry, and track live content drops.",
+    blurb: "Build squads, solve SBCs, and optimize evolutions.",
     emoji: "⭐️",
   },
   {
