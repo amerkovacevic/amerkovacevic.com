@@ -290,7 +290,9 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
             </div>
           </div>
           <div className="text-right text-sm">
-            <div className="font-semibold text-brand">{goingCount}</div>
+            <div className="font-semibold text-brand dark:text-brand-foreground">
+              {goingCount}
+            </div>
             <div className="text-xs uppercase tracking-[0.18em] text-brand-muted dark:text-brand-subtle">of {game.maxPlayers} spots</div>
             <div className="mt-1 text-xs text-brand-subtle">
               {full ? "Roster full" : `${spotsLeft} spots left`}
