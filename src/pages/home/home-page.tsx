@@ -4,6 +4,13 @@ import { ArrowUpRight } from "lucide-react";
 // Static catalogue of tools surfaced on the landing page.
 const APPS = [
   {
+    id: "fc26",
+    name: "FC 26 SBC Architect",
+    to: "/fc26",
+    blurb: "Import your club, map translations, and prototype SBC solutions.",
+    emoji: "🧩",
+  },
+  {
     id: "pickup",
     name: "Pickup Soccer",
     to: "/pickup",

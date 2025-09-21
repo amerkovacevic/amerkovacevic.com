@@ -4,6 +4,7 @@ import { RootLayout } from "../layouts";
 import {
   BracketPage,
   CreateGamePage,
+  Fc26SbcPage,
   FmTeamDrawPage,
   HomePage,
   LinksPage,
@@ -26,6 +27,7 @@ export const routes: RouteObject[] = [
       { path: "santa", element: <SecretSantaPage /> },
       { path: "fm", element: <FmTeamDrawPage /> },
       { path: "bracket", element: <BracketPage /> },
+      { path: "fc26", element: <Fc26SbcPage /> },
     ],
   },
 ];
