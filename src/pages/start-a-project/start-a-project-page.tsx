@@ -5,10 +5,43 @@ import { PageHero, PageSection } from "../../shared/components/page";
 
 export default function StartAProjectPage() {
   const [submitted, setSubmitted] = useState(false);
+  const recipientEmail = "amerkovacevic99@gmail.com";
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
+    const formData = new FormData(form);
+    const company = (formData.get("company") as string | null) ?? "";
+    const companyWebsite = (formData.get("companyWebsite") as string | null) ?? "";
+    const name = (formData.get("name") as string | null) ?? "";
+    const email = (formData.get("email") as string | null) ?? "";
+    const phone = (formData.get("phone") as string | null) ?? "";
+    const timeline = (formData.get("timeline") as string | null) ?? "";
+    const projectDetails = (formData.get("projectDetails") as string | null) ?? "";
+    const extras = (formData.get("extras") as string | null) ?? "";
+
+    const subjectPieces = ["New project inquiry", name].filter(Boolean);
+    const subject = subjectPieces.join(" from ");
+
+    const lines = [
+      `Company: ${company}`,
+      companyWebsite ? `Website: ${companyWebsite}` : null,
+      `Name: ${name}`,
+      `Email: ${email}`,
+      phone ? `Phone: ${phone}` : null,
+      timeline ? `Ideal timeline: ${timeline}` : null,
+      "", // spacer
+      "Project details:",
+      projectDetails,
+      extras ? "\nAdditional context:\n" + extras : null,
+    ].filter((line): line is string => Boolean(line));
+
+    const mailto = new URL(`mailto:${recipientEmail}`);
+    mailto.searchParams.set("subject", subject || "New project inquiry");
+    mailto.searchParams.set("body", lines.join("\n"));
+
+    window.open(mailto.toString(), "_blank", "noopener,noreferrer");
+
     form.reset();
     setSubmitted(true);
   };
@@ -45,7 +78,7 @@ export default function StartAProjectPage() {
                 name="company"
                 type="text"
                 required
-                placeholder="Alen's General Construction"
+                placeholder="AK Sales & Marketing"
                 className={inputClasses}
                 autoComplete="organization"
               />
@@ -83,7 +116,7 @@ export default function StartAProjectPage() {
                 name="email"
                 type="email"
                 required
-                placeholder="you@example.com"
+                placeholder="amerkovacevic99@gmail.com"
                 className={inputClasses}
                 autoComplete="email"
               />
@@ -95,7 +128,7 @@ export default function StartAProjectPage() {
               <input
                 name="phone"
                 type="tel"
-                placeholder="(555) 123-4567"
+                placeholder="3144436491"
                 className={inputClasses}
                 autoComplete="tel"
               />
@@ -165,14 +198,14 @@ export default function StartAProjectPage() {
           <div className="space-y-3">
             <div className="flex items-center gap-3 rounded-2xl border border-white/30 bg-white/80 px-4 py-3 text-brand-strong shadow-brand-sm dark:border-white/10 dark:bg-white/10 dark:text-brand-foreground">
               <Mail className="h-5 w-5 text-brand" aria-hidden />
-              <a href="mailto:hey@amerkovacevic.com" className="hover:underline">
-                hey@amerkovacevic.com
+              <a href={`mailto:${recipientEmail}`} className="hover:underline">
+                {recipientEmail}
               </a>
             </div>
             <div className="flex items-center gap-3 rounded-2xl border border-white/30 bg-white/80 px-4 py-3 text-brand-strong shadow-brand-sm dark:border-white/10 dark:bg-white/10 dark:text-brand-foreground">
               <Phone className="h-5 w-5 text-brand" aria-hidden />
-              <a href="tel:+12535324263" className="hover:underline">
-                +1 (253) 532-4263
+              <a href="tel:+13144436491" className="hover:underline">
+                (314) 443-6491
               </a>
             </div>
           </div>

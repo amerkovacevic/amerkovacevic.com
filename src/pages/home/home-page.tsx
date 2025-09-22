@@ -46,13 +46,6 @@ const APPS = [
     emoji: "🖥️",
   },
   {
-    id: "start-project",
-    name: "Start a Project",
-    to: "/start-a-project",
-    blurb: "Share your goals and get a tailored website proposal.",
-    emoji: "📝",
-  },
-  {
     id: "links",
     name: "Contact",
     to: "/links",
