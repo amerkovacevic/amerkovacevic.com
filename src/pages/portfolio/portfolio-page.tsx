@@ -1,4 +1,5 @@
 import { ArrowUpRight, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { PageHero } from "../../shared/components/page";
 
@@ -10,7 +11,6 @@ type SiteCaseStudy = {
   headline: string;
   description: string;
   gradient: string;
-  stats: { label: string; value: string }[];
   highlights: string[];
   features: string[];
 };
@@ -25,10 +25,6 @@ const SITES: SiteCaseStudy[] = [
     description:
       "A responsive marketing site that gives homeowners confidence—service pages outline capabilities, past renovation shots build trust, and every section ends with an easy way to book a walkthrough.",
     gradient: "from-amber-300/35 via-orange-400/20 to-sky-400/30",
-    stats: [
-      { label: "Role", value: "Design · Development · Local SEO" },
-      { label: "Stack", value: "React · Tailwind · Firebase" },
-    ],
     highlights: [
       "Showcases signature renovations",
       "Service inquiry capture on every page",
@@ -38,30 +34,6 @@ const SITES: SiteCaseStudy[] = [
       "Trade-inspired hero with direct calls to request an estimate in one tap.",
       "Modular service cards so the team can grow offerings without touching code.",
       "Gallery and testimonials arranged in a masonry grid to spotlight workmanship.",
-    ],
-  },
-  {
-    id: "amerkovacevic",
-    title: "amerkovacevic.com",
-    url: "https://amerkovacevic.com",
-    industry: "Personal Portfolio",
-    headline: "Interactive hub for product experiments, tools, and ways to connect.",
-    description:
-      "The site you're exploring: a living portfolio that surfaces side projects, playground apps, and social touchpoints in a cohesive brand system with dark mode support.",
-    gradient: "from-sky-400/30 via-indigo-500/20 to-purple-500/30",
-    stats: [
-      { label: "Role", value: "Brand · Design · Engineering" },
-      { label: "Stack", value: "React · TypeScript · Firebase" },
-    ],
-    highlights: [
-      "Launchpad of community tools",
-      "Adaptive dark & light themes",
-      "Curated contact directory",
-    ],
-    features: [
-      "Tile-based homepage guiding visitors into each app with playful motion.",
-      "Reusable page hero system so every product story opens with the same premium box design.",
-      "Contact hub aggregating social profiles, project inquiries, and quick links.",
     ],
   },
 ];
@@ -84,32 +56,6 @@ const PRINCIPLES = [
   },
 ];
 
-const startProjectEmail = () => {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  const mailto = new URL("mailto:amerkovacevic99@gmail.com");
-  mailto.searchParams.set("subject", "Project inquiry from the portfolio site");
-  mailto.searchParams.set(
-    "body",
-    [
-      "Hey Amer,",
-      "",
-      "I came across your work and would love to start a project together.",
-      "",
-      "Here are a few quick details:",
-      "• Company: ",
-      "• Project goals: ",
-      "• Ideal timeline: ",
-      "",
-      "Looking forward to hearing from you!",
-    ].join("\n"),
-  );
-
-  window.open(mailto.toString(), "_blank", "noopener,noreferrer");
-};
-
 export default function PortfolioPage() {
   return (
     <div className="space-y-16">
@@ -121,17 +67,16 @@ export default function PortfolioPage() {
           </>
         }
         title="Portfolio of immersive websites blending storytelling and conversions"
-        description="From local businesses to personal platforms, these builds balance premium visuals with the performance and structure needed to keep shipping new stories."
+        description="Explore the launch of alensgeneralconstruction.com—a marketing site crafted to earn homeowner trust, capture leads, and make booking a renovation walkthrough effortless."
         actions={
           <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={startProjectEmail}
+            <Link
+              to="/start-a-project"
               className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
             >
               Start a project
               <ArrowUpRight className="h-4 w-4" aria-hidden />
-            </button>
+            </Link>
             <a
               href="/links"
               className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
@@ -150,7 +95,7 @@ export default function PortfolioPage() {
           </span>
           <h2 className="text-3xl sm:text-4xl">Digital experiences engineered to feel handcrafted</h2>
           <p className="max-w-2xl text-sm sm:text-base text-brand-muted dark:text-brand-subtle">
-            A peek at recent launches spanning agencies, wellness brands, and architecture studios. Each one pairs brand narrative with high-converting flows and accessible interactions.
+            A deep dive into the craftsmanship behind a contractor website built to bring in new business without sacrificing personality.
           </p>
         </header>
 
@@ -235,17 +180,6 @@ function CaseStudyCard({ site }: { site: SiteCaseStudy }) {
                 ))}
               </ul>
             </div>
-
-            <dl className="grid gap-3 text-sm text-brand-muted dark:text-brand-subtle">
-              {site.stats.map((stat) => (
-                <div key={stat.label} className="flex flex-col rounded-2xl border border-white/30 bg-white/60 px-4 py-3 shadow-brand-sm backdrop-blur-md dark:border-white/10 dark:bg-white/10">
-                  <dt className="text-xs font-semibold uppercase tracking-[0.3em] text-brand/70 dark:text-brand-foreground/70">
-                    {stat.label}
-                  </dt>
-                  <dd className="text-brand-strong dark:text-brand-foreground">{stat.value}</dd>
-                </div>
-              ))}
-            </dl>
           </aside>
         </div>
       </div>
@@ -262,18 +196,17 @@ function CallToAction() {
       </div>
 
       <div className="relative flex flex-col gap-6 text-center">
-          <h2 className="text-3xl font-semibold sm:text-4xl">Let's launch something unforgettable.</h2>
+        <h2 className="text-3xl font-semibold sm:text-4xl">Let's launch something unforgettable.</h2>
         <p className="mx-auto max-w-2xl text-sm sm:text-base text-brand-muted dark:text-brand-subtle">
           Whether you need a conversion-focused marketing site or a full product experience, I help teams craft web experiences that feel premium, move fast, and stay easy to evolve.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <button
-            type="button"
-            onClick={startProjectEmail}
+          <Link
+            to="/start-a-project"
             className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
           >
             Start a project
-          </button>
+          </Link>
           <a
             href="/links"
             className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
