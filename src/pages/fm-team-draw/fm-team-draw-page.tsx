@@ -289,7 +289,7 @@ export default function FMTeamDraw() {
                           </span>
                         ) : r.team ? (
                           <>
-                            {r.team.name} — {r.team.league} ({r.team.nation})
+                            {r.team.name} - {r.team.league} ({r.team.nation})
                           </>
                         ) : (
                           "No team assigned"
@@ -479,7 +479,7 @@ function ChipList({
   if (!items.length) {
     return (
       <div className="rounded-brand border border-dashed border-border-light/70 bg-surface px-3 py-2 text-xs text-brand-muted dark:border-border-dark/60 dark:bg-surface-overlayDark">
-        {emptyText || "—"}
+        {emptyText || "-"}
       </div>
     );
   }

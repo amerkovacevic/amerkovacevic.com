@@ -23,7 +23,7 @@ const SITES: SiteCaseStudy[] = [
     industry: "General Contractor",
     headline: "Neighborhood contractor site pairing craftsmanship visuals with clear service breakdowns.",
     description:
-      "A responsive marketing site that gives homeowners confidence—service pages outline capabilities, past renovation shots build trust, and every section ends with an easy way to book a walkthrough.",
+      "A responsive marketing site that gives homeowners confidence. Service pages outline capabilities, past renovation shots build trust, and every section ends with an easy way to book a walkthrough.",
     gradient: "from-amber-300/35 via-orange-400/20 to-sky-400/30",
     highlights: [
       "Showcases signature renovations",
@@ -44,7 +44,7 @@ const SITES: SiteCaseStudy[] = [
     headline:
       "Personal studio hub that packages case studies, services, and content into a cohesive brand home.",
     description:
-      "A modular portfolio built to flex with new engagements—hero storytelling introduces the founder, detailed project write-ups articulate outcomes, and embedded contact prompts move prospects into conversation fast.",
+      "A modular portfolio built to flex with new engagements. Hero storytelling introduces the founder, detailed project write-ups articulate outcomes, and embedded contact prompts move prospects into conversation fast.",
     gradient: "from-violet-300/35 via-fuchsia-400/25 to-blue-400/30",
     highlights: [
       "Service menu with instant inquiry access",
@@ -88,18 +88,18 @@ export default function PortfolioPage() {
           </>
         }
         title="Portfolio of immersive websites blending storytelling and conversions"
-        description="Explore the launch of alensgeneralconstruction.com—a marketing site crafted to earn homeowner trust, capture leads, and make booking a renovation walkthrough effortless."
+        description="Explore the launch of alensgeneralconstruction.com, a marketing site crafted to earn homeowner trust, capture leads, and make booking a renovation walkthrough effortless."
         actions={
           <div className="flex flex-wrap items-center gap-3">
             <Link
-              to="/start-a-project"
+              to="/professional/start-a-project"
               className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
             >
               Start a project
               <ArrowUpRight className="h-4 w-4" aria-hidden />
             </Link>
             <a
-              href="/links"
+              href="/professional/links"
               className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
             >
               View more links
@@ -222,14 +222,14 @@ function CallToAction() {
           Whether you need a conversion-focused marketing site or a full product experience, I help teams craft web experiences that feel premium, move fast, and stay easy to evolve.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <Link
-            to="/start-a-project"
+            <Link
+              to="/professional/start-a-project"
             className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
           >
             Start a project
           </Link>
-          <a
-            href="/links"
+            <a
+              href="/professional/links"
             className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
           >
             View more links

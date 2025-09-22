@@ -166,8 +166,8 @@ function buildSummary(b: Bracket): string {
     if (!round) continue;
     lines.push(`# ${round.name}`);
     for (const m of round.matches) {
-      const p1 = m.p1 ?? "—";
-      const p2 = m.p2 ?? "—";
+      const p1 = m.p1 ?? "-";
+      const p2 = m.p2 ?? "-";
       const s1 = m.s1 ?? "-";
       const s2 = m.s2 ?? "-";
       const res = (m.s1 !== null && m.s2 !== null && m.p1 && m.p2) ? ` → ${m.winner}` : "";
@@ -333,7 +333,7 @@ export default function Bracket() {
         stats={
           <>
             <StatPill>Players · {playerCount}</StatPill>
-            <StatPill>Rounds · {roundsCount || "—"}</StatPill>
+            <StatPill>Rounds · {roundsCount || "-"}</StatPill>
             <StatPill>{withThirdPlace ? "3rd place on" : "Winner takes all"}</StatPill>
           </>
         }
@@ -471,7 +471,7 @@ function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | n
     ? third ?? (awaitingThird ? `${semifinalLosers[0]} vs ${semifinalLosers[1]}` : "TBD")
     : semifinalLosers.length
       ? semifinalLosers.join(" & ")
-      : "—";
+      : "-";
 
   return (
     <div className="space-y-4">
@@ -479,11 +479,11 @@ function StandingsPanel({ bracket, placements, hasThird }:{ bracket: Bracket | n
       <ul className="space-y-2 text-sm text-brand-strong dark:text-white">
         <li className="flex items-center justify-between rounded-brand-full border border-border-light/60 bg-white/80 px-3 py-2 shadow-brand-sm backdrop-blur-sm dark:border-border-dark/60 dark:bg-white/10">
           <span className="inline-flex items-center gap-2 font-medium"><span>🥇</span> Champion</span>
-          <span>{first ?? "—"}</span>
+          <span>{first ?? "-"}</span>
         </li>
         <li className="flex items-center justify-between rounded-brand-full border border-border-light/60 bg-white/80 px-3 py-2 shadow-brand-sm backdrop-blur-sm dark:border-border-dark/60 dark:bg-white/10">
           <span className="inline-flex items-center gap-2 font-medium"><span>🥈</span> 2nd Place</span>
-          <span>{second ?? "—"}</span>
+          <span>{second ?? "-"}</span>
         </li>
         <li className="flex items-center justify-between rounded-brand-full border border-border-light/60 bg-white/80 px-3 py-2 shadow-brand-sm backdrop-blur-sm dark:border-border-dark/60 dark:bg-white/10">
           <span className="inline-flex items-center gap-2 font-medium"><span>🥉</span> 3rd Place</span>
@@ -629,8 +629,8 @@ function MatchCard({ match, onScore, onReset, readOnly }: { match: Match; onScor
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const _ = useMemo(() => { setS1(match.s1?.toString() ?? ""); setS2(match.s2?.toString() ?? ""); return null; }, [snapshot]);
 
-  const p1 = match.p1 ?? "—";
-  const p2 = match.p2 ?? "—";
+  const p1 = match.p1 ?? "-";
+  const p2 = match.p2 ?? "-";
 
   return (
     <div
