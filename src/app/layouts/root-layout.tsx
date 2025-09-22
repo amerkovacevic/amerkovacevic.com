@@ -31,7 +31,7 @@ export default function RootLayout() {
   const location = useLocation();
 
   const navItems = [
-    { id: "home", label: "Amer", to: "/" },
+    { id: "home", label: "Amer Kovacevic", to: "/" },
     { id: "apps", label: "Apps", to: "/tools" },
     { id: "professional", label: "Professional", to: "/professional" },
   ] as const;
@@ -73,7 +73,7 @@ export default function RootLayout() {
                 onClick={() => setMobileNavOpen((open) => !open)}
                 aria-controls="primary-navigation"
                 aria-expanded={mobileNavOpen}
-                className="inline-flex items-center gap-2 rounded-full border border-border-light/70 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-brand-strong shadow-brand-sm transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:border-border-dark/60 dark:bg-white/10 dark:text-brand-foreground"
+                className="inline-flex h-12 items-center gap-2 rounded-full border border-border-light/70 bg-white/80 px-5 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-brand-strong shadow-brand-sm transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:border-border-dark/60 dark:bg-white/10 dark:text-brand-foreground"
               >
                 {mobileNavOpen ? (
                   <X className="h-4 w-4" aria-hidden />
