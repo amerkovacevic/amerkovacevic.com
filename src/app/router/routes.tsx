@@ -8,6 +8,7 @@ import {
   HomePage,
   LinksPage,
   PortfolioPage,
+  StartAProjectPage,
   PickupGamePage,
   PickupPage,
   SecretSantaPage,
@@ -30,6 +31,7 @@ export const routes: RouteObject[] = [
       { path: "ultimate-team", element: <UltimateTeamPage /> },
       { path: "bracket", element: <BracketPage /> },
       { path: "portfolio", element: <PortfolioPage /> },
+      { path: "start-a-project", element: <StartAProjectPage /> },
     ],
   },
 ];

@@ -1,4 +1,6 @@
 /* Base Tailwind layers plus site-wide background + token variables. */
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -28,6 +30,7 @@
   --max-width-page: 80rem;
   --page-gutter: 1.5rem;
   --font-brand: 'Inter', 'SF Pro Text', 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
 }
 
 body {
@@ -72,6 +75,12 @@ body {
   .dark h5,
   .dark h6 {
     color: var(--color-brand-foreground);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
   }
 }
 

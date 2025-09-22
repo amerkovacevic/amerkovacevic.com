@@ -1,4 +1,7 @@
 import { ArrowUpRight, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
+
+import { PageHero } from "../../shared/components/page";
 
 type SiteCaseStudy = {
   id: string;
@@ -15,71 +18,51 @@ type SiteCaseStudy = {
 
 const SITES: SiteCaseStudy[] = [
   {
-    id: "aurora",
-    title: "Aurora Creative Studio",
-    url: "https://aurora.studio",
-    industry: "Creative Agency",
-    headline: "Cinematic storytelling for a boutique motion design collective.",
+    id: "alens-general-construction",
+    title: "Alen's General Construction",
+    url: "https://alensgeneralconstruction.com",
+    industry: "General Contractor",
+    headline: "Neighborhood contractor site pairing craftsmanship visuals with clear service breakdowns.",
     description:
-      "Modular case studies, art-directed typography, and cinematic scroll cues invite visitors into each campaign's narrative while keeping performance silky smooth.",
-    gradient: "from-sky-400/40 via-blue-500/20 to-indigo-500/35",
+      "A responsive marketing site that gives homeowners confidence—service pages outline capabilities, past renovation shots build trust, and every section ends with an easy way to book a walkthrough.",
+    gradient: "from-amber-300/35 via-orange-400/20 to-sky-400/30",
     stats: [
-      { label: "Role", value: "Strategy · Design · Build" },
-      { label: "Stack", value: "Next.js · Tailwind · Sanity" },
+      { label: "Role", value: "Design · Development · Local SEO" },
+      { label: "Stack", value: "React · Tailwind · Firebase" },
     ],
     highlights: [
-      "+62% lead conversion",
-      "Average session 3m+",
-      "Interactive reel system",
+      "Showcases signature renovations",
+      "Service inquiry capture on every page",
+      "Search-optimized for local leads",
     ],
     features: [
-      "Scene-based hero with parallax storytelling and responsive art direction.",
-      "Reusable case study slices with themable colorways editors can mix and match.",
-      "Lightweight video showcase powered by edge caching and responsive sources.",
+      "Trade-inspired hero with direct calls to request an estimate in one tap.",
+      "Modular service cards so the team can grow offerings without touching code.",
+      "Gallery and testimonials arranged in a masonry grid to spotlight workmanship.",
     ],
   },
   {
-    id: "harbor",
-    title: "Harbor Wellness",
-    url: "https://harborwellness.co",
-    industry: "Health & Wellness",
-    headline: "Membership experience for a boutique studio launching digital classes.",
+    id: "amerkovacevic",
+    title: "amerkovacevic.com",
+    url: "https://amerkovacevic.com",
+    industry: "Personal Portfolio",
+    headline: "Interactive hub for product experiments, tools, and ways to connect.",
     description:
-      "Built a serene brand world anchored by rich photography, interactive schedules, and a conversion-focused onboarding flow that doubled founding memberships.",
-    gradient: "from-emerald-400/35 via-teal-400/20 to-emerald-500/30",
+      "The site you're exploring: a living portfolio that surfaces side projects, playground apps, and social touchpoints in a cohesive brand system with dark mode support.",
+    gradient: "from-sky-400/30 via-indigo-500/20 to-purple-500/30",
     stats: [
-      { label: "Role", value: "Product Design · Development" },
-      { label: "Stack", value: "Remix · Tailwind · Stripe" },
-    ],
-    highlights: ["2.1× launch revenue", "<1s first contentful paint", "CMS-powered schedule"],
-    features: [
-      "Adaptive membership wizard with pricing experiments and milestone nudges.",
-      "Editorial wellness journal with ambient gradients and fluid typography.",
-      "Integrated booking calendar syncing live capacity from the studio floor.",
-    ],
-  },
-  {
-    id: "atelier",
-    title: "Atelier Nord",
-    url: "https://ateliernord.design",
-    industry: "Architecture",
-    headline: "High-touch portfolio celebrating bespoke hospitality spaces.",
-    description:
-      "A gallery-driven experience with tactile textures, tactile hover states, and a pitch deck generator so the team can spin up proposals in minutes.",
-    gradient: "from-amber-400/35 via-rose-400/20 to-fuchsia-500/30",
-    stats: [
-      { label: "Role", value: "UX · Visual Direction · Build" },
-      { label: "Stack", value: "Next.js · Tailwind · Contentful" },
+      { label: "Role", value: "Brand · Design · Engineering" },
+      { label: "Stack", value: "React · TypeScript · Firebase" },
     ],
     highlights: [
-      "Inbound inquiries up 3×",
-      "95 Lighthouse performance",
-      "Proposal decks in 6 clicks",
+      "Launchpad of community tools",
+      "Adaptive dark & light themes",
+      "Curated contact directory",
     ],
     features: [
-      "Responsive masonry showcasing projects with ambient lighting simulations.",
-      "Texture library layering paper grain, depth shadows, and subtle noise.",
-      "Auto-generated pitch decks using project data and printable layouts.",
+      "Tile-based homepage guiding visitors into each app with playful motion.",
+      "Reusable page hero system so every product story opens with the same premium box design.",
+      "Contact hub aggregating social profiles, project inquiries, and quick links.",
     ],
   },
 ];
@@ -105,7 +88,33 @@ const PRINCIPLES = [
 export default function PortfolioPage() {
   return (
     <div className="space-y-16">
-      <HeroSection />
+      <PageHero
+        eyebrow={
+          <>
+            <Sparkles className="h-4 w-4" aria-hidden />
+            Featured Work
+          </>
+        }
+        title="Portfolio of immersive websites blending storytelling and conversions"
+        description="From local businesses to personal platforms, these builds balance premium visuals with the performance and structure needed to keep shipping new stories."
+        actions={
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              to="/start-a-project"
+              className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
+            >
+              Start a project
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </Link>
+            <a
+              href="/links"
+              className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
+            >
+              View more links
+            </a>
+          </div>
+        }
+      />
 
       <section className="space-y-8">
         <header className="flex flex-col gap-3">
@@ -141,47 +150,6 @@ export default function PortfolioPage() {
 
       <CallToAction />
     </div>
-  );
-}
-
-function HeroSection() {
-  return (
-    <section className="relative overflow-hidden rounded-[2.75rem] border border-border-light/60 bg-gradient-to-br from-white/95 via-sky-50/80 to-brand/20 p-10 text-brand-strong shadow-brand-sm dark:border-border-dark/70 dark:from-slate-900/80 dark:via-slate-900/70 dark:to-brand/20">
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="absolute -left-10 top-[-8rem] h-[22rem] w-[22rem] rounded-full bg-sky-200/30 blur-3xl" />
-        <div className="absolute bottom-[-10rem] right-[-6rem] h-[20rem] w-[28rem] rounded-full bg-brand/30 blur-[140px]" />
-      </div>
-
-      <div className="relative flex flex-col gap-8">
-        <span className="inline-flex w-fit items-center gap-2 rounded-full border border-brand/20 bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-brand-strong shadow-brand-sm dark:border-brand/30 dark:bg-slate-900/60 dark:text-brand-foreground">
-          <Sparkles className="h-4 w-4" aria-hidden />
-          Featured Work
-        </span>
-        <div className="flex flex-col gap-5">
-          <h1 className="text-balance text-4xl font-semibold sm:text-5xl">
-            Portfolio of immersive websites that blend storytelling and conversion.
-          </h1>
-          <p className="max-w-2xl text-base text-brand-muted dark:text-brand-subtle">
-            From launch-day microsites to full product ecosystems, these builds focus on the subtle interactions that make brands memorable while staying ruthlessly fast.
-          </p>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-3">
-          {["95+ Lighthouse scores", "Crafted editor tooling", "Inclusive motion design"].map((pill) => (
-            <div
-              key={pill}
-              className="group relative overflow-hidden rounded-2xl border border-white/50 bg-white/80 p-4 text-sm font-medium text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/50 hover:shadow-brand dark:border-white/20 dark:bg-slate-900/80 dark:text-brand-foreground"
-            >
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand/10 via-transparent to-brand-accent/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden />
-              <div className="relative flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-brand" aria-hidden />
-                <span>{pill}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -268,17 +236,17 @@ function CallToAction() {
       </div>
 
       <div className="relative flex flex-col gap-6 text-center">
-        <h2 className="text-3xl font-semibold sm:text-4xl">Let&apos;s launch something unforgettable.</h2>
+          <h2 className="text-3xl font-semibold sm:text-4xl">Let's launch something unforgettable.</h2>
         <p className="mx-auto max-w-2xl text-sm sm:text-base text-brand-muted dark:text-brand-subtle">
           Whether you need a conversion-focused marketing site or a full product experience, I help teams craft web experiences that feel premium, move fast, and stay easy to evolve.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <a
-            href="mailto:hey@amerkovacevic.com"
+          <Link
+            to="/start-a-project"
             className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
           >
             Start a project
-          </a>
+          </Link>
           <a
             href="/links"
             className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"

@@ -6,6 +6,7 @@ import { Card } from "./ui/card";
 // Layout primitives reused across marketing-style pages.
 export function PageHero({
   icon,
+  eyebrow,
   title,
   description,
   actions,
@@ -14,6 +15,7 @@ export function PageHero({
   align = "start",
 }: {
   icon?: ReactNode;
+  eyebrow?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
@@ -26,39 +28,56 @@ export function PageHero({
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-[2rem] border border-border-light/70 bg-surface/80 px-6 py-8 text-brand-strong shadow-brand-sm transition-all duration-300 dark:border-border-dark/60 dark:bg-surface-overlayDark/80 sm:px-8 sm:py-10",
+        "relative overflow-hidden rounded-[2.75rem] border border-border-light/60 bg-gradient-to-br from-white/95 via-sky-50/80 to-brand/10 px-7 py-10 text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/70 dark:from-slate-900/80 dark:via-slate-900/70 dark:to-brand/20 sm:px-10",
         className
       )}
     >
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 opacity-90" style={{
-          background:
-            "radial-gradient(circle at 12% 20%, rgba(14,165,233,0.18), transparent 55%), radial-gradient(circle at 80% 25%, rgba(59,130,246,0.18), transparent 65%), linear-gradient(135deg, rgba(15,23,42,0.08), rgba(15,23,42,0))",
-        }} />
-        <div className="absolute -right-12 -top-16 h-40 w-40 rounded-full bg-brand-accent/20 blur-[120px]" />
-        <div className="absolute -bottom-20 left-12 h-48 w-48 rounded-full bg-white/25 blur-[140px] dark:bg-brand/20" />
+        <div className="absolute -left-10 -top-24 h-[22rem] w-[22rem] rounded-full bg-sky-200/40 blur-[140px]" />
+        <div className="absolute -right-20 bottom-[-12rem] h-[24rem] w-[28rem] rounded-full bg-brand/30 blur-[180px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.8),transparent_60%)] opacity-70 dark:bg-[radial-gradient(circle_at_top,rgba(14,116,144,0.45),transparent_65%)]" />
       </div>
       <div
         className={cn(
-          "relative flex flex-col gap-8",
+          "relative flex flex-col gap-10",
           isCentered
-            ? "items-center gap-6 text-center md:flex-col"
+            ? "items-center text-center"
             : "md:flex-row md:items-end md:justify-between"
         )}
       >
-        <div className={cn("space-y-5 text-balance", isCentered && "text-center")}>
+        <div
+          className={cn(
+            "space-y-6 text-balance",
+            isCentered ? "items-center text-center" : ""
+          )}
+        >
+          {eyebrow ? (
+            <div
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/80 px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm backdrop-blur-md dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground",
+                isCentered ? "mx-auto" : undefined
+              )}
+            >
+              {eyebrow}
+            </div>
+          ) : null}
           <div
             className={cn(
-              "flex items-center gap-4 text-3xl font-semibold sm:text-4xl",
-              isCentered && "flex-col items-center gap-3"
+              "flex items-center gap-4",
+              isCentered && "flex-col gap-3 text-center"
             )}
           >
             {icon ? (
-              <span className="grid h-14 w-14 place-items-center rounded-[1.35rem] bg-white/80 text-4xl shadow-brand-sm dark:bg-surface/30" aria-hidden>
+              <span
+                className="grid h-16 w-16 place-items-center rounded-[1.6rem] bg-white/80 text-4xl shadow-brand-sm ring-1 ring-white/40 backdrop-blur-md transition-transform duration-300 dark:bg-white/10 dark:text-brand-foreground"
+                aria-hidden
+              >
                 {icon}
               </span>
             ) : null}
-            <span className="leading-tight text-brand-strong dark:text-white">{title}</span>
+            <h1 className="font-display text-4xl font-semibold leading-tight text-brand-strong dark:text-white sm:text-5xl">
+              {title}
+            </h1>
           </div>
           {description ? (
             <p
@@ -73,7 +92,7 @@ export function PageHero({
           {stats ? (
             <div
               className={cn(
-                "flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.24em] text-brand-muted/90 dark:text-white/60",
+                "flex flex-wrap gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-brand-muted/90 dark:text-white/70",
                 isCentered && "justify-center"
               )}
             >
@@ -84,8 +103,8 @@ export function PageHero({
         {actions ? (
           <div
             className={cn(
-              "flex shrink-0 flex-col items-start gap-3 text-sm md:items-end",
-              isCentered && "items-center md:items-center"
+              "flex shrink-0 flex-col items-start gap-4 text-sm md:items-end",
+              isCentered && "items-center"
             )}
           >
             {actions}
