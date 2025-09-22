@@ -30,6 +30,7 @@ export default function RootLayout() {
   const location = useLocation();
 
   const navItems = [
+    { id: "home", label: "Amer", to: "/" },
     { id: "tools", label: "Tools", to: "/tools" },
     { id: "professional", label: "Professional", to: "/professional" },
   ] as const;
@@ -62,51 +63,40 @@ export default function RootLayout() {
             }}
           />
           <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center justify-between gap-3">
-              <Link
-                to="/"
-                className="inline-flex items-center rounded-brand-full border border-transparent bg-white/80 px-6 py-3 text-sm font-semibold tracking-[0.26em] text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-brand-strong/80 dark:bg-surface-overlayDark/80 dark:text-white"
-              >
-                AK TOOLS
-              </Link>
-              <AuthControls
-                user={user}
-                onSignIn={handleSignIn}
-                onSignOut={handleSignOut}
-                className="md:hidden"
-              />
-            </div>
+            <nav className="flex flex-wrap items-center gap-3 text-sm">
+              {navItems.map((item) => {
+                const active =
+                  item.to === "/"
+                    ? location.pathname === "/"
+                    : location.pathname.startsWith(item.to);
+                return (
+                  <Link
+                    key={item.id}
+                    to={item.to}
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium uppercase tracking-[0.24em] transition-all duration-200",
+                      active
+                        ? "border-brand bg-brand/15 text-brand shadow-brand-sm dark:border-brand/60 dark:bg-brand/25 dark:text-brand-foreground"
+                        : "border-border-light/70 bg-white/70 text-brand-muted shadow-none hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-white/10 dark:text-brand-subtle"
+                    )}
+                  >
+                    <span>{item.label}</span>
+                    {active ? (
+                      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand text-white text-[0.6rem] shadow-brand-sm dark:bg-brand-strong">
+                        ●
+                      </span>
+                    ) : null}
+                  </Link>
+                );
+              })}
+            </nav>
             <AuthControls
               user={user}
               onSignIn={handleSignIn}
               onSignOut={handleSignOut}
-              className="hidden md:flex"
+              className="flex w-full justify-end md:ml-auto md:w-auto"
             />
           </div>
-          <nav className="relative flex flex-wrap items-center gap-3 pt-2 text-sm">
-            {navItems.map((item) => {
-              const active = location.pathname.startsWith(item.to);
-              return (
-                <Link
-                  key={item.id}
-                  to={item.to}
-                  className={cn(
-                    "inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium uppercase tracking-[0.24em] transition-all duration-200",
-                    active
-                      ? "border-brand bg-brand/15 text-brand shadow-brand-sm dark:border-brand/60 dark:bg-brand/25 dark:text-brand-foreground"
-                      : "border-border-light/70 bg-white/70 text-brand-muted shadow-none hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-white/10 dark:text-brand-subtle"
-                  )}
-                >
-                  <span>{item.label}</span>
-                  {active ? (
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand text-white text-[0.6rem] shadow-brand-sm dark:bg-brand-strong">
-                      ●
-                    </span>
-                  ) : null}
-                </Link>
-              );
-            })}
-          </nav>
         </div>
       </header>
 

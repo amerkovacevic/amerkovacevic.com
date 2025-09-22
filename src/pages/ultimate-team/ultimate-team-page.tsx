@@ -43,7 +43,7 @@ export default function UltimateTeamPage() {
 
       <PageSection
         title="Club import"
-        description="Automated processing is nearly ready—drop your export and we'll prep it for the full toolkit."
+        description="Automated processing is nearly ready, so drop your export and we'll prep it for the full toolkit."
         contentClassName="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
       >
         <div className="space-y-6">
@@ -56,7 +56,7 @@ export default function UltimateTeamPage() {
               The importer now runs as a background job: as soon as JSON lands, it cleans player clubs, aligns chem links, and queues data for the rest of the utilities.
             </p>
             <p>
-              You no longer need to paste into separate fields—just drop the latest scrape and let the worker do the heavy lifting.
+              You no longer need to paste into separate fields. Just drop the latest scrape and let the worker do the heavy lifting.
             </p>
           </div>
 

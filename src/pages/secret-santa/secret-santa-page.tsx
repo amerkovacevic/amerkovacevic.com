@@ -616,10 +616,10 @@ export default function SecretSanta() {
                       <div className="text-base font-semibold text-brand-strong dark:text-white">{myMatch.name}</div>
                       <div className="text-xs text-brand-muted dark:text-brand-subtle">{myMatch.email}</div>
                     </div>
-                    <PreferenceList label="Wants — Players" items={myMatch.wantPlayers} />
-                    <PreferenceList label="Wants — Teams" items={myMatch.wantTeams} />
-                    <PreferenceList label="Avoid — Players" items={myMatch.avoidPlayers} />
-                    <PreferenceList label="Avoid — Teams" items={myMatch.avoidTeams} />
+                    <PreferenceList label="Wants - Players" items={myMatch.wantPlayers} />
+                    <PreferenceList label="Wants - Teams" items={myMatch.wantTeams} />
+                    <PreferenceList label="Avoid - Players" items={myMatch.avoidPlayers} />
+                    <PreferenceList label="Avoid - Teams" items={myMatch.avoidTeams} />
                   </div>
                 ) : (
                   <p className="text-sm text-brand-muted dark:text-brand-subtle">
@@ -658,7 +658,7 @@ function Alert({ tone, children }: { tone: "error" | "info"; children: ReactNode
 
 // Format preference arrays for display, falling back to an em dash.
 function listOrDash(arr: string[]) {
-  return arr && arr.length ? arr.join(", ") : "—";
+  return arr && arr.length ? arr.join(", ") : "-";
 }
 
 // Generate a high-contrast alphanumeric join code with ambiguous characters removed.

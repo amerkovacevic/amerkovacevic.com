@@ -146,7 +146,7 @@ export default function CreateGame() {
 
       {hasPrefillNotice ? (
         <p className="text-sm text-brand-muted dark:text-brand-subtle">
-          We prefilled these details from a previous game—double-check anything you
+          We prefilled these details from a previous game, so double-check anything you
           need before publishing.
         </p>
       ) : null}
