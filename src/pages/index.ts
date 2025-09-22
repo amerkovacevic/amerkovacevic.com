@@ -1,6 +1,6 @@
 // Central export hub so routes can import every page from a single module.
 export { default as HomePage } from "./home/home-page";
-export { default as ToolsLandingPage } from "./tools/tools-landing-page";
+export { default as AppsLandingPage } from "./tools/tools-landing-page";
 export { default as ProfessionalLandingPage } from "./professional/professional-landing-page";
 export { default as PickupPage } from "./pickup/pickup-page";
 export { default as PickupGamePage } from "./pickup/pickup-game-page";
