@@ -14,7 +14,7 @@ import {
   PickupPage,
   SecretSantaPage,
   UltimateTeamPage,
-  ToolsLandingPage,
+  AppsLandingPage,
 } from "../../pages";
 
 // Application routes wire feature pages into the shared RootLayout shell.
@@ -27,7 +27,7 @@ export const routes: RouteObject[] = [
       {
         path: "tools",
         children: [
-          { index: true, element: <ToolsLandingPage /> },
+          { index: true, element: <AppsLandingPage /> },
           { path: "pickup", element: <PickupPage /> },
           { path: "pickup/:gameId", element: <PickupGamePage /> },
           { path: "new", element: <CreateGamePage /> },

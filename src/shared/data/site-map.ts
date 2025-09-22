@@ -6,7 +6,7 @@ export type SiteLink = {
   emoji: string;
 };
 
-export const TOOL_LINKS: SiteLink[] = [
+export const APP_LINKS: SiteLink[] = [
   {
     id: "pickup",
     name: "Pickup Soccer",
@@ -68,4 +68,4 @@ export const PROFESSIONAL_LINKS: SiteLink[] = [
   },
 ];
 
-export const ALL_LINKS: SiteLink[] = [...TOOL_LINKS, ...PROFESSIONAL_LINKS];
+export const ALL_LINKS: SiteLink[] = [...APP_LINKS, ...PROFESSIONAL_LINKS];

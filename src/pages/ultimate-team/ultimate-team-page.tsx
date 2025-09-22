@@ -10,7 +10,7 @@ const PIPELINE_STEPS = [
   },
   {
     title: "Instant availability",
-    description: "The processed club sheet unlocks the rest of the tools without needing manual copy and paste gymnastics.",
+    description: "The processed club sheet unlocks the rest of the apps without needing manual copy and paste gymnastics.",
   },
 ];
 
@@ -38,12 +38,12 @@ export default function UltimateTeamPage() {
       <PageHero
         align="center"
         title="Ultimate Team Utility"
-        description="Tools to simplify Ultimate Team management and squad building."
+        description="Apps to simplify Ultimate Team management and squad building."
       />
 
       <PageSection
         title="Club import"
-        description="Automated processing is nearly ready, so drop your export and we'll prep it for the full toolkit."
+        description="Automated processing is nearly ready, so drop your export and we'll prep it for the full app suite."
         contentClassName="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
       >
         <div className="space-y-6">
@@ -104,7 +104,7 @@ export default function UltimateTeamPage() {
         </aside>
       </PageSection>
 
-      <PageSection title="Coming soon" description="These helpers round out the toolkit next.">
+      <PageSection title="Coming soon" description="These helpers round out the app suite next.">
         <div className="grid gap-5 lg:grid-cols-3">
           {FEATURES.map((feature) => (
             <article

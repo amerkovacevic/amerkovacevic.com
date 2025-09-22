@@ -4,27 +4,18 @@ import { Link } from "react-router-dom";
 import { PageHero, PageSection } from "../../shared/components/page";
 import {
   PROFESSIONAL_LINKS,
-  TOOL_LINKS,
+  APP_LINKS,
   type SiteLink,
 } from "../../shared/data/site-map";
 
 const GROUPS: {
-  id: "tools" | "professional";
+  id: "apps" | "professional";
   title: string;
   description: string;
   cta: string;
   to: string;
   items: SiteLink[];
 }[] = [
-  {
-    id: "tools",
-    title: "Tools & automations for everyday moments",
-    description:
-      "Play organizers, friend groups, and communities use these utilities to stay coordinated without spinning up custom apps.",
-    cta: "Explore tools",
-    to: "/tools",
-    items: TOOL_LINKS,
-  },
   {
     id: "professional",
     title: "Professional work & ways to collaborate",
@@ -34,6 +25,15 @@ const GROUPS: {
     to: "/professional",
     items: PROFESSIONAL_LINKS,
   },
+  {
+    id: "apps",
+    title: "Apps & automations for everyday moments",
+    description:
+      "Play organizers, friend groups, and communities use these utilities to stay coordinated without spinning up custom builds.",
+    cta: "Explore apps",
+    to: "/tools",
+    items: APP_LINKS,
+  },
 ];
 
 export default function HomePage() {
@@ -41,8 +41,8 @@ export default function HomePage() {
     <div className="space-y-10">
       <PageHero
         align="center"
-        title="Welcome to Amer Kovačević’s digital workspace"
-        description="Choose a path below so dedicated tools live alongside the professional studio and you can get to the right experience fast."
+        title="Welcome to Amer Kovacevic’s digital workspace"
+        // description="Choose a path below so dedicated apps live alongside the professional studio and you can get to the right experience fast."
         actions={
           <div className="flex flex-wrap justify-center gap-3">
             {GROUPS.map((group) => (

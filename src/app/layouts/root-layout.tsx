@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Github, Instagram, Linkedin } from "lucide-react";
+import { Github, Instagram, Linkedin, Menu, X } from "lucide-react";
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
 
 import { ThemeToggle } from "../../shared/components/theme-toggle";
@@ -27,16 +27,20 @@ function GoogleG({ className = "h-4 w-4" }: { className?: string }) {
 // Shared page chrome with authentication controls and footer links.
 export default function RootLayout() {
   const [user, setUser] = useState<User | null>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const location = useLocation();
 
   const navItems = [
     { id: "home", label: "Amer", to: "/" },
-    { id: "tools", label: "Tools", to: "/tools" },
+    { id: "apps", label: "Apps", to: "/tools" },
     { id: "professional", label: "Professional", to: "/professional" },
   ] as const;
 
   // Keep layout state aligned with Firebase auth changes.
   useEffect(() => onAuthStateChanged(auth, setUser), []);
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [location.pathname]);
 
   const handleSignIn = async () => {
     await signInWithPopup(auth, googleProvider);
@@ -62,40 +66,72 @@ export default function RootLayout() {
               background: "rgba(56,189,248,0.14)",
             }}
           />
-          <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <nav className="flex flex-wrap items-center gap-3 text-sm">
-              {navItems.map((item) => {
-                const active =
-                  item.to === "/"
-                    ? location.pathname === "/"
-                    : location.pathname.startsWith(item.to);
-                return (
-                  <Link
-                    key={item.id}
-                    to={item.to}
-                    className={cn(
-                      "inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium uppercase tracking-[0.24em] transition-all duration-200",
-                      active
-                        ? "border-brand bg-brand/15 text-brand shadow-brand-sm dark:border-brand/60 dark:bg-brand/25 dark:text-brand-foreground"
-                        : "border-border-light/70 bg-white/70 text-brand-muted shadow-none hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-white/10 dark:text-brand-subtle"
-                    )}
-                  >
-                    <span>{item.label}</span>
-                    {active ? (
-                      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand text-white text-[0.6rem] shadow-brand-sm dark:bg-brand-strong">
-                        ●
-                      </span>
-                    ) : null}
-                  </Link>
-                );
-              })}
-            </nav>
-            <AuthControls
-              user={user}
-              onSignIn={handleSignIn}
-              onSignOut={handleSignOut}
-              className="flex w-full justify-end md:ml-auto md:w-auto"
-            />
+          <div className="relative flex flex-col gap-5">
+            <div className="flex items-center justify-between md:hidden">
+              <button
+                type="button"
+                onClick={() => setMobileNavOpen((open) => !open)}
+                aria-controls="primary-navigation"
+                aria-expanded={mobileNavOpen}
+                className="inline-flex h-12 items-center gap-2 rounded-full border border-border-light/70 bg-white/80 px-5 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-brand-strong shadow-brand-sm transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:border-border-dark/60 dark:bg-white/10 dark:text-brand-foreground"
+              >
+                {mobileNavOpen ? (
+                  <X className="h-4 w-4" aria-hidden />
+                ) : (
+                  <Menu className="h-4 w-4" aria-hidden />
+                )}
+                <span>Menu</span>
+              </button>
+              <AuthControls
+                user={user}
+                onSignIn={handleSignIn}
+                onSignOut={handleSignOut}
+                className="md:hidden"
+              />
+            </div>
+            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+              <nav
+                id="primary-navigation"
+                className={cn(
+                  "grid gap-3 text-sm md:flex md:flex-wrap md:items-center",
+                  "mt-4 md:mt-0",
+                  mobileNavOpen ? "grid" : "hidden md:flex"
+                )}
+              >
+                {navItems.map((item) => {
+                  const active =
+                    item.to === "/"
+                      ? location.pathname === "/"
+                      : location.pathname.startsWith(item.to);
+                  return (
+                    <Link
+                      key={item.id}
+                      to={item.to}
+                      className={cn(
+                        "inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium uppercase tracking-[0.24em] transition-all duration-200",
+                        "w-full justify-between text-sm md:w-auto md:justify-start",
+                        active
+                          ? "border-brand bg-brand/15 text-brand shadow-brand-sm dark:border-brand/60 dark:bg-brand/25 dark:text-brand-foreground"
+                          : "border-border-light/70 bg-white/70 text-brand-muted shadow-none hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-white/10 dark:text-brand-subtle"
+                      )}
+                    >
+                      <span>{item.label}</span>
+                      {active ? (
+                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand text-white text-[0.6rem] shadow-brand-sm dark:bg-brand-strong">
+                          ●
+                        </span>
+                      ) : null}
+                    </Link>
+                  );
+                })}
+              </nav>
+              <AuthControls
+                user={user}
+                onSignIn={handleSignIn}
+                onSignOut={handleSignOut}
+                className="hidden w-full justify-end md:ml-auto md:flex md:w-auto"
+              />
+            </div>
           </div>
         </div>
       </header>

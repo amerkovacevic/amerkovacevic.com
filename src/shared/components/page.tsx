@@ -28,7 +28,7 @@ export function PageHero({
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-[2.75rem] border border-border-light/60 bg-gradient-to-br from-white/95 via-sky-50/80 to-brand/10 px-7 py-10 text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/70 dark:from-slate-900/80 dark:via-slate-900/70 dark:to-brand/20 sm:px-10",
+        "relative overflow-hidden rounded-[2.75rem] border border-border-light/60 bg-gradient-to-br from-white/95 via-sky-50/80 to-brand/10 px-6 py-8 text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/70 dark:from-slate-900/80 dark:via-slate-900/70 dark:to-brand/20 sm:px-10 sm:py-10",
         className
       )}
     >
@@ -39,7 +39,7 @@ export function PageHero({
       </div>
       <div
         className={cn(
-          "relative flex flex-col gap-10",
+          "relative flex flex-col gap-8 sm:gap-10",
           isCentered
             ? "items-center text-center"
             : "md:flex-row md:items-end md:justify-between"
