@@ -36,6 +36,27 @@ const SITES: SiteCaseStudy[] = [
       "Gallery and testimonials arranged in a masonry grid to spotlight workmanship.",
     ],
   },
+  {
+    id: "amerkovacevic",
+    title: "amerkovacevic.com",
+    url: "https://amerkovacevic.com",
+    industry: "Creative Studio",
+    headline:
+      "Personal studio hub that packages case studies, services, and content into a cohesive brand home.",
+    description:
+      "A modular portfolio built to flex with new engagements—hero storytelling introduces the founder, detailed project write-ups articulate outcomes, and embedded contact prompts move prospects into conversation fast.",
+    gradient: "from-violet-300/35 via-fuchsia-400/25 to-blue-400/30",
+    highlights: [
+      "Service menu with instant inquiry access",
+      "Case studies paired with measurable results",
+      "Optimized for conversions on every breakpoint",
+    ],
+    features: [
+      "Above-the-fold narrative framing that immediately communicates positioning and offer.",
+      "Interactive project gallery blending imagery, pull quotes, and metric callouts for credibility.",
+      "Sticky contact and calendaring hooks so visitors can book a consult without hunting for links.",
+    ],
+  },
 ];
 
 const PRINCIPLES = [
