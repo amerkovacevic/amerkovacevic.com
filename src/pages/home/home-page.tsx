@@ -41,7 +41,7 @@ export default function HomePage() {
     <div className="space-y-10">
       <PageHero
         align="center"
-        title="Welcome to Amer Kovacevic’s digital workspace"
+        title="Welcome to my digital workspace"
         // description="Choose a path below so dedicated apps live alongside the professional studio and you can get to the right experience fast."
         actions={
           <div className="flex flex-wrap justify-center gap-3">
