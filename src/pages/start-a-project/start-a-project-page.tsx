@@ -284,7 +284,7 @@ export default function StartAProjectPage() {
             </div>
 
             <div className="rounded-2xl border border-white/30 bg-white/60 p-4 text-xs uppercase tracking-[0.24em] text-brand-muted shadow-brand-sm dark:border-white/10 dark:bg-white/10 dark:text-brand-subtle">
-              Prefer to skip the form? Email or call me directly and we can coordinate a kickoff call.
+              Email or call me directly and we can coordinate a kickoff call.
             </div>
           </aside>
         ) : null}
