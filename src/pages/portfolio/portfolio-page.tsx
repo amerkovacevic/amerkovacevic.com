@@ -1,5 +1,4 @@
 import { ArrowUpRight, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
 
 import { PageHero } from "../../shared/components/page";
 
@@ -85,6 +84,32 @@ const PRINCIPLES = [
   },
 ];
 
+const startProjectEmail = () => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const mailto = new URL("mailto:amerkovacevic99@gmail.com");
+  mailto.searchParams.set("subject", "Project inquiry from the portfolio site");
+  mailto.searchParams.set(
+    "body",
+    [
+      "Hey Amer,",
+      "",
+      "I came across your work and would love to start a project together.",
+      "",
+      "Here are a few quick details:",
+      "• Company: ",
+      "• Project goals: ",
+      "• Ideal timeline: ",
+      "",
+      "Looking forward to hearing from you!",
+    ].join("\n"),
+  );
+
+  window.open(mailto.toString(), "_blank", "noopener,noreferrer");
+};
+
 export default function PortfolioPage() {
   return (
     <div className="space-y-16">
@@ -99,13 +124,14 @@ export default function PortfolioPage() {
         description="From local businesses to personal platforms, these builds balance premium visuals with the performance and structure needed to keep shipping new stories."
         actions={
           <div className="flex flex-wrap items-center gap-3">
-            <Link
-              to="/start-a-project"
+            <button
+              type="button"
+              onClick={startProjectEmail}
               className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
             >
               Start a project
               <ArrowUpRight className="h-4 w-4" aria-hidden />
-            </Link>
+            </button>
             <a
               href="/links"
               className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
@@ -241,12 +267,13 @@ function CallToAction() {
           Whether you need a conversion-focused marketing site or a full product experience, I help teams craft web experiences that feel premium, move fast, and stay easy to evolve.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <Link
-            to="/start-a-project"
+          <button
+            type="button"
+            onClick={startProjectEmail}
             className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
           >
             Start a project
-          </Link>
+          </button>
           <a
             href="/links"
             className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
