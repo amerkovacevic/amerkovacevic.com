@@ -152,7 +152,7 @@ function pickTranslation(
   item: ClubItem,
   translations: Map<number, TranslationEntry>
 ): TranslationEntry | undefined {
-  const identifiers = [item.resourceId, item.assetId, item.id]
+  const identifiers = [item.id, item.resourceId, item.assetId]
     .filter((id): id is number => typeof id === "number")
     .map((id) => Number(id));
 
