@@ -110,6 +110,7 @@ export default function StartAProjectPage() {
   const inputClasses =
     "w-full rounded-2xl border border-white/40 bg-white/80 px-4 py-3 text-sm text-brand-strong shadow-brand-sm placeholder:text-brand-subtle focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40 dark:border-white/10 dark:bg-white/10 dark:text-brand-foreground";
   const isSending = status === "sending";
+  const showFallbackContact = status === "error";
 
   return (
     <div className="space-y-10">
@@ -258,33 +259,35 @@ export default function StartAProjectPage() {
           </div>
         </form>
 
-        <aside className="surface-card flex flex-col gap-6 rounded-[2rem] border border-white/30 bg-white/70 p-6 text-sm text-brand-muted shadow-brand-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/5 dark:text-brand-subtle">
-          <div className="space-y-2 text-brand-strong dark:text-brand-foreground">
-            <h3 className="font-display text-xl font-semibold">What happens next</h3>
-            <p>
-              I'll review your brief, follow up with any clarifying questions, then share a proposal outlining timeline, investment, and deliverables tailored to your project.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 rounded-2xl border border-white/30 bg-white/80 px-4 py-3 text-brand-strong shadow-brand-sm dark:border-white/10 dark:bg-white/10 dark:text-brand-foreground">
-              <Mail className="h-5 w-5 text-brand" aria-hidden />
-              <a href={`mailto:${recipientEmail}`} className="hover:underline">
-                {recipientEmail}
-              </a>
+        {showFallbackContact ? (
+          <aside className="surface-card flex flex-col gap-6 rounded-[2rem] border border-white/30 bg-white/70 p-6 text-sm text-brand-muted shadow-brand-sm backdrop-blur-xl dark:border-white/10 dark:bg-white/5 dark:text-brand-subtle">
+            <div className="space-y-2 text-brand-strong dark:text-brand-foreground">
+              <h3 className="font-display text-xl font-semibold">What happens next</h3>
+              <p>
+                Looks like the form couldn't send automatically. Reach out directly and we'll pick things up right away.
+              </p>
             </div>
-            <div className="flex items-center gap-3 rounded-2xl border border-white/30 bg-white/80 px-4 py-3 text-brand-strong shadow-brand-sm dark:border-white/10 dark:bg-white/10 dark:text-brand-foreground">
-              <Phone className="h-5 w-5 text-brand" aria-hidden />
-              <a href="tel:+13144436491" className="hover:underline">
-                (314) 443-6491
-              </a>
-            </div>
-          </div>
 
-          <div className="rounded-2xl border border-white/30 bg-white/60 p-4 text-xs uppercase tracking-[0.24em] text-brand-muted shadow-brand-sm dark:border-white/10 dark:bg-white/10 dark:text-brand-subtle">
-            Prefer to skip the form? Email or call me directly and we can coordinate a kickoff call.
-          </div>
-        </aside>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/30 bg-white/80 px-4 py-3 text-brand-strong shadow-brand-sm dark:border-white/10 dark:bg-white/10 dark:text-brand-foreground">
+                <Mail className="h-5 w-5 text-brand" aria-hidden />
+                <a href={`mailto:${recipientEmail}`} className="hover:underline">
+                  {recipientEmail}
+                </a>
+              </div>
+              <div className="flex items-center gap-3 rounded-2xl border border-white/30 bg-white/80 px-4 py-3 text-brand-strong shadow-brand-sm dark:border-white/10 dark:bg-white/10 dark:text-brand-foreground">
+                <Phone className="h-5 w-5 text-brand" aria-hidden />
+                <a href="tel:+13144436491" className="hover:underline">
+                  (314) 443-6491
+                </a>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/30 bg-white/60 p-4 text-xs uppercase tracking-[0.24em] text-brand-muted shadow-brand-sm dark:border-white/10 dark:bg-white/10 dark:text-brand-subtle">
+              Email or call me directly and we can coordinate a kickoff call.
+            </div>
+          </aside>
+        ) : null}
       </PageSection>
     </div>
   );
