@@ -79,7 +79,7 @@ const PRINCIPLES = [
 
 export default function PortfolioPage() {
   return (
-    <div className="space-y-16">
+    <div className="space-y-12 sm:space-y-16">
       <PageHero
         eyebrow={
           <>
@@ -90,17 +90,17 @@ export default function PortfolioPage() {
         title="Portfolio of immersive websites blending storytelling and conversions"
         description="Explore the launch of alensgeneralconstruction.com, a marketing site crafted to earn homeowner trust, capture leads, and make booking a renovation walkthrough effortless."
         actions={
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
             <Link
               to="/professional/start-a-project"
-              className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand sm:w-auto sm:px-6 sm:text-xs"
             >
               Start a project
               <ArrowUpRight className="h-4 w-4" aria-hidden />
             </Link>
             <a
               href="/professional/links"
-              className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/50 bg-white/70 px-5 py-3 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground sm:w-auto sm:px-6 sm:text-xs"
             >
               View more links
             </a>
@@ -221,16 +221,16 @@ function CallToAction() {
         <p className="mx-auto max-w-2xl text-sm sm:text-base text-brand-muted dark:text-brand-subtle">
           Whether you need a conversion-focused marketing site or a full product experience, I help teams craft web experiences that feel premium, move fast, and stay easy to evolve.
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link
-              to="/professional/start-a-project"
-            className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
+        <div className="flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
+          <Link
+            to="/professional/start-a-project"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand sm:w-auto sm:px-6 sm:text-sm"
           >
             Start a project
           </Link>
-            <a
-              href="/professional/links"
-            className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
+          <a
+            href="/professional/links"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/50 bg-white/70 px-5 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground sm:w-auto sm:px-6 sm:text-sm"
           >
             View more links
           </a>
