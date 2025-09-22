@@ -10,16 +10,7 @@ export default function AppsLandingPage() {
       <PageHero
         icon="📱"
         title="Choose an app and get right to work"
-        description="Utilities for pickup sports, holiday exchanges, bracket planning, and FIFA make it easy to spin up gatherings without spreadsheets."
-        actions={
-          <Link
-            to="/tools/new"
-            className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
-          >
-            Post a pickup game
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
-          </Link>
-        }
+        description="A personal collection of apps I’ve built to make everyday things simpler and more enjoyable. Whether it’s setting up a quick soccer match, running a tournament, or creating fun group activities, these tools are here to save time and keep things organized."
       />
 
       <PageSection contentClassName="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">

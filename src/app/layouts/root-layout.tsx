@@ -31,7 +31,7 @@ export default function RootLayout() {
   const location = useLocation();
 
   const navItems = [
-    { id: "home", label: "Amer Kovacevic", to: "/" },
+    { id: "home", label: "Amer", to: "/" },
     { id: "apps", label: "Apps", to: "/tools" },
     { id: "professional", label: "Professional", to: "/professional" },
   ] as const;

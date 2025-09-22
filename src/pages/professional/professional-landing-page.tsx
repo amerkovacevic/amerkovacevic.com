@@ -10,25 +10,7 @@ export default function ProfessionalLandingPage() {
       <PageHero
         icon="💼"
         title="Explore the professional studio"
-        description="Review portfolio work, open the contact directory, or kick off a scoped engagement when you are ready to collaborate."
-        actions={
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Link
-              to="/professional/start-a-project"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand sm:w-auto sm:text-xs sm:tracking-[0.28em]"
-            >
-              Start a project
-              <ArrowUpRight className="h-4 w-4" aria-hidden />
-            </Link>
-            <Link
-              to="/professional/links"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/50 bg-white/80 px-6 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground sm:w-auto sm:text-xs sm:tracking-[0.28em]"
-            >
-              View contact hub
-              <ArrowUpRight className="h-4 w-4" aria-hidden />
-            </Link>
-          </div>
-        }
+        description="A dedicated space to share my professional work and connect on new ideas. Browse through portfolio projects that highlight my approach to design and development, find the easiest ways to get in touch, or start a tailored project where we can collaborate from concept to launch."
       />
 
       <PageSection contentClassName="grid gap-4">

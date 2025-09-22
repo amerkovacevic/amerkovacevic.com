@@ -42,7 +42,7 @@ export default function HomePage() {
       <PageHero
         align="center"
         title="Welcome to Amer Kovacevic’s digital workspace"
-        description="Choose a path below so dedicated apps live alongside the professional studio and you can get to the right experience fast."
+        // description="Choose a path below so dedicated apps live alongside the professional studio and you can get to the right experience fast."
         actions={
           <div className="flex flex-wrap justify-center gap-3">
             {GROUPS.map((group) => (

@@ -88,7 +88,7 @@ export default function PortfolioPage() {
           </>
         }
         title="Portfolio of immersive websites blending storytelling and conversions"
-        description="Explore the launch of alensgeneralconstruction.com, a marketing site crafted to earn homeowner trust, capture leads, and make booking a renovation walkthrough effortless."
+        description="Showcasing websites I’ve designed and developed to balance creativity with measurable impact. Each project highlights my ability to blend engaging storytelling with clean, conversion-driven design, turning ideas into digital experiences that perform."
         actions={
           <div className="flex flex-wrap items-center gap-3">
             <Link
@@ -115,9 +115,6 @@ export default function PortfolioPage() {
             Signature builds
           </span>
           <h2 className="text-3xl sm:text-4xl">Digital experiences engineered to feel handcrafted</h2>
-          <p className="max-w-2xl text-sm sm:text-base text-brand-muted dark:text-brand-subtle">
-            A deep dive into the craftsmanship behind a contractor website built to bring in new business without sacrificing personality.
-          </p>
         </header>
 
         <div className="grid gap-8">
