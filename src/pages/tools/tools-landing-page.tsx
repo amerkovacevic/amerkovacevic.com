@@ -1,0 +1,50 @@
+import { ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
+
+import { PageHero, PageSection } from "../../shared/components/page";
+import { APP_LINKS, type SiteLink } from "../../shared/data/site-map";
+
+export default function AppsLandingPage() {
+  return (
+    <div className="space-y-10">
+      <PageHero
+        icon="📱"
+        title="Choose an app and get right to work"
+        description="A personal collection of apps I’ve built to make everyday things simpler and more enjoyable. Whether it’s setting up a quick soccer match, running a tournament, or creating fun group activities, these tools are here to save time and keep things organized."
+      />
+
+      <PageSection contentClassName="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        {APP_LINKS.map((app) => (
+          <AppCard key={app.id} app={app} />
+        ))}
+      </PageSection>
+    </div>
+  );
+}
+
+function AppCard({ app }: { app: SiteLink }) {
+  return (
+    <Link
+      to={app.to}
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-brand-lg border border-border-light bg-surface p-6 text-left text-brand-strong shadow-brand-sm transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-brand dark:border-border-dark dark:bg-surface-muted dark:text-brand-foreground"
+    >
+      <div
+        className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand/8 via-transparent to-brand-accent/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        aria-hidden
+      />
+      <div className="relative flex items-start justify-between">
+        <span className="relative grid h-14 w-14 place-items-center rounded-[1.35rem] bg-gradient-to-br from-white via-white/60 to-white/20 text-3xl shadow-brand-sm ring-1 ring-border-light transition-colors duration-300 dark:from-slate-900 dark:via-slate-900/60 dark:to-slate-900/40 dark:ring-border-dark">
+          <span aria-hidden>{app.emoji}</span>
+          <span className="sr-only">{app.name} icon</span>
+        </span>
+        <span className="mt-1 text-brand-muted transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 dark:text-brand-subtle">
+          <ArrowUpRight className="h-5 w-5" aria-hidden />
+        </span>
+      </div>
+      <div className="relative mt-4 space-y-3">
+        <h3 className="text-lg font-semibold text-brand-strong dark:text-brand-foreground">{app.name}</h3>
+        <p className="text-sm text-brand-muted dark:text-brand-subtle">{app.blurb}</p>
+      </div>
+    </Link>
+  );
+}

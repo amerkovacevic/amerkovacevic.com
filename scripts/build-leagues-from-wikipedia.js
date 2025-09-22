@@ -19,31 +19,31 @@ const __dirname = path.dirname(__filename);
  * Portugal (2), + single top leagues for Turkey, Belgium, Austria, Croatia, Serbia, Scotland
  */
 const LEAGUES = [
-  // England — top 4
+  // England - top 4
   { nation: "England", league: "Premier League", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_Premier_League" },
   { nation: "England", league: "EFL Championship", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_Championship" },
   { nation: "England", league: "EFL League One", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_One" },
   { nation: "England", league: "EFL League Two", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_EFL_League_Two" },
 
-  // France — top 3
+  // France - top 3
   { nation: "France", league: "Ligue 1", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_1" },
   { nation: "France", league: "Ligue 2", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_Ligue_2" },
   { nation: "France", league: "Championnat National", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_Championnat_National" },
 
-  // Germany — top 3
+  // Germany - top 3
   { nation: "Germany", league: "Bundesliga", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_Bundesliga" },
   { nation: "Germany", league: "2. Bundesliga", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_2._Bundesliga" },
   { nation: "Germany", league: "3. Liga", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_3._Liga" },
 
-  // Italy — top 2
+  // Italy - top 2
   { nation: "Italy", league: "Serie A", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_A" },
   { nation: "Italy", league: "Serie B", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_Serie_B" },
 
-  // Spain — top 2
+  // Spain - top 2
   { nation: "Spain", league: "LaLiga", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_La_Liga" },
   { nation: "Spain", league: "Segunda División", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_Segunda_Divisi%C3%B3n" },
 
-  // Portugal — top 2
+  // Portugal - top 2
   { nation: "Portugal", league: "Primeira Liga", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_Primeira_Liga" },
   { nation: "Portugal", league: "Liga Portugal 2", url: "https://en.wikipedia.org/wiki/2024%E2%80%9325_Liga_Portugal_2" },
 
@@ -186,7 +186,7 @@ async function build() {
           const html = await fetchHTML(entry.url);
           const names = extractTeamsFromLeagueTable(html);
           if (names.length === 0) {
-            console.warn(`No league-table teams detected for ${entry.league} — check URL/selectors`);
+            console.warn(`No league-table teams detected for ${entry.league} - check URL/selectors`);
           }
           names.forEach((name) => {
             all.push({

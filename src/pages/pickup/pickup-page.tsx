@@ -298,8 +298,8 @@ function GameCard({ game, user }: { game: Game; user: User | null }) {
               {full ? "Roster full" : `${spotsLeft} spots left`}
             </div>
             {user?.uid === game.organizerUid ? (
-              <MotionLink
-                to={`/pickup/${game.id}`}
+            <MotionLink
+              to={`/tools/pickup/${game.id}`}
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.97 }}
                 className={buttonStyles({
@@ -430,7 +430,7 @@ function EmptyState() {
 function CreateGameButton({ className }: { className?: string }) {
   return (
     <MotionLink
-      to="/new"
+      to="/tools/new"
       whileHover={{ y: -1 }}
       whileTap={{ scale: 0.97 }}
       className={cn(
