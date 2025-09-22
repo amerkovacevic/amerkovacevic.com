@@ -1,13 +1,25 @@
 import { FormEvent, useState } from "react";
-import { Mail, Phone, Sparkles } from "lucide-react";
+import { Mail, Phone, Sparkles, TriangleAlert } from "lucide-react";
 
 import { PageHero, PageSection } from "../../shared/components/page";
 
 export default function StartAProjectPage() {
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">(
+    "idle",
+  );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const recipientEmail = "amerkovacevic99@gmail.com";
+  const emailJsEndpoint = "https://api.emailjs.com/api/v1.0/email/send";
+  const emailJsServiceId =
+    import.meta.env.VITE_EMAILJS_SERVICE_ID || "service_g7if0xb";
+  const emailJsTemplateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+  const emailJsPublicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const buttonBaseClasses =
+    "inline-flex items-center gap-2 rounded-full bg-brand px-8 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300";
+  const buttonHoverClasses = "hover:-translate-y-0.5 hover:shadow-brand";
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -36,18 +48,68 @@ export default function StartAProjectPage() {
       extras ? "\nAdditional context:\n" + extras : null,
     ].filter((line): line is string => Boolean(line));
 
-    const mailto = new URL(`mailto:${recipientEmail}`);
-    mailto.searchParams.set("subject", subject || "New project inquiry");
-    mailto.searchParams.set("body", lines.join("\n"));
+    if (!emailJsTemplateId || !emailJsPublicKey) {
+      console.error(
+        "EmailJS template ID or public key missing. Please configure the environment variables.",
+      );
+      setStatus("error");
+      setErrorMessage(
+        "Something went wrong while preparing your request. Please email me directly.",
+      );
+      return;
+    }
 
-    window.open(mailto.toString(), "_blank", "noopener,noreferrer");
+    setStatus("sending");
+    setErrorMessage(null);
 
-    form.reset();
-    setSubmitted(true);
+    const templateParams = {
+      company,
+      companyWebsite,
+      name,
+      email,
+      phone,
+      timeline,
+      projectDetails,
+      extras,
+      subject,
+      message: lines.join("\n"),
+      recipientEmail,
+      reply_to: email,
+    };
+
+    try {
+      const response = await fetch(emailJsEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          service_id: emailJsServiceId,
+          template_id: emailJsTemplateId,
+          user_id: emailJsPublicKey,
+          template_params: templateParams,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to send email via EmailJS");
+      }
+
+      form.reset();
+      setStatus("success");
+    } catch (error) {
+      console.error("Failed to send project request via EmailJS", error);
+      setStatus("error");
+      setErrorMessage(
+        "We couldn't send your request automatically. Please email or call me directly.",
+      );
+    }
   };
 
   const inputClasses =
     "w-full rounded-2xl border border-white/40 bg-white/80 px-4 py-3 text-sm text-brand-strong shadow-brand-sm placeholder:text-brand-subtle focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40 dark:border-white/10 dark:bg-white/10 dark:text-brand-foreground";
+  const isSending = status === "sending";
 
   return (
     <div className="space-y-10">
@@ -174,14 +236,23 @@ export default function StartAProjectPage() {
           <div className="flex flex-wrap items-center gap-4">
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-full bg-brand px-8 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
+              disabled={isSending}
+              className={`${buttonBaseClasses} ${
+                isSending ? "cursor-not-allowed opacity-60" : buttonHoverClasses
+              }`}
             >
-              Send project request
+              {isSending ? "Sending..." : "Send project request"}
             </button>
-            {submitted ? (
+            {status === "success" ? (
               <span className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-white/80 px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-brand-strong shadow-brand-sm dark:border-brand/40 dark:bg-white/10 dark:text-brand-foreground">
                 <Sparkles className="h-3 w-3" aria-hidden />
                 Thanks! I'll be in touch shortly.
+              </span>
+            ) : null}
+            {status === "error" ? (
+              <span className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-white/80 px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-red-600 shadow-brand-sm dark:border-red-500/40 dark:bg-white/10 dark:text-red-400">
+                <TriangleAlert className="h-3 w-3" aria-hidden />
+                {errorMessage ?? "Please reach out via email or phone."}
               </span>
             ) : null}
           </div>
