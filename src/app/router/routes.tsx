@@ -7,6 +7,7 @@ import {
   FmTeamDrawPage,
   HomePage,
   LinksPage,
+  PortfolioPage,
   PickupGamePage,
   PickupPage,
   SecretSantaPage,
@@ -28,6 +29,7 @@ export const routes: RouteObject[] = [
       { path: "fm", element: <FmTeamDrawPage /> },
       { path: "ultimate-team", element: <UltimateTeamPage /> },
       { path: "bracket", element: <BracketPage /> },
+      { path: "portfolio", element: <PortfolioPage /> },
     ],
   },
 ];
