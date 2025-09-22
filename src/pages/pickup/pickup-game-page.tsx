@@ -165,7 +165,7 @@ export default function PickupGamePage() {
     if (game.fieldName) params.set("fieldName", game.fieldName);
     if (game.maxPlayers) params.set("maxPlayers", String(game.maxPlayers));
     params.set("dateTime", new Date().toISOString());
-    return `/new?${params.toString()}`;
+    return `/tools/new?${params.toString()}`;
   }, [game]);
 
   const handleDelete = async () => {
@@ -187,7 +187,7 @@ export default function PickupGamePage() {
       });
       batch.delete(doc(db, "games", gameId));
       await batch.commit();
-      nav("/pickup");
+      nav("/tools/pickup");
     } catch (error) {
       console.error(error);
       setDeleteErr("Failed to delete the game. Please try again.");
@@ -209,7 +209,7 @@ export default function PickupGamePage() {
         actions={
           <div className="flex flex-wrap gap-2">
             <MotionLink
-              to="/pickup"
+              to="/tools/pickup"
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.97 }}
               className={buttonStyles({ variant: "secondary", size: "sm" })}

@@ -115,7 +115,7 @@ export default function CreateGame() {
         { merge: true }
       );
 
-      nav("/pickup");
+      nav("/tools/pickup");
     } catch (e) {
       console.error(e);
       setError("Could not create the game. Please try again.");
@@ -138,7 +138,7 @@ export default function CreateGame() {
           </>
         }
         actions={
-          <Link to="/pickup" className={buttonStyles({ variant: "secondary", size: "sm" })}>
+          <Link to="/tools/pickup" className={buttonStyles({ variant: "secondary", size: "sm" })}>
             ← Back to games
           </Link>
         }
@@ -222,7 +222,7 @@ export default function CreateGame() {
               <p className="text-sm text-red-500">Sign in to create a game.</p>
             ) : (
               <p className="text-sm text-brand-muted dark:text-brand-subtle">
-                Need to adjust later? Visit the game in <Link to="/pickup" className="underline">Pickup Soccer</Link> and edit RSVPs live.
+                Need to adjust later? Visit the game in <Link to="/tools/pickup" className="underline">Pickup Soccer</Link> and edit RSVPs live.
               </p>
             )}
           </div>

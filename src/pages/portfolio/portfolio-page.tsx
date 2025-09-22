@@ -92,14 +92,14 @@ export default function PortfolioPage() {
         actions={
           <div className="flex flex-wrap items-center gap-3">
             <Link
-              to="/start-a-project"
+              to="/professional/start-a-project"
               className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
             >
               Start a project
               <ArrowUpRight className="h-4 w-4" aria-hidden />
             </Link>
             <a
-              href="/links"
+              href="/professional/links"
               className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
             >
               View more links
@@ -222,14 +222,14 @@ function CallToAction() {
           Whether you need a conversion-focused marketing site or a full product experience, I help teams craft web experiences that feel premium, move fast, and stay easy to evolve.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <Link
-            to="/start-a-project"
+            <Link
+              to="/professional/start-a-project"
             className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-white shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand"
           >
             Start a project
           </Link>
-          <a
-            href="/links"
+            <a
+              href="/professional/links"
             className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/70 px-6 py-3 text-sm font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
           >
             View more links

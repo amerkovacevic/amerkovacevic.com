@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { Github, Instagram, Linkedin } from "lucide-react";
 import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
 
@@ -27,6 +27,12 @@ function GoogleG({ className = "h-4 w-4" }: { className?: string }) {
 // Shared page chrome with authentication controls and footer links.
 export default function RootLayout() {
   const [user, setUser] = useState<User | null>(null);
+  const location = useLocation();
+
+  const navItems = [
+    { id: "tools", label: "Tools", to: "/tools" },
+    { id: "professional", label: "Professional", to: "/professional" },
+  ] as const;
 
   // Keep layout state aligned with Firebase auth changes.
   useEffect(() => onAuthStateChanged(auth, setUser), []);
@@ -77,6 +83,30 @@ export default function RootLayout() {
               className="hidden md:flex"
             />
           </div>
+          <nav className="relative flex flex-wrap items-center gap-3 pt-2 text-sm">
+            {navItems.map((item) => {
+              const active = location.pathname.startsWith(item.to);
+              return (
+                <Link
+                  key={item.id}
+                  to={item.to}
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium uppercase tracking-[0.24em] transition-all duration-200",
+                    active
+                      ? "border-brand bg-brand/15 text-brand shadow-brand-sm dark:border-brand/60 dark:bg-brand/25 dark:text-brand-foreground"
+                      : "border-border-light/70 bg-white/70 text-brand-muted shadow-none hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-white/10 dark:text-brand-subtle"
+                  )}
+                >
+                  <span>{item.label}</span>
+                  {active ? (
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand text-white text-[0.6rem] shadow-brand-sm dark:bg-brand-strong">
+                      ●
+                    </span>
+                  ) : null}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
       </header>
 

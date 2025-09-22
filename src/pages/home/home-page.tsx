@@ -1,105 +1,112 @@
-import { useNavigate } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
-// Static catalogue of tools surfaced on the landing page.
-const APPS = [
-  {
-    id: "pickup",
-    name: "Pickup Soccer",
-    to: "/pickup",
-    blurb: "Post games, RSVP in one click, see spots left.",
-    emoji: "⚽️",
-  },
-  {
-    id: "santa",
-    name: "Secret Santa",
-    to: "/santa",
-    blurb: "Create a group, invite by code, auto-assign matches.",
-    emoji: "🎅",
-  },
-  {
-    id: "fm",
-    name: "FM Team Draw",
-    to: "/fm",
-    blurb: "Randomly assign Football Manager teams to your group.",
-    emoji: "🎮",
-  },
-  {
-    id: "ultimate-team",
-    name: "Ultimate Team Utility",
-    to: "/ultimate-team",
-    blurb: "Build squads, solve SBCs, and optimize evolutions.",
-    emoji: "⭐️",
-  },
-  {
-    id: "bracket",
-    name: "Bracket Generator",
-    to: "/bracket",
-    blurb: "Create and manage tournament brackets.",
-    emoji: "🏆",
-  },
-  {
-    id: "portfolio",
-    name: "Web Portfolio",
-    to: "/portfolio",
-    blurb: "See bespoke marketing sites and product storytelling work.",
-    emoji: "🖥️",
-  },
-  {
-    id: "links",
-    name: "Contact",
-    to: "/links",
-    blurb: "Reach me anywhere from one tidy home for every profile.",
-    emoji: "🔗",
-  },
-] as const;
+import { PageHero, PageSection } from "../../shared/components/page";
+import {
+  PROFESSIONAL_LINKS,
+  TOOL_LINKS,
+  type SiteLink,
+} from "../../shared/data/site-map";
 
-type App = (typeof APPS)[number];
+const GROUPS: {
+  id: "tools" | "professional";
+  title: string;
+  description: string;
+  cta: string;
+  to: string;
+  items: SiteLink[];
+}[] = [
+  {
+    id: "tools",
+    title: "Tools & automations for everyday moments",
+    description:
+      "Play organizers, friend groups, and communities use these utilities to stay coordinated without spinning up custom apps.",
+    cta: "Explore tools",
+    to: "/tools",
+    items: TOOL_LINKS,
+  },
+  {
+    id: "professional",
+    title: "Professional work & ways to collaborate",
+    description:
+      "Dive into portfolio highlights, grab contact links, or start a scoped engagement when you are ready to build together.",
+    cta: "Visit professional hub",
+    to: "/professional",
+    items: PROFESSIONAL_LINKS,
+  },
+];
 
-// HomePage showcases every mini-app and routes users when a card is selected.
 export default function HomePage() {
   return (
-    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-      {APPS.map((app) => (
-        <AppCard key={app.id} app={app} />
-      ))}
+    <div className="space-y-10">
+      <PageHero
+        align="center"
+        title="Welcome to Amer Kovačević’s digital workspace"
+        description="Choose a path below—dedicated tools live alongside the professional studio so you can get to the right experience fast."
+        actions={
+          <div className="flex flex-wrap justify-center gap-3">
+            {GROUPS.map((group) => (
+              <Link
+                key={group.id}
+                to={group.to}
+                className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/80 px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-brand-strong shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-white/20 dark:bg-white/10 dark:text-brand-foreground"
+              >
+                {group.cta}
+                <ArrowUpRight className="h-4 w-4" aria-hidden />
+              </Link>
+            ))}
+          </div>
+        }
+      />
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        {GROUPS.map((group) => (
+          <PageSection
+            key={group.id}
+            title={group.title}
+            description={group.description}
+            actions={
+              <Link
+                to={group.to}
+                className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-brand shadow-brand-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-brand/40 dark:bg-brand/20 dark:text-brand-foreground"
+              >
+                {group.cta}
+                <ArrowUpRight className="h-4 w-4" aria-hidden />
+              </Link>
+            }
+            contentClassName="grid gap-4"
+          >
+            {group.items.map((item) => (
+              <CategoryCard key={item.id} item={item} />
+            ))}
+          </PageSection>
+        ))}
+      </div>
     </div>
   );
 }
 
-// Individual app card handles keyboard interaction so the grid stays accessible.
-function AppCard({ app }: { app: App }) {
-  const navigate = useNavigate();
-
-  const handleOpen = () => navigate(app.to);
-
+function CategoryCard({ item }: { item: SiteLink }) {
   return (
-    <div
-      role="link"
-      tabIndex={0}
-      onClick={handleOpen}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          handleOpen();
-        }
-      }}
-      className="group relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-brand-lg border border-border-light bg-surface p-6 text-left text-brand-strong shadow-brand-sm transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-brand dark:border-border-dark dark:bg-surface-muted dark:text-brand-foreground"
+    <Link
+      to={item.to}
+      className="group relative flex items-start gap-5 overflow-hidden rounded-[1.9rem] border border-border-light/70 bg-white/80 p-5 text-left text-brand-strong shadow-brand-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-brand dark:border-border-dark/60 dark:bg-surface-overlayDark/80 dark:text-brand-foreground"
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand/8 via-transparent to-brand-accent/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden />
-      <div className="relative flex items-start justify-between">
-        <span className="relative grid h-14 w-14 place-items-center rounded-[1.35rem] bg-gradient-to-br from-white via-white/60 to-white/20 text-3xl shadow-brand-sm ring-1 ring-border-light transition-colors duration-300 dark:from-slate-900 dark:via-slate-900/60 dark:to-slate-900/40 dark:ring-border-dark">
-          <span aria-hidden>{app.emoji}</span>
-          <span className="sr-only">{app.name} icon</span>
-        </span>
-        <span className="mt-1 text-brand-muted transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 dark:text-brand-subtle">
-          <ArrowUpRight className="h-5 w-5" aria-hidden />
-        </span>
+      <div
+        className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand/10 via-transparent to-brand-accent/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        aria-hidden
+      />
+      <span className="relative grid h-14 w-14 shrink-0 place-items-center rounded-[1.35rem] bg-gradient-to-br from-white via-white/60 to-white/20 text-3xl shadow-brand-sm ring-1 ring-border-light transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 dark:from-slate-900 dark:via-slate-900/60 dark:to-slate-900/40 dark:ring-border-dark">
+        <span aria-hidden>{item.emoji}</span>
+        <span className="sr-only">{item.name} icon</span>
+      </span>
+      <div className="relative flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <h3 className="text-base font-semibold tracking-tight sm:text-lg">{item.name}</h3>
+          <ArrowUpRight className="h-4 w-4 text-brand/80 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" aria-hidden />
+        </div>
+        <p className="text-sm text-brand-muted dark:text-brand-subtle">{item.blurb}</p>
       </div>
-      <div className="relative mt-4 space-y-3">
-        <h3 className="text-lg font-semibold text-brand-strong dark:text-brand-foreground">{app.name}</h3>
-        <p className="text-sm text-brand-muted dark:text-brand-subtle">{app.blurb}</p>
-      </div>
-    </div>
+    </Link>
   );
 }
