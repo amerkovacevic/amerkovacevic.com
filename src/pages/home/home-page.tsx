@@ -39,6 +39,13 @@ const APPS = [
     emoji: "🏆",
   },
   {
+    id: "portfolio",
+    name: "Web Portfolio",
+    to: "/portfolio",
+    blurb: "See bespoke marketing sites and product storytelling work.",
+    emoji: "🖥️",
+  },
+  {
     id: "links",
     name: "Contact",
     to: "/links",
