@@ -15,6 +15,13 @@ export const APP_LINKS: SiteLink[] = [
     emoji: "🛡️",
   },
   {
+    id: "games",
+    name: "Party Game Arcade",
+    to: "/tools/games",
+    blurb: "Play rapid-fire word, logic, and codebreaking challenges.",
+    emoji: "🎲",
+  },
+  {
     id: "pickup",
     name: "Pickup Soccer",
     to: "/tools/pickup",
