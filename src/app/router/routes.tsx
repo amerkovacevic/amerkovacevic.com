@@ -13,7 +13,6 @@ import {
   PickupGamePage,
   PickupPage,
   SecretSantaPage,
-  UltimateTeamPage,
   AppsLandingPage,
 } from "../../pages";
 
@@ -33,7 +32,6 @@ export const routes: RouteObject[] = [
           { path: "new", element: <CreateGamePage /> },
           { path: "santa", element: <SecretSantaPage /> },
           { path: "fm", element: <FmTeamDrawPage /> },
-          { path: "ultimate-team", element: <UltimateTeamPage /> },
           { path: "bracket", element: <BracketPage /> },
         ],
       },
