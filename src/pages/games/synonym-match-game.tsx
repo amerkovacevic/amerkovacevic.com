@@ -89,23 +89,10 @@ const QUESTIONS: Question[] = [
 type Status = "idle" | "correct" | "incorrect";
 
 export function SynonymMatchGame() {
-  const [order, setOrder] = useState(() => shuffle(QUESTIONS));
-  const [index, setIndex] = useState(0);
+  const [question, setQuestion] = useState(() => pickRandom(QUESTIONS));
   const [selected, setSelected] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
-  const [score, setScore] = useState(0);
-  const [attempted, setAttempted] = useState(0);
   const [showHint, setShowHint] = useState(false);
-  const [revealed, setRevealed] = useState(false);
-
-  const question = order[index] ?? order[0];
-
-  if (!question) {
-    return null;
-  }
-
-  const accuracy = attempted > 0 ? Math.round((score / attempted) * 100) : 0;
-  const progressLabel = `${index + 1} of ${order.length}`;
 
   const handleChoice = (choice: string) => {
     if (selected) {
@@ -113,136 +100,102 @@ export function SynonymMatchGame() {
     }
 
     setSelected(choice);
-    setAttempted((value) => value + 1);
-    if (choice === question.answer) {
-      setStatus("correct");
-      setScore((value) => value + 1);
-      setRevealed(false);
-    } else {
-      setStatus("incorrect");
-      setRevealed(false);
-    }
-  };
-
-  const handleNext = () => {
-    const nextIndex = index + 1;
-    if (nextIndex >= order.length) {
-      setOrder(shuffle(QUESTIONS));
-      setIndex(0);
-    } else {
-      setIndex(nextIndex);
-    }
-
-    setSelected(null);
-    setStatus("idle");
-    setShowHint(false);
-    setRevealed(false);
+    setStatus(choice === question.answer ? "correct" : "incorrect");
   };
 
   const handleReveal = () => {
+    if (status === "correct") {
+      return;
+    }
+
     setSelected(question.answer);
     setStatus("correct");
-    setRevealed(true);
+  };
+
+  const handleNext = () => {
+    setQuestion(pickRandom(QUESTIONS, question));
+    setSelected(null);
+    setStatus("idle");
+    setShowHint(false);
   };
 
   return (
     <div className="space-y-6">
       <Card padding="lg" className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 text-sm font-semibold uppercase tracking-[0.28em] text-brand-muted dark:text-brand-subtle">
-          <span>{progressLabel}</span>
-          <span>Score: {score}</span>
-          <span>Accuracy: {accuracy}%</span>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-2xl font-semibold text-brand-strong dark:text-brand-foreground">{question.word}</h3>
+          <Button variant="ghost" size="sm" onClick={() => setShowHint((value) => !value)}>
+            {showHint ? "Hide hint" : "Hint"}
+          </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,320px)] md:items-center">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="text-2xl font-semibold text-brand-strong dark:text-brand-foreground">{question.word}</h3>
-              <Button variant="ghost" size="sm" onClick={() => setShowHint((value) => !value)}>
-                {showHint ? "Hide hint" : "Hint"}
-              </Button>
-            </div>
-            <p className="text-sm text-brand-muted dark:text-brand-subtle">
-              Choose the synonym that best matches the focus word.
-            </p>
-            {showHint ? (
-              <p className="text-sm font-medium text-brand-strong dark:text-brand-foreground">Hint: {question.clue}</p>
-            ) : null}
-          </div>
+        <p className="text-sm text-brand-muted dark:text-brand-subtle">
+          Choose the synonym that best matches the focus word.
+        </p>
+        {showHint ? (
+          <p className="text-sm font-medium text-brand-strong dark:text-brand-foreground">Hint: {question.clue}</p>
+        ) : null}
 
-          <div className="space-y-3">
-            {question.choices.map((choice) => {
-              const isCorrectChoice = choice === question.answer;
-              const isSelected = selected === choice;
+        <div className="space-y-3">
+          {question.choices.map((choice) => {
+            const isCorrectChoice = choice === question.answer;
+            const isSelected = selected === choice;
 
-              return (
-                <button
-                  key={choice}
-                  type="button"
-                  onClick={() => handleChoice(choice)}
-                  disabled={Boolean(selected)}
-                  className={cn(
-                    "flex w-full items-center justify-between gap-3 rounded-brand-md border px-4 py-3 text-left text-base font-medium transition",
-                    "border-border-light bg-white/90 text-brand-strong hover:border-brand hover:bg-white dark:border-border-dark dark:bg-surface-muted dark:text-brand-foreground",
-                    selected
-                      ? isCorrectChoice
-                        ? "border-emerald-300/80 bg-emerald-50/80 text-emerald-700 dark:border-emerald-700/70 dark:bg-emerald-500/20 dark:text-emerald-200"
-                        : isSelected
-                        ? "border-rose-300/80 bg-rose-50/80 text-rose-700 dark:border-rose-900/70 dark:bg-rose-500/20 dark:text-rose-200"
-                        : "opacity-70"
-                      : ""
-                  )}
-                >
-                  {choice}
-                  {selected && isCorrectChoice ? <span className="text-sm">✔️</span> : null}
-                  {selected && isSelected && !isCorrectChoice ? <span className="text-sm">❌</span> : null}
-                </button>
-              );
-            })}
-          </div>
+            return (
+              <button
+                key={choice}
+                type="button"
+                onClick={() => handleChoice(choice)}
+                disabled={Boolean(selected)}
+                className={cn(
+                  "flex w-full items-center justify-between gap-3 rounded-brand-md border px-4 py-3 text-left text-base font-medium transition",
+                  "border-border-light bg-white/90 text-brand-strong hover:border-brand hover:bg-white dark:border-border-dark dark:bg-surface-muted dark:text-brand-foreground",
+                  selected
+                    ? isCorrectChoice
+                      ? "border-emerald-300/80 bg-emerald-50/80 text-emerald-700 dark:border-emerald-700/70 dark:bg-emerald-500/20 dark:text-emerald-200"
+                      : isSelected
+                      ? "border-rose-300/80 bg-rose-50/80 text-rose-700 dark:border-rose-900/70 dark:bg-rose-500/20 dark:text-rose-200"
+                      : "opacity-70"
+                    : ""
+                )}
+              >
+                {choice}
+                {selected && isCorrectChoice ? <span className="text-sm">✔️</span> : null}
+                {selected && isSelected && !isCorrectChoice ? <span className="text-sm">❌</span> : null}
+              </button>
+            );
+          })}
         </div>
 
-        <Feedback status={status} question={question} selected={selected} revealed={revealed} />
+        <Feedback status={status} question={question} />
 
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="secondary" onClick={handleNext}>
-            Next word
-          </Button>
-          <Button type="button" variant="ghost" onClick={handleReveal} disabled={selected === question.answer}>
+          <Button type="button" variant="ghost" onClick={handleReveal} disabled={status === "correct"}>
             Reveal synonym
           </Button>
+          {(status === "correct" || status === "incorrect") && (
+            <Button type="button" variant="secondary" onClick={handleNext}>
+              New word
+            </Button>
+          )}
         </div>
       </Card>
     </div>
   );
 }
 
-function Feedback({
-  status,
-  question,
-  selected,
-  revealed,
-}: {
-  status: Status;
-  question: Question;
-  selected: string | null;
-  revealed: boolean;
-}) {
-  if (!selected) {
-    return null;
-  }
-
+function Feedback({ status, question }: { status: Status; question: Question }) {
   if (status === "correct") {
     return (
       <p className="rounded-brand-md border border-emerald-200/60 bg-emerald-50/70 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-500/20 dark:text-emerald-200">
-        {revealed ? "Revealed" : "Correct"}! {question.word} ≈ {question.answer}.
+        Yes! {question.word} ≈ {question.answer}.
       </p>
     );
   }
 
   if (status === "incorrect") {
     return (
-      <p className="rounded-brand-md border border-rose-200/60 bg-rose-50/70 px-4 py-3 text-sm font-medium text-rose-700 dark:border-rose-900/60 dark:bg-rose-500/15 dark:text-rose-200">
+      <p className="rounded-brand-md border border-rose-200/60 bg-rose-50/70 px-4 py-3 text-sm font-medium text-rose-700 dark:border-rose-900/60 dark:bg-rose-500/20 dark:text-rose-200">
         Not quite. The synonym was {question.answer}.
       </p>
     );
@@ -251,17 +204,17 @@ function Feedback({
   return null;
 }
 
-function shuffle<T>(items: readonly T[]): T[] {
-  const clone = [...items];
-  for (let i = clone.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = clone[i];
-    const swapTarget = clone[j];
-    if (temp === undefined || swapTarget === undefined) {
-      continue;
-    }
-    clone[i] = swapTarget;
-    clone[j] = temp;
+function pickRandom<T>(items: readonly T[], exclude?: T) {
+  if (items.length === 0) {
+    throw new Error("No items provided");
   }
-  return clone;
+
+  const filtered = exclude ? items.filter((item) => item !== exclude) : items;
+  const pool = filtered.length > 0 ? filtered : items;
+  const index = Math.floor(Math.random() * pool.length);
+  const selection = pool[index];
+  if (!selection) {
+    return items[0]!;
+  }
+  return selection;
 }

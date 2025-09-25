@@ -68,20 +68,12 @@ const OPERATORS = [
 ];
 
 export function TwentyFourGame() {
-  const [order, setOrder] = useState<Puzzle[]>(() => shuffle(PUZZLES));
-  const [index, setIndex] = useState(0);
+  const [puzzle, setPuzzle] = useState(() => pickRandom(PUZZLES));
   const [tokens, setTokens] = useState<Token[]>([]);
-  const initialPuzzle: Puzzle = order[0] ?? PUZZLES[0]!;
-  const [usedDigits, setUsedDigits] = useState<boolean[]>(() => initialPuzzle.digits.map(() => false));
+  const [usedDigits, setUsedDigits] = useState<boolean[]>(() => puzzle.digits.map(() => false));
   const [result, setResult] = useState<ResultState>(null);
-  const [solved, setSolved] = useState(0);
-  const [attempts, setAttempts] = useState(0);
-  const [streak, setStreak] = useState(0);
-  const [bestStreak, setBestStreak] = useState(0);
   const [showSolution, setShowSolution] = useState(false);
-  const [history, setHistory] = useState<{ expression: string; success: boolean }[]>([]);
 
-  const puzzle: Puzzle = order[index] ?? initialPuzzle;
   const expression = useMemo(() => tokens.map((token) => token.value).join(" "), [tokens]);
   const openParens = useMemo(
     () => tokens.reduce((count, token) => count + (token.value === "(" ? 1 : token.value === ")" ? -1 : 0), 0),
@@ -93,7 +85,6 @@ export function TwentyFourGame() {
     setUsedDigits(puzzle.digits.map(() => false));
     setResult(null);
     setShowSolution(false);
-    setHistory([]);
   }, [puzzle]);
 
   const addDigit = (digit: number, digitIndex: number) => {
@@ -182,22 +173,11 @@ export function TwentyFourGame() {
       return;
     }
 
-    setAttempts((count) => count + 1);
-
-    if (Math.abs(value - 24) < 1e-6) {
+    if (Number.isFinite(value) && Math.abs(value - 24) < 1e-6) {
       setResult({ type: "success", message: "Exactly 24!" });
-      setSolved((count) => count + 1);
-      setHistory((entries) => [{ expression, success: true }, ...entries.slice(0, 4)]);
-      setStreak((value) => {
-        const next = value + 1;
-        setBestStreak((best) => Math.max(best, next));
-        return next;
-      });
     } else {
       const formatted = Number.isInteger(value) ? value.toString() : value.toFixed(2);
       setResult({ type: "error", message: `Close! That made ${formatted}.` });
-      setHistory((entries) => [{ expression, success: false }, ...entries.slice(0, 4)]);
-      setStreak(0);
     }
   };
 
@@ -206,24 +186,16 @@ export function TwentyFourGame() {
     setResult({ type: "info", message: "Study the sample solution, then reset and try again." });
   };
 
-  const goToNextPuzzle = () => {
-    const nextIndex = index + 1;
-    if (nextIndex >= order.length) {
-      setOrder(shuffle(PUZZLES));
-      setIndex(0);
-    } else {
-      setIndex(nextIndex);
-    }
+  const handleNewPuzzle = () => {
+    setPuzzle(pickRandom(PUZZLES, puzzle));
   };
 
   return (
     <div className="space-y-6">
       <Card padding="lg" className="space-y-6">
-        <header className="flex flex-wrap items-center justify-between gap-3 text-sm font-semibold uppercase tracking-[0.28em] text-brand-muted dark:text-brand-subtle">
-          <span>{index + 1} of {order.length}</span>
-          <span>Solved: {solved}</span>
-          <span>Attempts: {attempts}</span>
-          <span>Best streak: {bestStreak}</span>
+        <header className="space-y-1 text-sm">
+          <p className="font-semibold uppercase tracking-[0.28em] text-brand-muted dark:text-brand-subtle">One-and-done</p>
+          <p className="text-brand-muted dark:text-brand-subtle">Make 24 using each digit exactly once.</p>
         </header>
 
         <div className="grid gap-6 md:grid-cols-[minmax(0,240px)_minmax(0,1fr)] md:items-start">
@@ -289,6 +261,9 @@ export function TwentyFourGame() {
               <Button type="button" variant="ghost" onClick={handleRevealSolution}>
                 Show solution
               </Button>
+              <Button type="button" variant="secondary" onClick={handleNewPuzzle}>
+                New puzzle
+              </Button>
             </div>
 
             {result ? <ResultBanner result={result} /> : null}
@@ -298,28 +273,6 @@ export function TwentyFourGame() {
                 Example: {puzzle.solutions[0]}
               </div>
             ) : null}
-
-            {history.length ? (
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-muted dark:text-brand-subtle">
-                  Recent attempts
-                </p>
-                <ul className="space-y-2 text-sm text-brand-muted dark:text-brand-subtle">
-                  {history.map((entry, attemptIndex) => (
-                    <li key={`${entry.expression}-${attemptIndex}`} className="flex items-center justify-between gap-3">
-                      <span className="truncate">{entry.expression}</span>
-                      <span className={entry.success ? "text-emerald-600 dark:text-emerald-300" : "text-rose-600 dark:text-rose-300"}>
-                        {entry.success ? "✓" : "×"}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            <Button type="button" variant="secondary" onClick={goToNextPuzzle}>
-              Next puzzle
-            </Button>
           </div>
         </div>
       </Card>
@@ -355,17 +308,17 @@ function ResultBanner({ result }: { result: ResultState }) {
   );
 }
 
-function shuffle<T>(items: readonly T[]): T[] {
-  const clone = [...items];
-  for (let i = clone.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = clone[i];
-    const swapTarget = clone[j];
-    if (temp === undefined || swapTarget === undefined) {
-      continue;
-    }
-    clone[i] = swapTarget;
-    clone[j] = temp;
+function pickRandom<T>(items: readonly T[], exclude?: T) {
+  if (items.length === 0) {
+    throw new Error("No items provided");
   }
-  return clone;
+
+  const filtered = exclude ? items.filter((item) => item !== exclude) : items;
+  const pool = filtered.length > 0 ? filtered : items;
+  const index = Math.floor(Math.random() * pool.length);
+  const selection = pool[index];
+  if (!selection) {
+    return items[0]!;
+  }
+  return selection;
 }
