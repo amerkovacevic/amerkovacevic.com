@@ -5,6 +5,7 @@ import {
   BracketPage,
   CreateGamePage,
   FmTeamDrawPage,
+  AmerGauntletPage,
   HomePage,
   LinksPage,
   ProfessionalLandingPage,
@@ -27,6 +28,7 @@ export const routes: RouteObject[] = [
         path: "tools",
         children: [
           { index: true, element: <AppsLandingPage /> },
+          { path: "amer-gauntlet", element: <AmerGauntletPage /> },
           { path: "pickup", element: <PickupPage /> },
           { path: "pickup/:gameId", element: <PickupGamePage /> },
           { path: "new", element: <CreateGamePage /> },
