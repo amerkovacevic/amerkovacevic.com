@@ -195,7 +195,10 @@ export default function AmerGauntletPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [profile, setProfile] = useState<ProfileState | null>(null);
-  const [expandedGameId, setExpandedGameId] = useState<string | null>(null);
+  const [localResults, setLocalResults] = useState<Record<string, "win" | "loss">>({});
+  const [sessionStartedAt, setSessionStartedAt] = useState<Date | null>(null);
+  const [sessionEndedAt, setSessionEndedAt] = useState<Date | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   useEffect(() => {
     const ref = doc(db, "amerGauntletDaily", todayKey);
@@ -351,10 +354,18 @@ export default function AmerGauntletPage() {
   }, [user]);
 
   const lineupIds = dailyConfig?.games?.length ? dailyConfig.games : DEFAULT_LINEUP_IDS;
+  const lineupKey = useMemo(() => lineupIds.join("-"), [lineupIds]);
 
   const lineup = useMemo(() => {
     return lineupIds.map((id) => MINI_GAME_LIBRARY.find((game) => game.id === id) ?? makePlaceholderGame(id));
   }, [lineupIds]);
+
+  useEffect(() => {
+    setLocalResults({});
+    setSessionStartedAt(null);
+    setSessionEndedAt(null);
+    setElapsedSeconds(0);
+  }, [lineupKey]);
 
   const todaysCompleted = useMemo(() => {
     if (!profile) return [] as string[];
@@ -376,27 +387,105 @@ export default function AmerGauntletPage() {
 
   const dailyEntries = useMemo(() => {
     const completedSet = new Set(todaysCompleted);
-    let lockFuture = false;
 
     return lineup.map((game, index) => {
       const completed = completedSet.has(game.id);
-      const status: DailyGameStatus = completed ? "completed" : lockFuture ? "locked" : "available";
-      if (!completed) {
-        lockFuture = true;
-      }
       return {
         order: index + 1,
         game,
         completed,
-        status,
         score: todaysScoreByGame?.[game.id] ?? null,
       };
     });
   }, [lineup, todaysCompleted, todaysScoreByGame]);
 
-  const totalGames = dailyEntries.length;
-  const completedCount = dailyEntries.filter((entry) => entry.completed).length;
+  const sessionEntries = useMemo(() => {
+    const firstPendingIndex = dailyEntries.findIndex(
+      (entry) => !(entry.completed || localResults[entry.game.id] != null)
+    );
+
+    return dailyEntries.map((entry, index) => {
+      const localResult = localResults[entry.game.id] ?? null;
+      const completed = entry.completed || localResult != null;
+      const status: DailyGameStatus = completed
+        ? "completed"
+        : firstPendingIndex === -1
+        ? "completed"
+        : index === firstPendingIndex
+        ? "active"
+        : "queued";
+
+      return {
+        ...entry,
+        completed,
+        status,
+        localResult,
+      };
+    });
+  }, [dailyEntries, localResults]);
+
+  const activeEntry = sessionEntries.find((entry) => entry.status === "active") ?? null;
+  const totalGames = sessionEntries.length;
+  const completedCount = sessionEntries.filter((entry) => entry.completed).length;
   const progressPercent = totalGames ? Math.round((completedCount / totalGames) * 100) : 0;
+  const remainingGames = sessionEntries.filter((entry) => !entry.completed).length;
+
+  useEffect(() => {
+    if (!sessionEntries.length) {
+      return;
+    }
+    if (!sessionStartedAt && activeEntry) {
+      setSessionStartedAt(new Date());
+      return;
+    }
+    if (
+      sessionStartedAt &&
+      !activeEntry &&
+      sessionEntries.every((entry) => entry.completed) &&
+      !sessionEndedAt
+    ) {
+      setSessionEndedAt(new Date());
+    }
+  }, [sessionEntries, activeEntry, sessionStartedAt, sessionEndedAt]);
+
+  useEffect(() => {
+    if (!sessionStartedAt || sessionEndedAt) {
+      return;
+    }
+    const updateElapsed = () => {
+      setElapsedSeconds(
+        Math.max(0, Math.floor((Date.now() - sessionStartedAt.getTime()) / 1000))
+      );
+    };
+    updateElapsed();
+    const timer = window.setInterval(updateElapsed, 1000);
+    return () => window.clearInterval(timer);
+  }, [sessionStartedAt, sessionEndedAt]);
+
+  const wins = Object.values(localResults).filter((result) => result === "win").length;
+  const losses = Object.values(localResults).filter((result) => result === "loss").length;
+  const displayElapsedSeconds = sessionStartedAt
+    ? getDisplayDurationSeconds(sessionStartedAt, sessionEndedAt, elapsedSeconds)
+    : 0;
+
+  const handleCompleteGame = (result: "win" | "loss") => {
+    if (!activeEntry) return;
+    setLocalResults((prev) => {
+      if (prev[activeEntry.game.id]) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [activeEntry.game.id]: result,
+      };
+    });
+    if (!sessionStartedAt) {
+      setSessionStartedAt(new Date());
+    }
+    if (remainingGames === 1) {
+      setSessionEndedAt(new Date());
+    }
+  };
 
   const handleSignIn = async () => {
     await signInWithPopup(auth, googleProvider);
@@ -471,44 +560,39 @@ export default function AmerGauntletPage() {
         }
       >
         <div className="space-y-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-3">
-                <div className="relative h-2 w-44 overflow-hidden rounded-full bg-border-light/60 dark:bg-border-dark/50">
-                  <div
-                    className="h-full bg-brand transition-all duration-500"
-                    style={{ width: `${Math.max(progressPercent, 6)}%` }}
-                  />
-                </div>
-                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted dark:text-white/60">
-                  {completedCount}/{totalGames} cleared
-                </span>
-              </div>
-              {todaysScore != null ? (
-                <div className="text-sm text-brand-muted dark:text-white/70">Today's score: {todaysScore} pts</div>
-              ) : (
-                <div className="text-sm text-brand-muted dark:text-white/60">
-                  Play all five to post a season score. Scores sync instantly to Firestore.
-                </div>
-              )}
-            </div>
-            {dailyConfig?.note ? (
-              <div className="rounded-brand-lg border border-brand/20 bg-brand/5 px-4 py-3 text-xs text-brand-strong shadow-brand-sm dark:border-brand/40 dark:bg-brand/10 dark:text-brand-foreground">
-                <span className="font-semibold uppercase tracking-[0.24em]">Coach's note:</span>
-                <p className="mt-2 text-[13px] leading-relaxed tracking-normal">{dailyConfig.note}</p>
-              </div>
-            ) : null}
-          </div>
+          <SessionHeader
+            progressPercent={progressPercent}
+            completedCount={completedCount}
+            totalGames={totalGames}
+            todaysScore={todaysScore}
+            wins={wins}
+            losses={losses}
+            elapsedSeconds={displayElapsedSeconds}
+            note={dailyConfig?.note}
+          />
 
-          <div className="grid gap-4 md:grid-cols-2">
-            {dailyEntries.map((entry) => (
-              <DailyGameCard
-                key={entry.game.id}
-                entry={entry}
-                expanded={expandedGameId === entry.game.id}
-                onToggle={() => setExpandedGameId((prev) => (prev === entry.game.id ? null : entry.game.id))}
+          <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+            <ActiveGamePanel
+              activeEntry={activeEntry}
+              totalGames={totalGames}
+              elapsedSeconds={displayElapsedSeconds}
+              onComplete={handleCompleteGame}
+              sessionEnded={sessionEntries.every((entry) => entry.completed)}
+              wins={wins}
+              losses={losses}
+            />
+
+            <div className="space-y-4">
+              <SessionSummaryCard
+                completedCount={completedCount}
+                totalGames={totalGames}
+                wins={wins}
+                losses={losses}
+                elapsedSeconds={displayElapsedSeconds}
               />
-            ))}
+
+              <SessionProgressList entries={sessionEntries} />
+            </div>
           </div>
         </div>
       </PageSection>
@@ -646,96 +730,260 @@ export default function AmerGauntletPage() {
   );
 }
 
-type DailyGameStatus = "available" | "locked" | "completed";
 
-type DailyEntry = {
+type SessionGameResult = "win" | "loss" | null;
+type DailyGameStatus = "active" | "queued" | "completed";
+
+type SessionEntry = {
   order: number;
   game: MiniGameDefinition;
   completed: boolean;
   status: DailyGameStatus;
   score: number | null;
+  localResult: SessionGameResult;
 };
 
-function DailyGameCard({
-  entry,
-  expanded,
-  onToggle,
+function SessionHeader({
+  progressPercent,
+  completedCount,
+  totalGames,
+  todaysScore,
+  wins,
+  losses,
+  elapsedSeconds,
+  note,
 }: {
-  entry: DailyEntry;
-  expanded: boolean;
-  onToggle: () => void;
+  progressPercent: number;
+  completedCount: number;
+  totalGames: number;
+  todaysScore: number | null;
+  wins: number;
+  losses: number;
+  elapsedSeconds: number;
+  note?: string;
 }) {
-  const { order, game, status, score, completed } = entry;
+  const hasRun = completedCount > 0 || wins > 0 || losses > 0 || elapsedSeconds > 0;
+
   return (
-    <Card
-      className={cn(
-        "flex flex-col gap-4 border border-border-light/70 bg-surface/90 shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-surface-muted",
-        expanded && "ring-2 ring-brand/40"
-      )}
-    >
-      <div className="flex items-start justify-between gap-3">
+    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
-          <span className="grid h-12 w-12 place-items-center rounded-[1.5rem] bg-brand/10 text-2xl shadow-brand-sm dark:bg-brand/20">
+          <div className="relative h-2 w-48 overflow-hidden rounded-full bg-border-light/60 dark:bg-border-dark/50">
+            <div
+              className="h-full bg-brand transition-all duration-500"
+              style={{ width: `${Math.max(progressPercent, completedCount ? progressPercent : 6)}%` }}
+            />
+          </div>
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-muted dark:text-white/60">
+            {completedCount}/{totalGames || 5} cleared
+          </span>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 text-xs text-brand-muted dark:text-white/60">
+          <span className="rounded-full border border-border-light/60 px-3 py-1 uppercase tracking-[0.22em] dark:border-border-dark/60">
+            Time: {hasRun ? formatDurationLabel(elapsedSeconds) : "--:--"}
+          </span>
+          <span className="rounded-full border border-emerald-200 bg-emerald-100/60 px-3 py-1 font-semibold uppercase tracking-[0.22em] text-emerald-700 dark:border-emerald-400/70 dark:bg-emerald-400/15 dark:text-emerald-200">
+            Wins: {wins}
+          </span>
+          <span className="rounded-full border border-rose-200 bg-rose-100/60 px-3 py-1 font-semibold uppercase tracking-[0.22em] text-rose-600 dark:border-rose-400/70 dark:bg-rose-400/15 dark:text-rose-200">
+            Losses: {losses}
+          </span>
+          {todaysScore != null ? (
+            <span className="rounded-full border border-brand/30 bg-brand/5 px-3 py-1 uppercase tracking-[0.22em] text-brand-strong/80 dark:border-brand/50 dark:bg-brand/15 dark:text-brand-foreground/90">
+              Firestore score: {todaysScore} pts
+            </span>
+          ) : (
+            <span className="text-[11px] uppercase tracking-[0.2em] text-brand-muted dark:text-white/60">
+              Finish all five to post today&apos;s score
+            </span>
+          )}
+        </div>
+      </div>
+
+      {note ? (
+        <div className="rounded-brand-lg border border-brand/20 bg-brand/5 px-4 py-3 text-xs text-brand-strong shadow-brand-sm dark:border-brand/40 dark:bg-brand/10 dark:text-brand-foreground">
+          <span className="font-semibold uppercase tracking-[0.24em]">Coach&apos;s note:</span>
+          <p className="mt-2 text-[13px] leading-relaxed tracking-normal">{note}</p>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function ActiveGamePanel({
+  activeEntry,
+  totalGames,
+  elapsedSeconds,
+  onComplete,
+  sessionEnded,
+  wins,
+  losses,
+}: {
+  activeEntry: SessionEntry | null;
+  totalGames: number;
+  elapsedSeconds: number;
+  onComplete: (result: "win" | "loss") => void;
+  sessionEnded: boolean;
+  wins: number;
+  losses: number;
+}) {
+  if (totalGames === 0) {
+    return (
+      <Card className="flex h-full flex-col items-center justify-center gap-4 border border-border-light/70 bg-surface/90 p-10 text-center text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
+        <p>Today&apos;s gauntlet lineup is loading. Check back shortly for the five featured games.</p>
+      </Card>
+    );
+  }
+
+  if (!activeEntry) {
+    return (
+      <Card className="flex h-full flex-col justify-center gap-6 border border-emerald-200 bg-emerald-100/60 p-8 text-center text-emerald-700 shadow-brand-sm dark:border-emerald-500/80 dark:bg-emerald-400/15 dark:text-emerald-100">
+        <div className="text-4xl">🎉</div>
+        <div className="space-y-2">
+          <h3 className="text-xl font-semibold uppercase tracking-[0.28em]">Run complete</h3>
+          <p className="text-sm uppercase tracking-[0.2em]">Time: {formatDurationLabel(elapsedSeconds)}</p>
+          <p className="text-sm uppercase tracking-[0.2em]">Record: {wins}-{losses}</p>
+        </div>
+        {sessionEnded ? (
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-emerald-800 dark:text-emerald-200/80">
+            Your results are ready to sync. Firestore updates when each mini game reports completion.
+          </p>
+        ) : null}
+      </Card>
+    );
+  }
+
+  const { game, order } = activeEntry;
+
+  return (
+    <Card className="flex h-full flex-col gap-5 border border-border-light/70 bg-surface/95 p-6 shadow-brand-md dark:border-border-dark/60 dark:bg-surface-muted">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <span className="grid h-16 w-16 place-items-center rounded-[1.75rem] bg-brand/10 text-3xl shadow-brand-sm dark:bg-brand/20">
             {game.icon}
           </span>
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.26em] text-brand-muted dark:text-white/60">
-              Game {order}
+            <p className="text-xs uppercase tracking-[0.28em] text-brand-muted dark:text-white/60">
+              Game {order} of {totalGames}
             </p>
-            <h3 className="text-lg font-semibold text-brand-strong dark:text-white">{game.name}</h3>
+            <h3 className="text-2xl font-semibold text-brand-strong dark:text-white">{game.name}</h3>
             <p className="mt-1 text-sm text-brand-muted dark:text-white/70">{game.summary}</p>
           </div>
         </div>
-        <StatusBadge status={status} completed={completed} score={score} />
-      </div>
-
-      <div className="flex flex-wrap gap-2 text-xs text-brand-muted dark:text-white/60">
-        <span className="rounded-full border border-border-light/60 px-3 py-1 uppercase tracking-[0.22em] dark:border-border-dark/60">
-          {game.estTime}
-        </span>
-        {game.focus.map((focus) => (
-          <span
-            key={focus}
-            className="rounded-full border border-brand/20 bg-brand/5 px-3 py-1 uppercase tracking-[0.22em] text-brand-strong/80 dark:border-brand/40 dark:bg-brand/20 dark:text-brand-foreground/90"
-          >
-            {focus}
-          </span>
-        ))}
-      </div>
-
-      {expanded ? (
-        <div className="space-y-3 text-sm text-brand-muted dark:text-white/70">
-          <p className="font-medium text-brand-strong dark:text-white">How to play</p>
-          <ul className="space-y-2 text-[13px] leading-relaxed">
-            {game.instructions.map((step, index) => (
-              <li key={index}>• {step}</li>
-            ))}
-          </ul>
-          <p className="rounded-brand-md border border-dashed border-brand/30 bg-brand/5 p-3 text-[13px] text-brand-strong/80 dark:border-brand/50 dark:bg-brand/15 dark:text-brand-foreground/90">
-            {game.scoring}
-          </p>
+        <div className="rounded-brand-md border border-border-light/70 bg-surface px-4 py-2 text-right text-xs uppercase tracking-[0.2em] text-brand-muted dark:border-border-dark/60 dark:bg-surface-muted/80 dark:text-white/60">
+          <p>Elapsed</p>
+          <p className="text-sm font-semibold text-brand-strong dark:text-white">{formatDurationLabel(elapsedSeconds)}</p>
         </div>
-      ) : null}
+      </div>
 
-      <button
-        type="button"
-        onClick={onToggle}
-        className={buttonStyles({ variant: "secondary", size: "sm", className: "self-start" })}
-      >
-        {expanded ? "Hide instructions" : "View instructions"}
-      </button>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <InfoPill label="Focus" value={game.focus.join(" • ")} />
+        <InfoPill label="Est. time" value={game.estTime} />
+        <InfoPill label="Scoring" value={game.scoring} compact />
+      </div>
+
+      <div className="space-y-3 rounded-brand-md border border-dashed border-border-light/70 bg-surface px-4 py-4 text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-muted dark:text-white/60">How to play</p>
+        <ol className="list-decimal space-y-2 pl-5 text-[13px] leading-relaxed">
+          {game.instructions.map((step, index) => (
+            <li key={index}>{step}</li>
+          ))}
+        </ol>
+      </div>
+
+      <div className="mt-auto flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={() => onComplete("win")}
+          className={buttonStyles({ size: "lg", className: "flex-1 min-w-[140px]" })}
+        >
+          Mark win &amp; advance
+        </button>
+        <button
+          type="button"
+          onClick={() => onComplete("loss")}
+          className={buttonStyles({ variant: "secondary", size: "lg", className: "flex-1 min-w-[140px]" })}
+        >
+          Mark loss &amp; advance
+        </button>
+      </div>
     </Card>
   );
 }
 
-function StatusBadge({
+function SessionSummaryCard({
+  completedCount,
+  totalGames,
+  wins,
+  losses,
+  elapsedSeconds,
+}: {
+  completedCount: number;
+  totalGames: number;
+  wins: number;
+  losses: number;
+  elapsedSeconds: number;
+}) {
+  return (
+    <Card className="border border-border-light/70 bg-surface/90 p-5 text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
+      <h3 className="text-sm font-semibold uppercase tracking-[0.26em] text-brand-muted dark:text-white/60">
+        Run tracker
+      </h3>
+      <div className="mt-4 grid gap-3">
+        <SummaryStat label="Games cleared" value={`${completedCount}/${totalGames || 5}`} />
+        <SummaryStat label="Wins" value={`${wins}`} accent="emerald" />
+        <SummaryStat label="Losses" value={`${losses}`} accent="rose" />
+        <SummaryStat label="Elapsed time" value={formatDurationLabel(elapsedSeconds)} />
+      </div>
+    </Card>
+  );
+}
+
+function SessionProgressList({ entries }: { entries: SessionEntry[] }) {
+  return (
+    <Card className="border border-border-light/70 bg-surface/90 p-5 text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
+      <h3 className="text-sm font-semibold uppercase tracking-[0.26em] text-brand-muted dark:text-white/60">
+        Progression order
+      </h3>
+      <div className="mt-4 space-y-3">
+        {entries.map((entry) => (
+          <SessionProgressRow key={entry.game.id} entry={entry} />
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function SessionProgressRow({ entry }: { entry: SessionEntry }) {
+  const { game, order, status, localResult, completed } = entry;
+  return (
+    <div
+      className={cn(
+        "flex items-start justify-between gap-3 rounded-brand-md border px-4 py-3",
+        status === "active"
+          ? "border-brand/40 bg-brand/10 text-brand-strong dark:border-brand/60 dark:bg-brand/20 dark:text-brand-foreground"
+          : "border-border-light/60 bg-surface text-brand-muted dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70"
+      )}
+    >
+      <div>
+        <p className="text-[11px] uppercase tracking-[0.24em]">Game {order}</p>
+        <p className="text-sm font-semibold text-brand-strong dark:text-white">{game.name}</p>
+        <p className="text-xs text-brand-muted dark:text-white/60">{game.summary}</p>
+      </div>
+      <StatusIndicator status={status} result={localResult} completed={completed} />
+    </div>
+  );
+}
+
+function StatusIndicator({
   status,
+  result,
   completed,
-  score,
 }: {
   status: DailyGameStatus;
+  result: SessionGameResult;
   completed: boolean;
-  score: number | null;
 }) {
   if (status === "completed") {
     return (
@@ -743,25 +991,72 @@ function StatusBadge({
         <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-200/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-900 dark:border-emerald-500/80 dark:bg-emerald-400/25 dark:text-emerald-200">
           ✅ Cleared
         </span>
-        {score != null ? (
-          <span className="text-xs font-semibold text-emerald-500 dark:text-emerald-300">{score} pts</span>
+        {result ? (
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-500 dark:text-emerald-200">
+            {result === "win" ? "Win" : "Loss"}
+          </span>
+        ) : completed ? (
+          <span className="text-xs uppercase tracking-[0.2em] text-brand-muted dark:text-white/60">
+            Synced
+          </span>
         ) : null}
       </div>
     );
   }
 
-  if (status === "locked") {
+  if (status === "active") {
     return (
-      <span className="inline-flex items-center gap-2 rounded-full border border-border-light/70 bg-transparent px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-muted dark:border-border-dark/60 dark:text-white/50">
-        🔒 Locked
+      <span className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-strong dark:border-brand/60 dark:bg-brand/20 dark:text-brand-foreground">
+        ▶️ In play
       </span>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-strong dark:border-brand/50 dark:bg-brand/20 dark:text-brand-foreground">
-      ▶️ Ready
+    <span className="inline-flex items-center gap-2 rounded-full border border-border-light/70 bg-transparent px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-muted dark:border-border-dark/60 dark:text-white/60">
+      ⏳ Queued
     </span>
+  );
+}
+
+function SummaryStat({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent?: "emerald" | "rose";
+}) {
+  const accentStyles =
+    accent === "emerald"
+      ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/70 dark:bg-emerald-400/10 dark:text-emerald-200"
+      : accent === "rose"
+      ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-500/70 dark:bg-rose-400/10 dark:text-rose-200"
+      : "border-border-light/60 bg-surface text-brand-strong dark:border-border-dark/60 dark:bg-surface-muted dark:text-white";
+
+  return (
+    <div className={cn("flex items-center justify-between rounded-brand-md border px-3 py-2", accentStyles)}>
+      <span className="text-[11px] font-semibold uppercase tracking-[0.24em]">{label}</span>
+      <span className="text-sm font-semibold">{value}</span>
+    </div>
+  );
+}
+
+function InfoPill({
+  label,
+  value,
+  compact,
+}: {
+  label: string;
+  value: string;
+  compact?: boolean;
+}) {
+  return (
+    <div className="rounded-brand-md border border-border-light/60 bg-surface px-3 py-3 text-xs uppercase tracking-[0.22em] text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/60">
+      <p>{label}</p>
+      <p className={cn("mt-2 text-[13px] normal-case tracking-normal text-brand-strong dark:text-white", compact && "line-clamp-3 text-xs")}>{value}</p>
+    </div>
   );
 }
 
@@ -843,6 +1138,20 @@ function humanizeId(id: string) {
     .replace(/\s+/g, " ")
     .trim()
     .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function getDisplayDurationSeconds(startedAt: Date, endedAt: Date | null, liveElapsed: number) {
+  if (endedAt) {
+    return Math.max(0, Math.round((endedAt.getTime() - startedAt.getTime()) / 1000));
+  }
+  return liveElapsed;
+}
+
+function formatDurationLabel(seconds: number) {
+  if (!seconds) return "--:--";
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
 function formatDateKey(date: Date) {
