@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useMemo,
+  useState,
+  type LazyExoticComponent,
+} from "react";
 import { useOutletContext } from "react-router-dom";
 import { signInWithPopup, type User } from "firebase/auth";
 import {
@@ -29,6 +36,7 @@ type MiniGameDefinition = {
   estTime: string;
   scoring: string;
   instructions: string[];
+  component?: LazyExoticComponent<() => JSX.Element | null>;
 };
 
 type DailyConfig = {
@@ -68,7 +76,80 @@ type HistoryEntry = {
   winner?: string;
 };
 
+const EmojiRiddleGame = lazy(() =>
+  import("../games/emoji-riddle-game").then((module) => ({ default: module.EmojiRiddleGame }))
+);
+const SynonymMatchGame = lazy(() =>
+  import("../games/synonym-match-game").then((module) => ({ default: module.SynonymMatchGame }))
+);
+const TwentyFourGame = lazy(() =>
+  import("../games/twenty-four-game").then((module) => ({ default: module.TwentyFourGame }))
+);
+const CodebreakerGame = lazy(() =>
+  import("../games/codebreaker-game").then((module) => ({ default: module.CodebreakerGame }))
+);
+
 const MINI_GAME_LIBRARY: MiniGameDefinition[] = [
+  {
+    id: "emoji-riddle",
+    name: "Emoji Riddle",
+    icon: "🧠",
+    summary: "Decode the hidden word or phrase from nothing but emoji clues.",
+    focus: ["Wordplay", "Pattern Spotting"],
+    estTime: "2 min",
+    scoring: "Solve as many riddles as you can. Streaks boost your gauntlet momentum.",
+    instructions: [
+      "Study the emoji sequence and enter the matching word or phrase.",
+      "Submit to check your guess, reveal a hint if you need help, and skip to keep tempo.",
+      "Track streaks and solved count — perfect sessions fuel a gauntlet sweep.",
+    ],
+    component: EmojiRiddleGame,
+  },
+  {
+    id: "synonym-match",
+    name: "Synonym Match",
+    icon: "🔤",
+    summary: "Select the true synonym before the round timer slips away.",
+    focus: ["Vocabulary", "Speed"],
+    estTime: "3 min",
+    scoring: "+5 pts per correct pick, bonus streak after 5 in a row.",
+    instructions: [
+      "Read the target word and review all four options closely.",
+      "Tap the synonym that best matches the meaning — wrong picks break your streak.",
+      "Lock in answers quickly to finish all cards within the gauntlet window.",
+    ],
+    component: SynonymMatchGame,
+  },
+  {
+    id: "twenty-four",
+    name: "24 Game",
+    icon: "24️⃣",
+    summary: "Combine all four digits with math operations to land exactly on 24.",
+    focus: ["Arithmetic", "Creativity"],
+    estTime: "4 min",
+    scoring: "Each solved puzzle grants +8 pts. Run the table for a combo multiplier.",
+    instructions: [
+      "Use addition, subtraction, multiplication, division, or parentheses with every digit once.",
+      "Drag operators or tap quick actions to assemble a valid expression equal to 24.",
+      "Submit solutions to advance — reset if you need a fresh angle on the numbers.",
+    ],
+    component: TwentyFourGame,
+  },
+  {
+    id: "codebreaker",
+    name: "Codebreaker",
+    icon: "🕵️",
+    summary: "Crack the secret four-digit code with Mastermind-style feedback.",
+    focus: ["Logic", "Deduction"],
+    estTime: "5 min",
+    scoring: "Guess the code within eight attempts for full marks. Efficient solves earn bonus points.",
+    instructions: [
+      "Enter a unique four-digit guess to probe the hidden combination.",
+      "Use feedback pegs to track digits that are correct and in the right spot.",
+      "Iterate on clues quickly — a clean solve keeps your gauntlet streak alive.",
+    ],
+    component: CodebreakerGame,
+  },
   {
     id: "crossbar-clash",
     name: "Crossbar Clash",
@@ -855,6 +936,7 @@ function ActiveGamePanel({
   }
 
   const { game, order } = activeEntry;
+  const GameComponent = game.component;
 
   return (
     <Card className="flex h-full flex-col gap-5 border border-border-light/70 bg-surface/95 p-6 shadow-brand-md dark:border-border-dark/60 dark:bg-surface-muted">
@@ -883,13 +965,39 @@ function ActiveGamePanel({
         <InfoPill label="Scoring" value={game.scoring} compact />
       </div>
 
-      <div className="space-y-3 rounded-brand-md border border-dashed border-border-light/70 bg-surface px-4 py-4 text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-muted dark:text-white/60">How to play</p>
-        <ol className="list-decimal space-y-2 pl-5 text-[13px] leading-relaxed">
-          {game.instructions.map((step, index) => (
-            <li key={index}>{step}</li>
-          ))}
-        </ol>
+      <div className="space-y-4">
+        <div className="rounded-brand-md border border-border-light/70 bg-surface px-4 py-4 shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted">
+          {GameComponent ? (
+            <Suspense
+              fallback={
+                <div className="grid h-48 place-items-center text-sm font-medium uppercase tracking-[0.2em] text-brand-muted dark:text-white/60">
+                  Loading {game.name}...
+                </div>
+              }
+            >
+              <div className="space-y-4">
+                <GameComponent />
+              </div>
+            </Suspense>
+          ) : (
+            <div className="grid h-40 place-items-center text-center text-sm text-brand-muted dark:text-white/60">
+              <p className="max-w-sm text-balance">
+                Interactive mode is in development. Use the cues below to simulate the challenge and keep the gauntlet moving.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {game.instructions.length ? (
+          <div className="space-y-3 rounded-brand-md border border-dashed border-border-light/70 bg-surface px-4 py-4 text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-muted dark:text-white/60">How to play</p>
+            <ol className="list-decimal space-y-2 pl-5 text-[13px] leading-relaxed">
+              {game.instructions.map((step, index) => (
+                <li key={index}>{step}</li>
+              ))}
+            </ol>
+          </div>
+        ) : null}
       </div>
 
       <div className="mt-auto flex flex-wrap gap-3">
@@ -1111,6 +1219,11 @@ function LibraryGameCard({ game }: { game: MiniGameDefinition }) {
         </div>
       </div>
       <p className="text-sm text-brand-muted dark:text-white/70">{game.summary}</p>
+      {game.component ? (
+        <span className="inline-flex w-fit items-center justify-center rounded-full border border-emerald-300/70 bg-emerald-100/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-700 dark:border-emerald-500/60 dark:bg-emerald-500/15 dark:text-emerald-200">
+          Play in browser
+        </span>
+      ) : null}
       <div className="mt-auto rounded-brand-md border border-dashed border-brand/30 bg-brand/5 p-3 text-xs text-brand-strong/80 dark:border-brand/50 dark:bg-brand/15 dark:text-brand-foreground/90">
         {game.scoring}
       </div>
@@ -1129,6 +1242,7 @@ function makePlaceholderGame(id: string): MiniGameDefinition {
     estTime: "—",
     scoring: "Define scoring rules to surface them to players.",
     instructions: ["Set instructions in the mini game library to complete this module."],
+    component: undefined,
   };
 }
 
