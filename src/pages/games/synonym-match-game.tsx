@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "../../shared/components/ui/button";
 import { Card } from "../../shared/components/ui/card";
@@ -88,11 +88,13 @@ const QUESTIONS: Question[] = [
 
 type Status = "idle" | "correct" | "incorrect";
 
-export function SynonymMatchGame() {
+export function SynonymMatchGame({ onWin }: { onWin?: () => void }) {
   const [question, setQuestion] = useState(() => pickRandom(QUESTIONS));
   const [selected, setSelected] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [showHint, setShowHint] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+  const winReportedRef = useRef(false);
 
   const handleChoice = (choice: string) => {
     if (selected) {
@@ -101,6 +103,7 @@ export function SynonymMatchGame() {
 
     setSelected(choice);
     setStatus(choice === question.answer ? "correct" : "incorrect");
+    setRevealed(false);
   };
 
   const handleReveal = () => {
@@ -110,6 +113,7 @@ export function SynonymMatchGame() {
 
     setSelected(question.answer);
     setStatus("correct");
+    setRevealed(true);
   };
 
   const handleNext = () => {
@@ -117,7 +121,19 @@ export function SynonymMatchGame() {
     setSelected(null);
     setStatus("idle");
     setShowHint(false);
+    setRevealed(false);
   };
+
+  useEffect(() => {
+    if (status === "correct" && !revealed) {
+      if (!winReportedRef.current) {
+        winReportedRef.current = true;
+        onWin?.();
+      }
+    } else if (status !== "correct") {
+      winReportedRef.current = false;
+    }
+  }, [status, revealed, onWin]);
 
   return (
     <div className="space-y-6">

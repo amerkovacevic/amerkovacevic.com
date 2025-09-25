@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "../../shared/components/ui/button";
 import { Card } from "../../shared/components/ui/card";
@@ -14,13 +14,14 @@ type GameStatus = "playing" | "won" | "lost";
 const CODE_LENGTH = 4;
 const MAX_ATTEMPTS = 10;
 
-export function CodebreakerGame() {
+export function CodebreakerGame({ onWin }: { onWin?: () => void }) {
   const [secret, setSecret] = useState(() => generateCode());
   const [guess, setGuess] = useState("");
   const [history, setHistory] = useState<GuessEntry[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
   const [feedback, setFeedback] = useState<string | null>(null);
   const [showCode, setShowCode] = useState(false);
+  const winReportedRef = useRef(false);
 
   const attemptsLeft = MAX_ATTEMPTS - history.length;
   const progress = useMemo(() => Math.round(((MAX_ATTEMPTS - attemptsLeft) / MAX_ATTEMPTS) * 100), [attemptsLeft]);
@@ -69,6 +70,17 @@ export function CodebreakerGame() {
   };
 
   const statusMessage = status === "won" ? "Mission accomplished." : status === "lost" ? "Mission failed." : "";
+
+  useEffect(() => {
+    if (status === "won") {
+      if (!winReportedRef.current) {
+        winReportedRef.current = true;
+        onWin?.();
+      }
+    } else {
+      winReportedRef.current = false;
+    }
+  }, [status, onWin]);
 
   return (
     <div className="space-y-6">

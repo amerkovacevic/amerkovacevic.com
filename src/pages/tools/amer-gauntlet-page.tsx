@@ -27,6 +27,8 @@ import { auth, db, googleProvider } from "../../shared/lib/firebase";
 // Context exposed from the root layout so feature pages can access the user.
 type LayoutCtx = { user: User | null };
 
+type MiniGameComponentProps = { onWin?: () => void };
+
 type MiniGameDefinition = {
   id: string;
   name: string;
@@ -36,7 +38,9 @@ type MiniGameDefinition = {
   estTime: string;
   scoring: string;
   instructions: string[];
-  component?: LazyExoticComponent<() => JSX.Element | null>;
+  component?: LazyExoticComponent<
+    (props: MiniGameComponentProps) => JSX.Element | null
+  >;
 };
 
 type DailyConfig = {
@@ -950,19 +954,12 @@ function ActiveGamePanel({
               Game {order} of {totalGames}
             </p>
             <h3 className="text-2xl font-semibold text-brand-strong dark:text-white">{game.name}</h3>
-            <p className="mt-1 text-sm text-brand-muted dark:text-white/70">{game.summary}</p>
           </div>
         </div>
         <div className="rounded-brand-md border border-border-light/70 bg-surface px-4 py-2 text-right text-xs uppercase tracking-[0.2em] text-brand-muted dark:border-border-dark/60 dark:bg-surface-muted/80 dark:text-white/60">
           <p>Elapsed</p>
           <p className="text-sm font-semibold text-brand-strong dark:text-white">{formatDurationLabel(elapsedSeconds)}</p>
         </div>
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-3">
-        <InfoPill label="Focus" value={game.focus.join(" • ")} />
-        <InfoPill label="Est. time" value={game.estTime} />
-        <InfoPill label="Scoring" value={game.scoring} compact />
       </div>
 
       <div className="space-y-4">
@@ -976,7 +973,7 @@ function ActiveGamePanel({
               }
             >
               <div className="space-y-4">
-                <GameComponent />
+                <GameComponent onWin={() => onComplete("win")} />
               </div>
             </Suspense>
           ) : (
@@ -987,17 +984,6 @@ function ActiveGamePanel({
             </div>
           )}
         </div>
-
-        {game.instructions.length ? (
-          <div className="space-y-3 rounded-brand-md border border-dashed border-border-light/70 bg-surface px-4 py-4 text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-muted dark:text-white/60">How to play</p>
-            <ol className="list-decimal space-y-2 pl-5 text-[13px] leading-relaxed">
-              {game.instructions.map((step, index) => (
-                <li key={index}>{step}</li>
-              ))}
-            </ol>
-          </div>
-        ) : null}
       </div>
 
       <div className="mt-auto flex flex-wrap gap-3">
@@ -1077,7 +1063,6 @@ function SessionProgressRow({ entry }: { entry: SessionEntry }) {
       <div>
         <p className="text-[11px] uppercase tracking-[0.24em]">Game {order}</p>
         <p className="text-sm font-semibold text-brand-strong dark:text-white">{game.name}</p>
-        <p className="text-xs text-brand-muted dark:text-white/60">{game.summary}</p>
       </div>
       <StatusIndicator status={status} result={localResult} completed={completed} />
     </div>
@@ -1147,23 +1132,6 @@ function SummaryStat({
     <div className={cn("flex items-center justify-between rounded-brand-md border px-3 py-2", accentStyles)}>
       <span className="text-[11px] font-semibold uppercase tracking-[0.24em]">{label}</span>
       <span className="text-sm font-semibold">{value}</span>
-    </div>
-  );
-}
-
-function InfoPill({
-  label,
-  value,
-  compact,
-}: {
-  label: string;
-  value: string;
-  compact?: boolean;
-}) {
-  return (
-    <div className="rounded-brand-md border border-border-light/60 bg-surface px-3 py-3 text-xs uppercase tracking-[0.22em] text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/60">
-      <p>{label}</p>
-      <p className={cn("mt-2 text-[13px] normal-case tracking-normal text-brand-strong dark:text-white", compact && "line-clamp-3 text-xs")}>{value}</p>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "../../shared/components/ui/button";
 import { Card } from "../../shared/components/ui/card";
@@ -67,12 +67,13 @@ const OPERATORS = [
   { value: "÷", label: "Divide" },
 ];
 
-export function TwentyFourGame() {
+export function TwentyFourGame({ onWin }: { onWin?: () => void }) {
   const [puzzle, setPuzzle] = useState(() => pickRandom(PUZZLES));
   const [tokens, setTokens] = useState<Token[]>([]);
   const [usedDigits, setUsedDigits] = useState<boolean[]>(() => puzzle.digits.map(() => false));
   const [result, setResult] = useState<ResultState>(null);
   const [showSolution, setShowSolution] = useState(false);
+  const winReportedRef = useRef(false);
 
   const expression = useMemo(() => tokens.map((token) => token.value).join(" "), [tokens]);
   const openParens = useMemo(
@@ -189,6 +190,17 @@ export function TwentyFourGame() {
   const handleNewPuzzle = () => {
     setPuzzle(pickRandom(PUZZLES, puzzle));
   };
+
+  useEffect(() => {
+    if (result?.type === "success") {
+      if (!winReportedRef.current) {
+        winReportedRef.current = true;
+        onWin?.();
+      }
+    } else {
+      winReportedRef.current = false;
+    }
+  }, [result, onWin]);
 
   return (
     <div className="space-y-6">

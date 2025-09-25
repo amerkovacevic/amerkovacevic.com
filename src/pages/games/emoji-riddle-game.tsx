@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "../../shared/components/ui/button";
 import { Card } from "../../shared/components/ui/card";
@@ -28,12 +28,13 @@ const MAX_ATTEMPTS = 3;
 
 type Status = "idle" | "correct" | "incorrect" | "revealed";
 
-export function EmojiRiddleGame() {
+export function EmojiRiddleGame({ onWin }: { onWin?: () => void }) {
   const [riddle, setRiddle] = useState(() => pickRandom(RIDDLES));
   const [guess, setGuess] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [attempts, setAttempts] = useState(0);
   const [showHint, setShowHint] = useState(false);
+  const winReportedRef = useRef(false);
 
   const normalizedAnswers = useMemo(
     () => new Set(riddle.answers.map((answer) => normalize(answer))),
@@ -69,6 +70,17 @@ export function EmojiRiddleGame() {
     setAttempts(0);
     setShowHint(false);
   };
+
+  useEffect(() => {
+    if (status === "correct") {
+      if (!winReportedRef.current) {
+        winReportedRef.current = true;
+        onWin?.();
+      }
+    } else {
+      winReportedRef.current = false;
+    }
+  }, [status, onWin]);
 
   return (
     <div className="space-y-6">
