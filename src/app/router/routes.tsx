@@ -7,8 +7,6 @@ import {
   FmTeamDrawPage,
   AmerGauntletPage,
   HomePage,
-  GameDetailPage,
-  GamesLandingPage,
   LinksPage,
   ProfessionalLandingPage,
   PortfolioPage,
@@ -37,13 +35,6 @@ export const routes: RouteObject[] = [
           { path: "santa", element: <SecretSantaPage /> },
           { path: "fm", element: <FmTeamDrawPage /> },
           { path: "bracket", element: <BracketPage /> },
-          {
-            path: "games",
-            children: [
-              { index: true, element: <GamesLandingPage /> },
-              { path: ":gameId", element: <GameDetailPage /> },
-            ],
-          },
         ],
       },
       {

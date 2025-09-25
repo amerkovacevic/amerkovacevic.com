@@ -2,8 +2,6 @@
 export { default as HomePage } from "./home/home-page";
 export { default as AppsLandingPage } from "./tools/tools-landing-page";
 export { default as AmerGauntletPage } from "./tools/amer-gauntlet-page";
-export { default as GamesLandingPage } from "./games/games-landing-page";
-export { default as GameDetailPage } from "./games/game-detail-page";
 export { default as ProfessionalLandingPage } from "./professional/professional-landing-page";
 export { default as PickupPage } from "./pickup/pickup-page";
 export { default as PickupGamePage } from "./pickup/pickup-game-page";
