@@ -94,6 +94,11 @@ const TwentyFourGame = lazy(() =>
 const WordleGame = lazy(() =>
   import("../games/wordle-game").then((module) => ({ default: module.WordleGame }))
 );
+const GuessTheWikipediaGame = lazy(() =>
+  import("../games/guess-wikipedia-game").then((module) => ({
+    default: module.GuessTheWikipediaGame,
+  }))
+);
 
 const MINI_GAME_LIBRARY: MiniGameDefinition[] = [
   {
@@ -157,18 +162,19 @@ const MINI_GAME_LIBRARY: MiniGameDefinition[] = [
     component: WordleGame,
   },
   {
-    id: "crossbar-clash",
-    name: "Crossbar Clash",
-    icon: "🎯",
-    summary: "Hit the virtual crossbar before time runs out by timing perfectly weighted swipes.",
-    focus: ["Accuracy", "Touch"],
+    id: "guess-wikipedia",
+    name: "Guess the Wikipedia Page",
+    icon: "📘",
+    summary: "Identify the article from a single striking photo.",
+    focus: ["Recall", "Observation"],
     estTime: "2 min",
-    scoring: "Earn up to 100 pts. +20 combo bonus for 3 perfect hits in a row.",
+    scoring: "One shot at each page — nail the title to keep your streak alive.",
     instructions: [
-      "Players line up 10 simulated shots with adjustable power and bend.",
-      "The closer you land to the crossbar centerline, the higher the score.",
-      "Combo meter increases difficulty by shrinking the target zone each success.",
+      "Study the image pulled from a real Wikipedia article.",
+      "Submit the article title; use the hint button if you need a nudge.",
+      "Wrong answers exhaust attempts fast, so lock in confidently.",
     ],
+    component: GuessTheWikipediaGame,
   },
   {
     id: "tiki-taka-tracker",
@@ -272,6 +278,7 @@ const MINI_GAME_LIBRARY: MiniGameDefinition[] = [
 
 const GAME_ID_ALIASES: Record<string, string> = {
   codebreaker: "wordle",
+  "crossbar-clash": "guess-wikipedia",
 };
 
 const DEFAULT_LINEUP_IDS = MINI_GAME_LIBRARY.slice(0, 5).map((game) => game.id);
