@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "../../shared/components/ui/button";
 import { Card } from "../../shared/components/ui/card";
@@ -88,13 +88,15 @@ const QUESTIONS: Question[] = [
 
 type Status = "idle" | "correct" | "incorrect";
 
-export function SynonymMatchGame({ onWin }: { onWin?: () => void }) {
+export function SynonymMatchGame({
+  onComplete,
+}: {
+  onComplete?: (result: "win" | "loss") => void;
+}) {
   const [question, setQuestion] = useState(() => pickRandom(QUESTIONS));
   const [selected, setSelected] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [showHint, setShowHint] = useState(false);
-  const [revealed, setRevealed] = useState(false);
-  const winReportedRef = useRef(false);
 
   const handleChoice = (choice: string) => {
     if (selected) {
@@ -102,18 +104,9 @@ export function SynonymMatchGame({ onWin }: { onWin?: () => void }) {
     }
 
     setSelected(choice);
-    setStatus(choice === question.answer ? "correct" : "incorrect");
-    setRevealed(false);
-  };
-
-  const handleReveal = () => {
-    if (status === "correct") {
-      return;
-    }
-
-    setSelected(question.answer);
-    setStatus("correct");
-    setRevealed(true);
+    const nextStatus = choice === question.answer ? "correct" : "incorrect";
+    setStatus(nextStatus);
+    onComplete?.(nextStatus === "correct" ? "win" : "loss");
   };
 
   const handleNext = () => {
@@ -121,19 +114,7 @@ export function SynonymMatchGame({ onWin }: { onWin?: () => void }) {
     setSelected(null);
     setStatus("idle");
     setShowHint(false);
-    setRevealed(false);
   };
-
-  useEffect(() => {
-    if (status === "correct" && !revealed) {
-      if (!winReportedRef.current) {
-        winReportedRef.current = true;
-        onWin?.();
-      }
-    } else if (status !== "correct") {
-      winReportedRef.current = false;
-    }
-  }, [status, revealed, onWin]);
 
   return (
     <div className="space-y-6">
@@ -186,9 +167,6 @@ export function SynonymMatchGame({ onWin }: { onWin?: () => void }) {
         <Feedback status={status} question={question} />
 
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="ghost" onClick={handleReveal} disabled={status === "correct"}>
-            Reveal synonym
-          </Button>
           {(status === "correct" || status === "incorrect") && (
             <Button type="button" variant="secondary" onClick={handleNext}>
               New word

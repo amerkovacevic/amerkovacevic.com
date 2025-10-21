@@ -27,7 +27,9 @@ import { auth, db, googleProvider } from "../../shared/lib/firebase";
 // Context exposed from the root layout so feature pages can access the user.
 type LayoutCtx = { user: User | null };
 
-type MiniGameComponentProps = { onWin?: () => void };
+type MiniGameComponentProps = {
+  onComplete?: (result: "win" | "loss") => void;
+};
 
 type MiniGameDefinition = {
   id: string;
@@ -284,6 +286,7 @@ export default function AmerGauntletPage() {
   const [sessionStartedAt, setSessionStartedAt] = useState<Date | null>(null);
   const [sessionEndedAt, setSessionEndedAt] = useState<Date | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [penaltySeconds, setPenaltySeconds] = useState(0);
 
   useEffect(() => {
     const ref = doc(db, "amerGauntletDaily", todayKey);
@@ -450,6 +453,7 @@ export default function AmerGauntletPage() {
     setSessionStartedAt(null);
     setSessionEndedAt(null);
     setElapsedSeconds(0);
+    setPenaltySeconds(0);
   }, [lineupKey]);
 
   const todaysCompleted = useMemo(() => {
@@ -549,27 +553,45 @@ export default function AmerGauntletPage() {
 
   const wins = Object.values(localResults).filter((result) => result === "win").length;
   const losses = Object.values(localResults).filter((result) => result === "loss").length;
-  const displayElapsedSeconds = sessionStartedAt
+  const baseElapsedSeconds = sessionStartedAt
     ? getDisplayDurationSeconds(sessionStartedAt, sessionEndedAt, elapsedSeconds)
     : 0;
+  const displayElapsedSeconds = baseElapsedSeconds + penaltySeconds;
 
-  const handleCompleteGame = (result: "win" | "loss") => {
+  const handleCompleteGame = (
+    result: "win" | "loss",
+    options?: { penaltySeconds?: number }
+  ) => {
     if (!activeEntry) return;
+    const gameId = activeEntry.game.id;
+    let applied = false;
     setLocalResults((prev) => {
-      if (prev[activeEntry.game.id]) {
+      if (prev[gameId]) {
         return prev;
       }
+      applied = true;
       return {
         ...prev,
-        [activeEntry.game.id]: result,
+        [gameId]: result,
       };
     });
+    if (!applied) {
+      return;
+    }
     if (!sessionStartedAt) {
       setSessionStartedAt(new Date());
+    }
+    const penalty = options?.penaltySeconds ?? 0;
+    if (penalty) {
+      setPenaltySeconds((prev) => prev + penalty);
     }
     if (remainingGames === 1) {
       setSessionEndedAt(new Date());
     }
+  };
+
+  const handleSkipGame = () => {
+    handleCompleteGame("loss", { penaltySeconds: 30 });
   };
 
   const handleSignIn = async () => {
@@ -662,6 +684,7 @@ export default function AmerGauntletPage() {
               totalGames={totalGames}
               elapsedSeconds={displayElapsedSeconds}
               onComplete={handleCompleteGame}
+              onSkip={handleSkipGame}
               sessionEnded={sessionEntries.every((entry) => entry.completed)}
               wins={wins}
               losses={losses}
@@ -901,6 +924,7 @@ function ActiveGamePanel({
   totalGames,
   elapsedSeconds,
   onComplete,
+  onSkip,
   sessionEnded,
   wins,
   losses,
@@ -909,6 +933,7 @@ function ActiveGamePanel({
   totalGames: number;
   elapsedSeconds: number;
   onComplete: (result: "win" | "loss") => void;
+  onSkip: () => void;
   sessionEnded: boolean;
   wins: number;
   losses: number;
@@ -973,7 +998,7 @@ function ActiveGamePanel({
               }
             >
               <div className="space-y-4">
-                <GameComponent onWin={() => onComplete("win")} />
+                <GameComponent onComplete={onComplete} />
               </div>
             </Suspense>
           ) : (
@@ -1000,6 +1025,13 @@ function ActiveGamePanel({
           className={buttonStyles({ variant: "secondary", size: "lg", className: "flex-1 min-w-[140px]" })}
         >
           Mark loss &amp; advance
+        </button>
+        <button
+          type="button"
+          onClick={onSkip}
+          className={buttonStyles({ variant: "ghost", size: "lg", className: "flex-1 min-w-[140px]" })}
+        >
+          Skip (+30s)
         </button>
       </div>
     </Card>

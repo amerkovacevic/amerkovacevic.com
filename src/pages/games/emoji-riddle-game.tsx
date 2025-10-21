@@ -26,15 +26,19 @@ const RIDDLES: Riddle[] = [
 
 const MAX_ATTEMPTS = 3;
 
-type Status = "idle" | "correct" | "incorrect" | "revealed";
+type Status = "idle" | "correct" | "incorrect" | "locked";
 
-export function EmojiRiddleGame({ onWin }: { onWin?: () => void }) {
+export function EmojiRiddleGame({
+  onComplete,
+}: {
+  onComplete?: (result: "win" | "loss") => void;
+}) {
   const [riddle, setRiddle] = useState(() => pickRandom(RIDDLES));
   const [guess, setGuess] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [attempts, setAttempts] = useState(0);
   const [showHint, setShowHint] = useState(false);
-  const winReportedRef = useRef(false);
+  const completionRef = useRef<"win" | "loss" | null>(null);
 
   const normalizedAnswers = useMemo(
     () => new Set(riddle.answers.map((answer) => normalize(answer))),
@@ -54,13 +58,14 @@ export function EmojiRiddleGame({ onWin }: { onWin?: () => void }) {
     if (normalizedAnswers.has(normalizedGuess)) {
       setStatus("correct");
     } else {
-      setStatus("incorrect");
-      setAttempts((value) => value + 1);
+      const nextAttempts = attempts + 1;
+      setAttempts(nextAttempts);
+      if (nextAttempts >= MAX_ATTEMPTS) {
+        setStatus("locked");
+      } else {
+        setStatus("incorrect");
+      }
     }
-  };
-
-  const handleReveal = () => {
-    setStatus("revealed");
   };
 
   const handlePlayAgain = () => {
@@ -69,18 +74,20 @@ export function EmojiRiddleGame({ onWin }: { onWin?: () => void }) {
     setStatus("idle");
     setAttempts(0);
     setShowHint(false);
+    completionRef.current = null;
   };
 
   useEffect(() => {
-    if (status === "correct") {
-      if (!winReportedRef.current) {
-        winReportedRef.current = true;
-        onWin?.();
-      }
-    } else {
-      winReportedRef.current = false;
+    if (status === "correct" && completionRef.current !== "win") {
+      completionRef.current = "win";
+      onComplete?.("win");
     }
-  }, [status, onWin]);
+
+    if (status === "locked" && completionRef.current !== "loss") {
+      completionRef.current = "loss";
+      onComplete?.("loss");
+    }
+  }, [status, onComplete]);
 
   return (
     <div className="space-y-6">
@@ -113,23 +120,15 @@ export function EmojiRiddleGame({ onWin }: { onWin?: () => void }) {
               onChange={(event) => setGuess(event.target.value)}
               className="mt-2 w-full rounded-brand-md border border-border-light/80 bg-white/90 px-4 py-3 text-base text-brand-strong shadow-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/30 dark:border-border-dark dark:bg-surface-muted dark:text-brand-foreground"
               placeholder="Type the phrase"
-              disabled={!canAttempt || attemptsLeft <= 0}
+              disabled={!canAttempt || attemptsLeft <= 0 || completionRef.current !== null}
             />
           </label>
 
           <div className="flex flex-wrap gap-2">
-            <Button type="submit" disabled={!canAttempt || attemptsLeft <= 0}>
+            <Button type="submit" disabled={!canAttempt || attemptsLeft <= 0 || completionRef.current !== null}>
               Check answer
             </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={handleReveal}
-              disabled={status === "revealed" || status === "correct"}
-            >
-              Reveal
-            </Button>
-            {status === "correct" || status === "revealed" ? (
+            {status === "correct" || status === "locked" ? (
               <Button type="button" variant="secondary" onClick={handlePlayAgain}>
                 New riddle
               </Button>
@@ -160,19 +159,11 @@ function Feedback({
     );
   }
 
-  if (status === "revealed") {
-    return (
-      <p className="rounded-brand-md border border-sky-200/60 bg-sky-50/70 px-4 py-3 text-sm text-sky-700 dark:border-sky-900/60 dark:bg-sky-500/20 dark:text-sky-200">
-        The answer was {answers[0]}. Want another round?
-      </p>
-    );
-  }
-
   if (status === "incorrect") {
     if (attemptsLeft <= 0) {
       return (
         <p className="rounded-brand-md border border-rose-200/60 bg-rose-50/70 px-4 py-3 text-sm font-medium text-rose-700 dark:border-rose-900/60 dark:bg-rose-500/20 dark:text-rose-200">
-          Out of tries! Reveal the phrase or start fresh.
+          Out of tries! Start fresh for a new phrase.
         </p>
       );
     }
@@ -180,6 +171,14 @@ function Feedback({
     return (
       <p className="rounded-brand-md border border-amber-200/60 bg-amber-50/70 px-4 py-3 text-sm text-amber-700 dark:border-amber-900/60 dark:bg-amber-500/20 dark:text-amber-200">
         Keep going! {attemptsLeft} {attemptsLeft === 1 ? "attempt" : "attempts"} left.
+      </p>
+    );
+  }
+
+  if (status === "locked") {
+    return (
+      <p className="rounded-brand-md border border-rose-200/60 bg-rose-50/70 px-4 py-3 text-sm font-medium text-rose-700 dark:border-rose-900/60 dark:bg-rose-500/20 dark:text-rose-200">
+        No more attempts. The phrase was {answers[0]}.
       </p>
     );
   }

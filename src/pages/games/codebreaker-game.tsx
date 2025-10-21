@@ -14,14 +14,18 @@ type GameStatus = "playing" | "won" | "lost";
 const CODE_LENGTH = 4;
 const MAX_ATTEMPTS = 10;
 
-export function CodebreakerGame({ onWin }: { onWin?: () => void }) {
+export function CodebreakerGame({
+  onComplete,
+}: {
+  onComplete?: (result: "win" | "loss") => void;
+}) {
   const [secret, setSecret] = useState(() => generateCode());
   const [guess, setGuess] = useState("");
   const [history, setHistory] = useState<GuessEntry[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [showCode, setShowCode] = useState(false);
-  const winReportedRef = useRef(false);
+  const [revealSecret, setRevealSecret] = useState(false);
+  const completionRef = useRef<"win" | "loss" | null>(null);
 
   const attemptsLeft = MAX_ATTEMPTS - history.length;
   const progress = useMemo(() => Math.round(((MAX_ATTEMPTS - attemptsLeft) / MAX_ATTEMPTS) * 100), [attemptsLeft]);
@@ -46,12 +50,14 @@ export function CodebreakerGame({ onWin }: { onWin?: () => void }) {
     if (evaluation.exact === CODE_LENGTH) {
       setStatus("won");
       setFeedback("Code cracked! You win.");
+      setRevealSecret(true);
       return;
     }
 
     if (nextHistory.length >= MAX_ATTEMPTS) {
       setStatus("lost");
-      setFeedback("Out of attempts! Reveal the code and try again.");
+      setFeedback("Out of attempts! The vault stays locked.");
+      setRevealSecret(true);
       return;
     }
   };
@@ -62,25 +68,22 @@ export function CodebreakerGame({ onWin }: { onWin?: () => void }) {
     setHistory([]);
     setStatus("playing");
     setFeedback(null);
-    setShowCode(false);
-  };
-
-  const revealCode = () => {
-    setShowCode(true);
+    setRevealSecret(false);
+    completionRef.current = null;
   };
 
   const statusMessage = status === "won" ? "Mission accomplished." : status === "lost" ? "Mission failed." : "";
 
   useEffect(() => {
-    if (status === "won") {
-      if (!winReportedRef.current) {
-        winReportedRef.current = true;
-        onWin?.();
-      }
-    } else {
-      winReportedRef.current = false;
+    if (status === "won" && completionRef.current !== "win") {
+      completionRef.current = "win";
+      onComplete?.("win");
     }
-  }, [status, onWin]);
+    if (status === "lost" && completionRef.current !== "loss") {
+      completionRef.current = "loss";
+      onComplete?.("loss");
+    }
+  }, [status, onComplete]);
 
   return (
     <div className="space-y-6">
@@ -122,9 +125,6 @@ export function CodebreakerGame({ onWin }: { onWin?: () => void }) {
                 <Button type="button" variant="secondary" onClick={handleReset}>
                   New code
                 </Button>
-                <Button type="button" variant="ghost" onClick={revealCode}>
-                  Reveal code
-                </Button>
               </div>
             </form>
 
@@ -146,7 +146,7 @@ export function CodebreakerGame({ onWin }: { onWin?: () => void }) {
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-brand-muted dark:text-brand-subtle">{statusMessage}</p>
             ) : null}
 
-            {showCode ? (
+            {revealSecret ? (
               <div className="rounded-brand-md border border-border-light/70 bg-white/80 px-4 py-3 text-sm font-semibold text-brand-strong shadow-sm dark:border-border-dark dark:bg-surface-muted/80 dark:text-brand-foreground">
                 Secret code: {secret}
               </div>
