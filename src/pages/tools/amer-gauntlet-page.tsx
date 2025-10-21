@@ -91,8 +91,8 @@ const SynonymMatchGame = lazy(() =>
 const TwentyFourGame = lazy(() =>
   import("../games/twenty-four-game").then((module) => ({ default: module.TwentyFourGame }))
 );
-const CodebreakerGame = lazy(() =>
-  import("../games/codebreaker-game").then((module) => ({ default: module.CodebreakerGame }))
+const WordleGame = lazy(() =>
+  import("../games/wordle-game").then((module) => ({ default: module.WordleGame }))
 );
 
 const MINI_GAME_LIBRARY: MiniGameDefinition[] = [
@@ -142,19 +142,19 @@ const MINI_GAME_LIBRARY: MiniGameDefinition[] = [
     component: TwentyFourGame,
   },
   {
-    id: "codebreaker",
-    name: "Codebreaker",
-    icon: "🕵️",
-    summary: "Crack the secret four-digit code with Mastermind-style feedback.",
-    focus: ["Logic", "Deduction"],
-    estTime: "5 min",
-    scoring: "Guess the code within eight attempts for full marks. Efficient solves earn bonus points.",
+    id: "wordle",
+    name: "Wordle",
+    icon: "🟩",
+    summary: "Pin down the five-letter password using color-coded feedback.",
+    focus: ["Vocabulary", "Deduction"],
+    estTime: "3 min",
+    scoring: "Crack the word without using all six guesses to stay on pace.",
     instructions: [
-      "Enter a unique four-digit guess to probe the hidden combination.",
-      "Use feedback pegs to track digits that are correct and in the right spot.",
-      "Iterate on clues quickly — a clean solve keeps your gauntlet streak alive.",
+      "Type a five-letter guess and submit to see how each letter fares.",
+      "Green tiles mean perfect placement; amber tiles mean the letter belongs elsewhere.",
+      "Lock it in quickly — running out of guesses ends the round.",
     ],
-    component: CodebreakerGame,
+    component: WordleGame,
   },
   {
     id: "crossbar-clash",
@@ -269,6 +269,10 @@ const MINI_GAME_LIBRARY: MiniGameDefinition[] = [
     ],
   },
 ];
+
+const GAME_ID_ALIASES: Record<string, string> = {
+  codebreaker: "wordle",
+};
 
 const DEFAULT_LINEUP_IDS = MINI_GAME_LIBRARY.slice(0, 5).map((game) => game.id);
 
@@ -441,7 +445,10 @@ export default function AmerGauntletPage() {
     return () => unsub();
   }, [user]);
 
-  const lineupIds = dailyConfig?.games?.length ? dailyConfig.games : DEFAULT_LINEUP_IDS;
+  const lineupIds = useMemo(() => {
+    const source = dailyConfig?.games?.length ? dailyConfig.games : DEFAULT_LINEUP_IDS;
+    return source.map((id) => normalizeGameId(id));
+  }, [dailyConfig]);
   const lineupKey = useMemo(() => lineupIds.join("-"), [lineupIds]);
 
   const lineup = useMemo(() => {
@@ -459,7 +466,7 @@ export default function AmerGauntletPage() {
   const todaysCompleted = useMemo(() => {
     if (!profile) return [] as string[];
     if (profile.activeDailyKey !== todayKey) return [] as string[];
-    return profile.todaysCompleted;
+    return profile.todaysCompleted.map((id) => normalizeGameId(id));
   }, [profile, todayKey]);
 
   const todaysScore = useMemo(() => {
@@ -471,7 +478,10 @@ export default function AmerGauntletPage() {
   const todaysScoreByGame = useMemo(() => {
     if (!profile) return {} as Record<string, number>;
     if (profile.activeDailyKey !== todayKey) return {} as Record<string, number>;
-    return profile.scoreByGame;
+    return Object.entries(profile.scoreByGame).reduce((acc, [key, value]) => {
+      acc[normalizeGameId(key)] = Number(value ?? 0);
+      return acc;
+    }, {} as Record<string, number>);
   }, [profile, todayKey]);
 
   const dailyEntries = useMemo(() => {
@@ -1229,6 +1239,10 @@ function LibraryGameCard({ game }: { game: MiniGameDefinition }) {
       </div>
     </Card>
   );
+}
+
+function normalizeGameId(id: string) {
+  return GAME_ID_ALIASES[id] ?? id;
 }
 
 function makePlaceholderGame(id: string): MiniGameDefinition {
