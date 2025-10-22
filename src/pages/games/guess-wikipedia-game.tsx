@@ -5,78 +5,194 @@ import { Card } from "../../shared/components/ui/card";
 
 const MAX_ATTEMPTS = 3;
 
-const WIKIPEDIA_PAGES = [
-  {
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Taj_Mahal_in_March_2004.jpg/640px-Taj_Mahal_in_March_2004.jpg",
-    title: "Taj Mahal",
-    accepted: ["Taj Mahal"],
-    hint: "Mughal mausoleum on the Yamuna River.",
-  },
-  {
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Eiffel_Tower_%28square%29.JPG/640px-Eiffel_Tower_%28square%29.JPG",
-    title: "Eiffel Tower",
-    accepted: ["Eiffel Tower", "La Tour Eiffel"],
-    hint: "Wrought-iron icon overlooking the Seine.",
-  },
-  {
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Great_Wall_of_China_June_2007.jpg/640px-Great_Wall_of_China_June_2007.jpg",
-    title: "Great Wall of China",
-    accepted: ["Great Wall of China", "Great Wall"],
-    hint: "Ancient fortification stretching thousands of miles.",
-  },
-  {
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/ISS-65_International_Space_Station.jpg/640px-ISS-65_International_Space_Station.jpg",
-    title: "International Space Station",
-    accepted: ["International Space Station", "ISS"],
-    hint: "Modular outpost orbiting Earth every 90 minutes.",
-  },
-  {
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/640px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
-    title: "Mona Lisa",
-    accepted: ["Mona Lisa", "La Gioconda"],
-    hint: "Renaissance portrait guarding a mysterious smile.",
-  },
-  {
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/NASA-Apollo8-Dec24-Earthrise.jpg/640px-NASA-Apollo8-Dec24-Earthrise.jpg",
-    title: "Earthrise",
-    accepted: ["Earthrise"],
-    hint: "Famous lunar-orbit photograph captured in 1968.",
-  },
-  {
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Flag_of_the_United_Nations.svg/640px-Flag_of_the_United_Nations.svg.png",
-    title: "United Nations",
-    accepted: ["United Nations", "UN"],
-    hint: "Global organization founded after World War II.",
-  },
-  {
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Golden_Gate_Bridge_from_Battery_Spencer.jpg/640px-Golden_Gate_Bridge_from_Battery_Spencer.jpg",
-    title: "Golden Gate Bridge",
-    accepted: ["Golden Gate Bridge"],
-    hint: "Suspension landmark linking San Francisco to Marin.",
-  },
-  {
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Mount_Everest_as_seen_from_Drukair2_PLW_edit.jpg/640px-Mount_Everest_as_seen_from_Drukair2_PLW_edit.jpg",
-    title: "Mount Everest",
-    accepted: ["Mount Everest", "Everest"],
-    hint: "Tallest mountain on Earth's surface.",
-  },
-  {
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Sydney_Opera_House_-_Dec_2008.jpg/640px-Sydney_Opera_House_-_Dec_2008.jpg",
-    title: "Sydney Opera House",
-    accepted: ["Sydney Opera House"],
-    hint: "Sail-inspired performing arts venue on Bennelong Point.",
-  },
-] as const;
+const WIKIPEDIA_PAGES = createWikipediaPages();
+
+function createWikipediaPages() {
+  return [
+    {
+      imageUrl: createPoster({
+        id: "taj-mahal",
+        emoji: "🕌",
+        title: "Taj Mahal",
+        gradientFrom: "#fde3cf",
+        gradientTo: "#f6a7a0",
+        accent: "#5e2b1f",
+      }),
+      title: "Taj Mahal",
+      accepted: ["Taj Mahal"],
+      hint: "Mughal mausoleum on the Yamuna River.",
+    },
+    {
+      imageUrl: createPoster({
+        id: "eiffel-tower",
+        emoji: "🗼",
+        title: "Eiffel Tower",
+        gradientFrom: "#d7ecff",
+        gradientTo: "#86b0ff",
+        accent: "#1c3f73",
+      }),
+      title: "Eiffel Tower",
+      accepted: ["Eiffel Tower", "La Tour Eiffel"],
+      hint: "Wrought-iron icon overlooking the Seine.",
+    },
+    {
+      imageUrl: createPoster({
+        id: "great-wall",
+        emoji: "🧱",
+        title: "Great Wall",
+        gradientFrom: "#f9e7d2",
+        gradientTo: "#d1b48f",
+        accent: "#5f3c20",
+      }),
+      title: "Great Wall of China",
+      accepted: ["Great Wall of China", "Great Wall"],
+      hint: "Ancient fortification stretching thousands of miles.",
+    },
+    {
+      imageUrl: createPoster({
+        id: "iss",
+        emoji: "🛰️",
+        title: "ISS",
+        gradientFrom: "#131a2a",
+        gradientTo: "#2b4f73",
+        accent: "#b7d7ff",
+      }),
+      title: "International Space Station",
+      accepted: ["International Space Station", "ISS"],
+      hint: "Modular outpost orbiting Earth every 90 minutes.",
+    },
+    {
+      imageUrl: createPoster({
+        id: "mona-lisa",
+        emoji: "🖼️",
+        title: "Mona Lisa",
+        gradientFrom: "#f2e0c4",
+        gradientTo: "#caa177",
+        accent: "#4a3623",
+      }),
+      title: "Mona Lisa",
+      accepted: ["Mona Lisa", "La Gioconda"],
+      hint: "Renaissance portrait guarding a mysterious smile.",
+    },
+    {
+      imageUrl: createPoster({
+        id: "earthrise",
+        emoji: "🌍",
+        title: "Earthrise",
+        gradientFrom: "#001d3d",
+        gradientTo: "#00436d",
+        accent: "#8dd2ff",
+      }),
+      title: "Earthrise",
+      accepted: ["Earthrise"],
+      hint: "Famous lunar-orbit photograph captured in 1968.",
+    },
+    {
+      imageUrl: createPoster({
+        id: "united-nations",
+        emoji: "🇺🇳",
+        title: "United Nations",
+        gradientFrom: "#d2ecff",
+        gradientTo: "#6db4ff",
+        accent: "#134a9b",
+      }),
+      title: "United Nations",
+      accepted: ["United Nations", "UN"],
+      hint: "Global organization founded after World War II.",
+    },
+    {
+      imageUrl: createPoster({
+        id: "golden-gate",
+        emoji: "🌉",
+        title: "Golden Gate",
+        gradientFrom: "#ffe4d6",
+        gradientTo: "#ff9575",
+        accent: "#9b2f20",
+      }),
+      title: "Golden Gate Bridge",
+      accepted: ["Golden Gate Bridge"],
+      hint: "Suspension landmark linking San Francisco to Marin.",
+    },
+    {
+      imageUrl: createPoster({
+        id: "mount-everest",
+        emoji: "🏔️",
+        title: "Everest",
+        gradientFrom: "#e6f2ff",
+        gradientTo: "#7fb3e5",
+        accent: "#1d4168",
+      }),
+      title: "Mount Everest",
+      accepted: ["Mount Everest", "Everest"],
+      hint: "Tallest mountain on Earth's surface.",
+    },
+    {
+      imageUrl: createPoster({
+        id: "sydney-opera-house",
+        emoji: "🎶",
+        title: "Sydney Opera",
+        gradientFrom: "#f4ecff",
+        gradientTo: "#b99bff",
+        accent: "#4a2d7b",
+      }),
+      title: "Sydney Opera House",
+      accepted: ["Sydney Opera House"],
+      hint: "Sail-inspired performing arts venue on Bennelong Point.",
+    },
+  ] as const;
+}
+
+function createPoster({
+  id,
+  emoji,
+  title,
+  gradientFrom,
+  gradientTo,
+  accent,
+}: {
+  id: string;
+  emoji: string;
+  title: string;
+  gradientFrom: string;
+  gradientTo: string;
+  accent: string;
+}) {
+  const safeTitle = escapeXml(title);
+  const safeEmoji = escapeXml(emoji);
+  const gradientId = `grad-${id}`;
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+      <defs>
+        <linearGradient id="${gradientId}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${gradientFrom}" />
+          <stop offset="100%" stop-color="${gradientTo}" />
+        </linearGradient>
+        <filter id="shadow-${id}" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="rgba(0,0,0,0.25)" />
+        </filter>
+      </defs>
+      <rect width="640" height="360" rx="48" fill="url(#${gradientId})" />
+      <g filter="url(#shadow-${id})">
+        <circle cx="180" cy="180" r="96" fill="rgba(255,255,255,0.25)" />
+        <circle cx="470" cy="120" r="56" fill="rgba(255,255,255,0.18)" />
+        <circle cx="520" cy="250" r="72" fill="rgba(255,255,255,0.22)" />
+      </g>
+      <text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" font-size="120" font-family="'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif">${safeEmoji}</text>
+      <text x="50%" y="74%" dominant-baseline="middle" text-anchor="middle" font-size="54" font-family="'Poppins', 'Segoe UI', sans-serif" font-weight="600" fill="${accent}">${safeTitle}</text>
+    </svg>
+  `;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function escapeXml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
 function pickRandom<T>(items: readonly T[], exclude?: T) {
   if (items.length === 0) {
