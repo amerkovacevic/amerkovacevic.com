@@ -94,9 +94,9 @@ const TwentyFourGame = lazy(() =>
 const WordleGame = lazy(() =>
   import("../games/wordle-game").then((module) => ({ default: module.WordleGame }))
 );
-const GuessTheWikipediaGame = lazy(() =>
-  import("../games/guess-wikipedia-game").then((module) => ({
-    default: module.GuessTheWikipediaGame,
+const GuessTheAbbreviationGame = lazy(() =>
+  import("../games/guess-abbreviation-game").then((module) => ({
+    default: module.GuessTheAbbreviationGame,
   }))
 );
 
@@ -162,19 +162,19 @@ const MINI_GAME_LIBRARY: MiniGameDefinition[] = [
     component: WordleGame,
   },
   {
-    id: "guess-wikipedia",
-    name: "Guess the Wikipedia Page",
-    icon: "📘",
-    summary: "Identify the article from a single striking photo.",
-    focus: ["Recall", "Observation"],
+    id: "guess-abbreviation",
+    name: "Guess the Abbreviation",
+    icon: "🔤",
+    summary: "Expand the acronym before your attempts run out.",
+    focus: ["Vocabulary", "Recall"],
     estTime: "2 min",
-    scoring: "One shot at each page — nail the title to keep your streak alive.",
+    scoring: "Three chances to decode each term — stay sharp to keep streaks alive.",
     instructions: [
-      "Study the image pulled from a real Wikipedia article.",
-      "Submit the article title; use the hint button if you need a nudge.",
-      "Wrong answers exhaust attempts fast, so lock in confidently.",
+      "Study the abbreviation and consider the context category.",
+      "Type the full phrase the letters represent.",
+      "Hints help, but wrong guesses burn through limited attempts.",
     ],
-    component: GuessTheWikipediaGame,
+    component: GuessTheAbbreviationGame,
   },
   {
     id: "tiki-taka-tracker",
@@ -278,7 +278,7 @@ const MINI_GAME_LIBRARY: MiniGameDefinition[] = [
 
 const GAME_ID_ALIASES: Record<string, string> = {
   codebreaker: "wordle",
-  "crossbar-clash": "guess-wikipedia",
+  "crossbar-clash": "guess-abbreviation",
 };
 
 const DEFAULT_LINEUP_IDS = MINI_GAME_LIBRARY.slice(0, 5).map((game) => game.id);
