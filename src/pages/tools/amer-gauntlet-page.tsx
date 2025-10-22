@@ -1031,20 +1031,6 @@ function ActiveGamePanel({
       <div className="mt-auto flex flex-wrap gap-3">
         <button
           type="button"
-          onClick={() => onComplete("win")}
-          className={buttonStyles({ size: "lg", className: "flex-1 min-w-[140px]" })}
-        >
-          Mark win &amp; advance
-        </button>
-        <button
-          type="button"
-          onClick={() => onComplete("loss")}
-          className={buttonStyles({ variant: "secondary", size: "lg", className: "flex-1 min-w-[140px]" })}
-        >
-          Mark loss &amp; advance
-        </button>
-        <button
-          type="button"
           onClick={onSkip}
           className={buttonStyles({ variant: "ghost", size: "lg", className: "flex-1 min-w-[140px]" })}
         >
@@ -1130,11 +1116,25 @@ function StatusIndicator({
   if (status === "completed") {
     return (
       <div className="flex flex-col items-end gap-1 text-right">
-        <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-200/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-900 dark:border-emerald-500/80 dark:bg-emerald-400/25 dark:text-emerald-200">
+        <span
+          className={cn(
+            "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em]",
+            result === "loss"
+              ? "border-rose-300 bg-rose-200/60 text-rose-900 dark:border-rose-500/80 dark:bg-rose-400/25 dark:text-rose-200"
+              : "border-emerald-300 bg-emerald-200/60 text-emerald-900 dark:border-emerald-500/80 dark:bg-emerald-400/25 dark:text-emerald-200"
+          )}
+        >
           ✅ Cleared
         </span>
         {result ? (
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-500 dark:text-emerald-200">
+          <span
+            className={cn(
+              "text-xs font-semibold uppercase tracking-[0.2em]",
+              result === "loss"
+                ? "text-rose-500 dark:text-rose-200"
+                : "text-emerald-500 dark:text-emerald-200"
+            )}
+          >
             {result === "win" ? "Win" : "Loss"}
           </span>
         ) : completed ? (
