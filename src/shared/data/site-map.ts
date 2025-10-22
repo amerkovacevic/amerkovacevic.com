@@ -8,6 +8,13 @@ export type SiteLink = {
 
 export const APP_LINKS: SiteLink[] = [
   {
+    id: "amer-gauntlet",
+    name: "Amer Gauntlet",
+    to: "/tools/amer-gauntlet",
+    blurb: "Play five curated mini games, track streaks, and climb the leaderboard.",
+    emoji: "🛡️",
+  },
+  {
     id: "pickup",
     name: "Pickup Soccer",
     to: "/tools/pickup",
