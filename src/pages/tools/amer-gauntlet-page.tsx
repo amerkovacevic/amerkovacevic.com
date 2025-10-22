@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useMemo,
+  useState,
+  type LazyExoticComponent,
+} from "react";
 import { useOutletContext } from "react-router-dom";
 import { signInWithPopup, type User } from "firebase/auth";
 import {
@@ -20,6 +27,10 @@ import { auth, db, googleProvider } from "../../shared/lib/firebase";
 // Context exposed from the root layout so feature pages can access the user.
 type LayoutCtx = { user: User | null };
 
+type MiniGameComponentProps = {
+  onComplete?: (result: "win" | "loss") => void;
+};
+
 type MiniGameDefinition = {
   id: string;
   name: string;
@@ -29,6 +40,9 @@ type MiniGameDefinition = {
   estTime: string;
   scoring: string;
   instructions: string[];
+  component?: LazyExoticComponent<
+    (props: MiniGameComponentProps) => JSX.Element | null
+  >;
 };
 
 type DailyConfig = {
@@ -68,20 +82,99 @@ type HistoryEntry = {
   winner?: string;
 };
 
+const EmojiRiddleGame = lazy(() =>
+  import("../games/emoji-riddle-game").then((module) => ({ default: module.EmojiRiddleGame }))
+);
+const SynonymMatchGame = lazy(() =>
+  import("../games/synonym-match-game").then((module) => ({ default: module.SynonymMatchGame }))
+);
+const TwentyFourGame = lazy(() =>
+  import("../games/twenty-four-game").then((module) => ({ default: module.TwentyFourGame }))
+);
+const WordleGame = lazy(() =>
+  import("../games/wordle-game").then((module) => ({ default: module.WordleGame }))
+);
+const GuessTheAbbreviationGame = lazy(() =>
+  import("../games/guess-abbreviation-game").then((module) => ({
+    default: module.GuessTheAbbreviationGame,
+  }))
+);
+
 const MINI_GAME_LIBRARY: MiniGameDefinition[] = [
   {
-    id: "crossbar-clash",
-    name: "Crossbar Clash",
-    icon: "🎯",
-    summary: "Hit the virtual crossbar before time runs out by timing perfectly weighted swipes.",
-    focus: ["Accuracy", "Touch"],
+    id: "emoji-riddle",
+    name: "Emoji Riddle",
+    icon: "🧠",
+    summary: "Decode the hidden word or phrase from nothing but emoji clues.",
+    focus: ["Wordplay", "Pattern Spotting"],
     estTime: "2 min",
-    scoring: "Earn up to 100 pts. +20 combo bonus for 3 perfect hits in a row.",
+    scoring: "Solve as many riddles as you can. Streaks boost your gauntlet momentum.",
     instructions: [
-      "Players line up 10 simulated shots with adjustable power and bend.",
-      "The closer you land to the crossbar centerline, the higher the score.",
-      "Combo meter increases difficulty by shrinking the target zone each success.",
+      "Study the emoji sequence and enter the matching word or phrase.",
+      "Submit to check your guess, reveal a hint if you need help, and skip to keep tempo.",
+      "Track streaks and solved count — perfect sessions fuel a gauntlet sweep.",
     ],
+    component: EmojiRiddleGame,
+  },
+  {
+    id: "synonym-match",
+    name: "Synonym Match",
+    icon: "🔤",
+    summary: "Select the true synonym before the round timer slips away.",
+    focus: ["Vocabulary", "Speed"],
+    estTime: "3 min",
+    scoring: "+5 pts per correct pick, bonus streak after 5 in a row.",
+    instructions: [
+      "Read the target word and review all four options closely.",
+      "Tap the synonym that best matches the meaning — wrong picks break your streak.",
+      "Lock in answers quickly to finish all cards within the gauntlet window.",
+    ],
+    component: SynonymMatchGame,
+  },
+  {
+    id: "twenty-four",
+    name: "24 Game",
+    icon: "24️⃣",
+    summary: "Combine all four digits with math operations to land exactly on 24.",
+    focus: ["Arithmetic", "Creativity"],
+    estTime: "4 min",
+    scoring: "Each solved puzzle grants +8 pts. Run the table for a combo multiplier.",
+    instructions: [
+      "Use addition, subtraction, multiplication, division, or parentheses with every digit once.",
+      "Drag operators or tap quick actions to assemble a valid expression equal to 24.",
+      "Submit solutions to advance — reset if you need a fresh angle on the numbers.",
+    ],
+    component: TwentyFourGame,
+  },
+  {
+    id: "wordle",
+    name: "Wordle",
+    icon: "🟩",
+    summary: "Pin down the five-letter password using color-coded feedback.",
+    focus: ["Vocabulary", "Deduction"],
+    estTime: "3 min",
+    scoring: "Crack the word without using all six guesses to stay on pace.",
+    instructions: [
+      "Type a five-letter guess and submit to see how each letter fares.",
+      "Green tiles mean perfect placement; amber tiles mean the letter belongs elsewhere.",
+      "Lock it in quickly — running out of guesses ends the round.",
+    ],
+    component: WordleGame,
+  },
+  {
+    id: "guess-abbreviation",
+    name: "Guess the Abbreviation",
+    icon: "🔤",
+    summary: "Expand the acronym before your attempts run out.",
+    focus: ["Vocabulary", "Recall"],
+    estTime: "2 min",
+    scoring: "Three chances to decode each term — stay sharp to keep streaks alive.",
+    instructions: [
+      "Study the abbreviation and consider the context category.",
+      "Type the full phrase the letters represent.",
+      "Hints help, but wrong guesses burn through limited attempts.",
+    ],
+    component: GuessTheAbbreviationGame,
   },
   {
     id: "tiki-taka-tracker",
@@ -183,6 +276,11 @@ const MINI_GAME_LIBRARY: MiniGameDefinition[] = [
   },
 ];
 
+const GAME_ID_ALIASES: Record<string, string> = {
+  codebreaker: "wordle",
+  "crossbar-clash": "guess-abbreviation",
+};
+
 const DEFAULT_LINEUP_IDS = MINI_GAME_LIBRARY.slice(0, 5).map((game) => game.id);
 
 export default function AmerGauntletPage() {
@@ -199,6 +297,9 @@ export default function AmerGauntletPage() {
   const [sessionStartedAt, setSessionStartedAt] = useState<Date | null>(null);
   const [sessionEndedAt, setSessionEndedAt] = useState<Date | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [penaltySeconds, setPenaltySeconds] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null);
 
   useEffect(() => {
     const ref = doc(db, "amerGauntletDaily", todayKey);
@@ -353,7 +454,10 @@ export default function AmerGauntletPage() {
     return () => unsub();
   }, [user]);
 
-  const lineupIds = dailyConfig?.games?.length ? dailyConfig.games : DEFAULT_LINEUP_IDS;
+  const lineupIds = useMemo(() => {
+    const source = dailyConfig?.games?.length ? dailyConfig.games : DEFAULT_LINEUP_IDS;
+    return source.map((id) => normalizeGameId(id));
+  }, [dailyConfig]);
   const lineupKey = useMemo(() => lineupIds.join("-"), [lineupIds]);
 
   const lineup = useMemo(() => {
@@ -365,12 +469,15 @@ export default function AmerGauntletPage() {
     setSessionStartedAt(null);
     setSessionEndedAt(null);
     setElapsedSeconds(0);
+    setPenaltySeconds(0);
+    setHasStarted(false);
+    setCountdownSeconds(null);
   }, [lineupKey]);
 
   const todaysCompleted = useMemo(() => {
     if (!profile) return [] as string[];
     if (profile.activeDailyKey !== todayKey) return [] as string[];
-    return profile.todaysCompleted;
+    return profile.todaysCompleted.map((id) => normalizeGameId(id));
   }, [profile, todayKey]);
 
   const todaysScore = useMemo(() => {
@@ -382,7 +489,10 @@ export default function AmerGauntletPage() {
   const todaysScoreByGame = useMemo(() => {
     if (!profile) return {} as Record<string, number>;
     if (profile.activeDailyKey !== todayKey) return {} as Record<string, number>;
-    return profile.scoreByGame;
+    return Object.entries(profile.scoreByGame).reduce((acc, [key, value]) => {
+      acc[normalizeGameId(key)] = Number(value ?? 0);
+      return acc;
+    }, {} as Record<string, number>);
   }, [profile, todayKey]);
 
   const dailyEntries = useMemo(() => {
@@ -424,7 +534,10 @@ export default function AmerGauntletPage() {
     });
   }, [dailyEntries, localResults]);
 
-  const activeEntry = sessionEntries.find((entry) => entry.status === "active") ?? null;
+  const activeEntry = hasStarted
+    ? sessionEntries.find((entry) => entry.status === "active") ?? null
+    : null;
+  const upcomingEntry = sessionEntries.find((entry) => !entry.completed) ?? null;
   const totalGames = sessionEntries.length;
   const completedCount = sessionEntries.filter((entry) => entry.completed).length;
   const progressPercent = totalGames ? Math.round((completedCount / totalGames) * 100) : 0;
@@ -434,7 +547,7 @@ export default function AmerGauntletPage() {
     if (!sessionEntries.length) {
       return;
     }
-    if (!sessionStartedAt && activeEntry) {
+    if (hasStarted && !sessionStartedAt && activeEntry) {
       setSessionStartedAt(new Date());
       return;
     }
@@ -446,7 +559,23 @@ export default function AmerGauntletPage() {
     ) {
       setSessionEndedAt(new Date());
     }
-  }, [sessionEntries, activeEntry, sessionStartedAt, sessionEndedAt]);
+  }, [sessionEntries, activeEntry, sessionStartedAt, sessionEndedAt, hasStarted]);
+
+  useEffect(() => {
+    if (countdownSeconds == null) {
+      return;
+    }
+    if (countdownSeconds === 0) {
+      setCountdownSeconds(null);
+      setHasStarted(true);
+      setSessionStartedAt(new Date());
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setCountdownSeconds((prev) => (prev != null ? prev - 1 : null));
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [countdownSeconds]);
 
   useEffect(() => {
     if (!sessionStartedAt || sessionEndedAt) {
@@ -464,27 +593,52 @@ export default function AmerGauntletPage() {
 
   const wins = Object.values(localResults).filter((result) => result === "win").length;
   const losses = Object.values(localResults).filter((result) => result === "loss").length;
-  const displayElapsedSeconds = sessionStartedAt
+  const baseElapsedSeconds = sessionStartedAt
     ? getDisplayDurationSeconds(sessionStartedAt, sessionEndedAt, elapsedSeconds)
     : 0;
+  const displayElapsedSeconds = baseElapsedSeconds + penaltySeconds;
 
-  const handleCompleteGame = (result: "win" | "loss") => {
+  const handleCompleteGame = (
+    result: "win" | "loss",
+    options?: { penaltySeconds?: number }
+  ) => {
     if (!activeEntry) return;
+    const gameId = activeEntry.game.id;
+    let applied = false;
     setLocalResults((prev) => {
-      if (prev[activeEntry.game.id]) {
+      if (prev[gameId]) {
         return prev;
       }
+      applied = true;
       return {
         ...prev,
-        [activeEntry.game.id]: result,
+        [gameId]: result,
       };
     });
+    if (!applied) {
+      return;
+    }
     if (!sessionStartedAt) {
       setSessionStartedAt(new Date());
+    }
+    const penalty = options?.penaltySeconds ?? 0;
+    if (penalty) {
+      setPenaltySeconds((prev) => prev + penalty);
     }
     if (remainingGames === 1) {
       setSessionEndedAt(new Date());
     }
+  };
+
+  const handleSkipGame = () => {
+    handleCompleteGame("loss", { penaltySeconds: 30 });
+  };
+
+  const handleStartGauntlet = () => {
+    if (hasStarted || countdownSeconds != null || !sessionEntries.length) {
+      return;
+    }
+    setCountdownSeconds(3);
   };
 
   const handleSignIn = async () => {
@@ -497,12 +651,17 @@ export default function AmerGauntletPage() {
     <div className="space-y-10">
       <PageHero
         icon="🛡️"
-        eyebrow={<span className="tracking-[0.28em]">New Daily Challenge</span>}
-        title="Amer Gauntlet"
+        eyebrow={
+          <span className="tracking-[0.28em]">
+            Beta Release • New Daily Challenge
+          </span>
+        }
+        title="Amer Gauntlet (Beta)"
         description={
           <span>
-            Five rapid-fire mini games curated each day to sharpen touch, tactics, and mentality. Sign in to track your streak,
-            chase the leaderboard, and review your matchday history.
+            Five rapid-fire mini games curated each day to sharpen touch, tactics, and mentality. This beta experience is still being
+            balanced — expect rapid tweaks as feedback rolls in. Sign in to track your streak, chase the leaderboard, and review your
+            matchday history.
           </span>
         }
         stats={
@@ -510,6 +669,7 @@ export default function AmerGauntletPage() {
             <StatPill>5 Games per day</StatPill>
             <StatPill>Season leaderboard</StatPill>
             <StatPill>Firestore-tracked progress</StatPill>
+            <StatPill>Active beta build</StatPill>
           </>
         }
         actions={
@@ -574,12 +734,17 @@ export default function AmerGauntletPage() {
           <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
             <ActiveGamePanel
               activeEntry={activeEntry}
+              upcomingEntry={upcomingEntry}
               totalGames={totalGames}
               elapsedSeconds={displayElapsedSeconds}
               onComplete={handleCompleteGame}
+              onSkip={handleSkipGame}
               sessionEnded={sessionEntries.every((entry) => entry.completed)}
               wins={wins}
               losses={losses}
+              hasStarted={hasStarted}
+              onStart={handleStartGauntlet}
+              countdownSeconds={countdownSeconds}
             />
 
             <div className="space-y-4">
@@ -708,24 +873,6 @@ export default function AmerGauntletPage() {
         </div>
       </PageSection>
 
-      <PageSection
-        title="Mini game library"
-        description="Drop-in ready modules. Add a new game by extending the library — the daily picker updates automatically."
-      >
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {MINI_GAME_LIBRARY.map((game) => (
-            <LibraryGameCard key={game.id} game={game} />
-          ))}
-          <Card className="flex flex-col gap-3 border border-dashed border-brand/40 bg-transparent p-6 text-brand-strong dark:border-brand/60 dark:text-brand-foreground">
-            <span className="text-2xl">➕</span>
-            <h3 className="text-lg font-semibold">Add your next mini game</h3>
-            <p className="text-sm text-brand-muted dark:text-white/70">
-              Append a new definition to <code>MINI_GAME_LIBRARY</code>, provide an <code>id</code>, and it becomes eligible for
-              the daily pool and history logging immediately.
-            </p>
-          </Card>
-        </div>
-      </PageSection>
     </div>
   );
 }
@@ -813,25 +960,70 @@ function SessionHeader({
 
 function ActiveGamePanel({
   activeEntry,
+  upcomingEntry,
   totalGames,
   elapsedSeconds,
   onComplete,
+  onSkip,
   sessionEnded,
   wins,
   losses,
+  hasStarted,
+  onStart,
+  countdownSeconds,
 }: {
   activeEntry: SessionEntry | null;
+  upcomingEntry: SessionEntry | null;
   totalGames: number;
   elapsedSeconds: number;
   onComplete: (result: "win" | "loss") => void;
+  onSkip: () => void;
   sessionEnded: boolean;
   wins: number;
   losses: number;
+  hasStarted: boolean;
+  onStart: () => void;
+  countdownSeconds: number | null;
 }) {
   if (totalGames === 0) {
     return (
       <Card className="flex h-full flex-col items-center justify-center gap-4 border border-border-light/70 bg-surface/90 p-10 text-center text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
         <p>Today&apos;s gauntlet lineup is loading. Check back shortly for the five featured games.</p>
+      </Card>
+    );
+  }
+
+  if (!hasStarted) {
+    const nextGame = upcomingEntry?.game;
+    return (
+      <Card className="flex h-full flex-col items-center justify-center gap-5 border border-brand/30 bg-brand/5 p-8 text-center text-brand-strong shadow-brand-sm dark:border-brand/60 dark:bg-brand/15 dark:text-brand-foreground">
+        <div className="text-5xl">🚦</div>
+        <div className="space-y-2">
+          <h3 className="text-xl font-semibold uppercase tracking-[0.28em]">Ready to start?</h3>
+          {nextGame ? (
+            <p className="text-sm uppercase tracking-[0.22em] text-brand-muted dark:text-brand-foreground/80">
+              First up: {nextGame.name}
+            </p>
+          ) : null}
+        </div>
+        {countdownSeconds != null ? (
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-4xl font-semibold tracking-[0.3em]">
+              {countdownSeconds === 0 ? "GO!" : countdownSeconds}
+            </span>
+            <p className="text-xs uppercase tracking-[0.24em] text-brand-muted dark:text-brand-foreground/70">
+              Starting gauntlet
+            </p>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={onStart}
+            className={buttonStyles({ size: "lg" })}
+          >
+            Start gauntlet
+          </button>
+        )}
       </Card>
     );
   }
@@ -855,6 +1047,7 @@ function ActiveGamePanel({
   }
 
   const { game, order } = activeEntry;
+  const GameComponent = game.component;
 
   return (
     <Card className="flex h-full flex-col gap-5 border border-border-light/70 bg-surface/95 p-6 shadow-brand-md dark:border-border-dark/60 dark:bg-surface-muted">
@@ -868,7 +1061,6 @@ function ActiveGamePanel({
               Game {order} of {totalGames}
             </p>
             <h3 className="text-2xl font-semibold text-brand-strong dark:text-white">{game.name}</h3>
-            <p className="mt-1 text-sm text-brand-muted dark:text-white/70">{game.summary}</p>
           </div>
         </div>
         <div className="rounded-brand-md border border-border-light/70 bg-surface px-4 py-2 text-right text-xs uppercase tracking-[0.2em] text-brand-muted dark:border-border-dark/60 dark:bg-surface-muted/80 dark:text-white/60">
@@ -877,35 +1069,37 @@ function ActiveGamePanel({
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <InfoPill label="Focus" value={game.focus.join(" • ")} />
-        <InfoPill label="Est. time" value={game.estTime} />
-        <InfoPill label="Scoring" value={game.scoring} compact />
-      </div>
-
-      <div className="space-y-3 rounded-brand-md border border-dashed border-border-light/70 bg-surface px-4 py-4 text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-muted dark:text-white/60">How to play</p>
-        <ol className="list-decimal space-y-2 pl-5 text-[13px] leading-relaxed">
-          {game.instructions.map((step, index) => (
-            <li key={index}>{step}</li>
-          ))}
-        </ol>
+      <div className="space-y-4">
+        <div className="rounded-brand-md border border-border-light/70 bg-surface px-4 py-4 shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted">
+          {GameComponent ? (
+            <Suspense
+              fallback={
+                <div className="grid h-48 place-items-center text-sm font-medium uppercase tracking-[0.2em] text-brand-muted dark:text-white/60">
+                  Loading {game.name}...
+                </div>
+              }
+            >
+              <div className="space-y-4">
+                <GameComponent onComplete={onComplete} />
+              </div>
+            </Suspense>
+          ) : (
+            <div className="grid h-40 place-items-center text-center text-sm text-brand-muted dark:text-white/60">
+              <p className="max-w-sm text-balance">
+                Interactive mode is in development. Use the cues below to simulate the challenge and keep the gauntlet moving.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mt-auto flex flex-wrap gap-3">
         <button
           type="button"
-          onClick={() => onComplete("win")}
-          className={buttonStyles({ size: "lg", className: "flex-1 min-w-[140px]" })}
+          onClick={onSkip}
+          className={buttonStyles({ variant: "ghost", size: "lg", className: "flex-1 min-w-[140px]" })}
         >
-          Mark win &amp; advance
-        </button>
-        <button
-          type="button"
-          onClick={() => onComplete("loss")}
-          className={buttonStyles({ variant: "secondary", size: "lg", className: "flex-1 min-w-[140px]" })}
-        >
-          Mark loss &amp; advance
+          Skip (+30s)
         </button>
       </div>
     </Card>
@@ -969,7 +1163,6 @@ function SessionProgressRow({ entry }: { entry: SessionEntry }) {
       <div>
         <p className="text-[11px] uppercase tracking-[0.24em]">Game {order}</p>
         <p className="text-sm font-semibold text-brand-strong dark:text-white">{game.name}</p>
-        <p className="text-xs text-brand-muted dark:text-white/60">{game.summary}</p>
       </div>
       <StatusIndicator status={status} result={localResult} completed={completed} />
     </div>
@@ -988,11 +1181,25 @@ function StatusIndicator({
   if (status === "completed") {
     return (
       <div className="flex flex-col items-end gap-1 text-right">
-        <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-200/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-900 dark:border-emerald-500/80 dark:bg-emerald-400/25 dark:text-emerald-200">
+        <span
+          className={cn(
+            "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em]",
+            result === "loss"
+              ? "border-rose-300 bg-rose-200/60 text-rose-900 dark:border-rose-500/80 dark:bg-rose-400/25 dark:text-rose-200"
+              : "border-emerald-300 bg-emerald-200/60 text-emerald-900 dark:border-emerald-500/80 dark:bg-emerald-400/25 dark:text-emerald-200"
+          )}
+        >
           ✅ Cleared
         </span>
         {result ? (
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-500 dark:text-emerald-200">
+          <span
+            className={cn(
+              "text-xs font-semibold uppercase tracking-[0.2em]",
+              result === "loss"
+                ? "text-rose-500 dark:text-rose-200"
+                : "text-emerald-500 dark:text-emerald-200"
+            )}
+          >
             {result === "win" ? "Win" : "Loss"}
           </span>
         ) : completed ? (
@@ -1043,23 +1250,6 @@ function SummaryStat({
   );
 }
 
-function InfoPill({
-  label,
-  value,
-  compact,
-}: {
-  label: string;
-  value: string;
-  compact?: boolean;
-}) {
-  return (
-    <div className="rounded-brand-md border border-border-light/60 bg-surface px-3 py-3 text-xs uppercase tracking-[0.22em] text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/60">
-      <p>{label}</p>
-      <p className={cn("mt-2 text-[13px] normal-case tracking-normal text-brand-strong dark:text-white", compact && "line-clamp-3 text-xs")}>{value}</p>
-    </div>
-  );
-}
-
 function StatGridItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between rounded-brand-md border border-border-light/60 bg-surface/80 px-3 py-2 text-brand-strong shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white">
@@ -1098,24 +1288,8 @@ function HistoryRow({ entry }: { entry: HistoryEntry }) {
   );
 }
 
-function LibraryGameCard({ game }: { game: MiniGameDefinition }) {
-  return (
-    <Card className="flex h-full flex-col gap-3 border border-border-light/70 bg-surface/90 p-6 shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-surface-muted">
-      <div className="flex items-center gap-3">
-        <span className="grid h-12 w-12 place-items-center rounded-[1.5rem] bg-brand/10 text-2xl shadow-brand-sm dark:bg-brand/20">
-          {game.icon}
-        </span>
-        <div>
-          <h3 className="text-lg font-semibold text-brand-strong dark:text-white">{game.name}</h3>
-          <p className="text-xs uppercase tracking-[0.22em] text-brand-muted dark:text-white/60">{game.focus.join(" • ")}</p>
-        </div>
-      </div>
-      <p className="text-sm text-brand-muted dark:text-white/70">{game.summary}</p>
-      <div className="mt-auto rounded-brand-md border border-dashed border-brand/30 bg-brand/5 p-3 text-xs text-brand-strong/80 dark:border-brand/50 dark:bg-brand/15 dark:text-brand-foreground/90">
-        {game.scoring}
-      </div>
-    </Card>
-  );
+function normalizeGameId(id: string) {
+  return GAME_ID_ALIASES[id] ?? id;
 }
 
 function makePlaceholderGame(id: string): MiniGameDefinition {
@@ -1129,6 +1303,7 @@ function makePlaceholderGame(id: string): MiniGameDefinition {
     estTime: "—",
     scoring: "Define scoring rules to surface them to players.",
     instructions: ["Set instructions in the mini game library to complete this module."],
+    component: undefined,
   };
 }
 
