@@ -651,12 +651,17 @@ export default function AmerGauntletPage() {
     <div className="space-y-10">
       <PageHero
         icon="🛡️"
-        eyebrow={<span className="tracking-[0.28em]">New Daily Challenge</span>}
-        title="Amer Gauntlet"
+        eyebrow={
+          <span className="tracking-[0.28em]">
+            Beta Release • New Daily Challenge
+          </span>
+        }
+        title="Amer Gauntlet (Beta)"
         description={
           <span>
-            Five rapid-fire mini games curated each day to sharpen touch, tactics, and mentality. Sign in to track your streak,
-            chase the leaderboard, and review your matchday history.
+            Five rapid-fire mini games curated each day to sharpen touch, tactics, and mentality. This beta experience is still being
+            balanced — expect rapid tweaks as feedback rolls in. Sign in to track your streak, chase the leaderboard, and review your
+            matchday history.
           </span>
         }
         stats={
@@ -664,6 +669,7 @@ export default function AmerGauntletPage() {
             <StatPill>5 Games per day</StatPill>
             <StatPill>Season leaderboard</StatPill>
             <StatPill>Firestore-tracked progress</StatPill>
+            <StatPill>Active beta build</StatPill>
           </>
         }
         actions={
