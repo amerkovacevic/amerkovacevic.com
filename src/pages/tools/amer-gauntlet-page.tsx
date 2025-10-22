@@ -298,6 +298,8 @@ export default function AmerGauntletPage() {
   const [sessionEndedAt, setSessionEndedAt] = useState<Date | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [penaltySeconds, setPenaltySeconds] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null);
 
   useEffect(() => {
     const ref = doc(db, "amerGauntletDaily", todayKey);
@@ -468,6 +470,8 @@ export default function AmerGauntletPage() {
     setSessionEndedAt(null);
     setElapsedSeconds(0);
     setPenaltySeconds(0);
+    setHasStarted(false);
+    setCountdownSeconds(null);
   }, [lineupKey]);
 
   const todaysCompleted = useMemo(() => {
@@ -530,7 +534,10 @@ export default function AmerGauntletPage() {
     });
   }, [dailyEntries, localResults]);
 
-  const activeEntry = sessionEntries.find((entry) => entry.status === "active") ?? null;
+  const activeEntry = hasStarted
+    ? sessionEntries.find((entry) => entry.status === "active") ?? null
+    : null;
+  const upcomingEntry = sessionEntries.find((entry) => !entry.completed) ?? null;
   const totalGames = sessionEntries.length;
   const completedCount = sessionEntries.filter((entry) => entry.completed).length;
   const progressPercent = totalGames ? Math.round((completedCount / totalGames) * 100) : 0;
@@ -540,7 +547,7 @@ export default function AmerGauntletPage() {
     if (!sessionEntries.length) {
       return;
     }
-    if (!sessionStartedAt && activeEntry) {
+    if (hasStarted && !sessionStartedAt && activeEntry) {
       setSessionStartedAt(new Date());
       return;
     }
@@ -552,7 +559,23 @@ export default function AmerGauntletPage() {
     ) {
       setSessionEndedAt(new Date());
     }
-  }, [sessionEntries, activeEntry, sessionStartedAt, sessionEndedAt]);
+  }, [sessionEntries, activeEntry, sessionStartedAt, sessionEndedAt, hasStarted]);
+
+  useEffect(() => {
+    if (countdownSeconds == null) {
+      return;
+    }
+    if (countdownSeconds === 0) {
+      setCountdownSeconds(null);
+      setHasStarted(true);
+      setSessionStartedAt(new Date());
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setCountdownSeconds((prev) => (prev != null ? prev - 1 : null));
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [countdownSeconds]);
 
   useEffect(() => {
     if (!sessionStartedAt || sessionEndedAt) {
@@ -609,6 +632,13 @@ export default function AmerGauntletPage() {
 
   const handleSkipGame = () => {
     handleCompleteGame("loss", { penaltySeconds: 30 });
+  };
+
+  const handleStartGauntlet = () => {
+    if (hasStarted || countdownSeconds != null || !sessionEntries.length) {
+      return;
+    }
+    setCountdownSeconds(3);
   };
 
   const handleSignIn = async () => {
@@ -698,6 +728,7 @@ export default function AmerGauntletPage() {
           <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
             <ActiveGamePanel
               activeEntry={activeEntry}
+              upcomingEntry={upcomingEntry}
               totalGames={totalGames}
               elapsedSeconds={displayElapsedSeconds}
               onComplete={handleCompleteGame}
@@ -705,6 +736,9 @@ export default function AmerGauntletPage() {
               sessionEnded={sessionEntries.every((entry) => entry.completed)}
               wins={wins}
               losses={losses}
+              hasStarted={hasStarted}
+              onStart={handleStartGauntlet}
+              countdownSeconds={countdownSeconds}
             />
 
             <div className="space-y-4">
@@ -833,24 +867,6 @@ export default function AmerGauntletPage() {
         </div>
       </PageSection>
 
-      <PageSection
-        title="Mini game library"
-        description="Drop-in ready modules. Add a new game by extending the library — the daily picker updates automatically."
-      >
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {MINI_GAME_LIBRARY.map((game) => (
-            <LibraryGameCard key={game.id} game={game} />
-          ))}
-          <Card className="flex flex-col gap-3 border border-dashed border-brand/40 bg-transparent p-6 text-brand-strong dark:border-brand/60 dark:text-brand-foreground">
-            <span className="text-2xl">➕</span>
-            <h3 className="text-lg font-semibold">Add your next mini game</h3>
-            <p className="text-sm text-brand-muted dark:text-white/70">
-              Append a new definition to <code>MINI_GAME_LIBRARY</code>, provide an <code>id</code>, and it becomes eligible for
-              the daily pool and history logging immediately.
-            </p>
-          </Card>
-        </div>
-      </PageSection>
     </div>
   );
 }
@@ -938,6 +954,7 @@ function SessionHeader({
 
 function ActiveGamePanel({
   activeEntry,
+  upcomingEntry,
   totalGames,
   elapsedSeconds,
   onComplete,
@@ -945,8 +962,12 @@ function ActiveGamePanel({
   sessionEnded,
   wins,
   losses,
+  hasStarted,
+  onStart,
+  countdownSeconds,
 }: {
   activeEntry: SessionEntry | null;
+  upcomingEntry: SessionEntry | null;
   totalGames: number;
   elapsedSeconds: number;
   onComplete: (result: "win" | "loss") => void;
@@ -954,11 +975,49 @@ function ActiveGamePanel({
   sessionEnded: boolean;
   wins: number;
   losses: number;
+  hasStarted: boolean;
+  onStart: () => void;
+  countdownSeconds: number | null;
 }) {
   if (totalGames === 0) {
     return (
       <Card className="flex h-full flex-col items-center justify-center gap-4 border border-border-light/70 bg-surface/90 p-10 text-center text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
         <p>Today&apos;s gauntlet lineup is loading. Check back shortly for the five featured games.</p>
+      </Card>
+    );
+  }
+
+  if (!hasStarted) {
+    const nextGame = upcomingEntry?.game;
+    return (
+      <Card className="flex h-full flex-col items-center justify-center gap-5 border border-brand/30 bg-brand/5 p-8 text-center text-brand-strong shadow-brand-sm dark:border-brand/60 dark:bg-brand/15 dark:text-brand-foreground">
+        <div className="text-5xl">🚦</div>
+        <div className="space-y-2">
+          <h3 className="text-xl font-semibold uppercase tracking-[0.28em]">Ready to start?</h3>
+          {nextGame ? (
+            <p className="text-sm uppercase tracking-[0.22em] text-brand-muted dark:text-brand-foreground/80">
+              First up: {nextGame.name}
+            </p>
+          ) : null}
+        </div>
+        {countdownSeconds != null ? (
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-4xl font-semibold tracking-[0.3em]">
+              {countdownSeconds === 0 ? "GO!" : countdownSeconds}
+            </span>
+            <p className="text-xs uppercase tracking-[0.24em] text-brand-muted dark:text-brand-foreground/70">
+              Starting gauntlet
+            </p>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={onStart}
+            className={buttonStyles({ size: "lg" })}
+          >
+            Start gauntlet
+          </button>
+        )}
       </Card>
     );
   }
@@ -1219,31 +1278,6 @@ function HistoryRow({ entry }: { entry: HistoryEntry }) {
         ) : null}
       </div>
       <p>{gameLabels}</p>
-    </Card>
-  );
-}
-
-function LibraryGameCard({ game }: { game: MiniGameDefinition }) {
-  return (
-    <Card className="flex h-full flex-col gap-3 border border-border-light/70 bg-surface/90 p-6 shadow-brand-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-brand dark:border-border-dark/60 dark:bg-surface-muted">
-      <div className="flex items-center gap-3">
-        <span className="grid h-12 w-12 place-items-center rounded-[1.5rem] bg-brand/10 text-2xl shadow-brand-sm dark:bg-brand/20">
-          {game.icon}
-        </span>
-        <div>
-          <h3 className="text-lg font-semibold text-brand-strong dark:text-white">{game.name}</h3>
-          <p className="text-xs uppercase tracking-[0.22em] text-brand-muted dark:text-white/60">{game.focus.join(" • ")}</p>
-        </div>
-      </div>
-      <p className="text-sm text-brand-muted dark:text-white/70">{game.summary}</p>
-      {game.component ? (
-        <span className="inline-flex w-fit items-center justify-center rounded-full border border-emerald-300/70 bg-emerald-100/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-700 dark:border-emerald-500/60 dark:bg-emerald-500/15 dark:text-emerald-200">
-          Play in browser
-        </span>
-      ) : null}
-      <div className="mt-auto rounded-brand-md border border-dashed border-brand/30 bg-brand/5 p-3 text-xs text-brand-strong/80 dark:border-brand/50 dark:bg-brand/15 dark:text-brand-foreground/90">
-        {game.scoring}
-      </div>
     </Card>
   );
 }
