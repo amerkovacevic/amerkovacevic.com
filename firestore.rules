@@ -86,5 +86,25 @@ service cloud.firestore {
       }
     }
 
+    // -------------------------
+    // Amer Gauntlet
+    // -------------------------
+    match /amerGauntletDaily/{dailyId} {
+      allow read: if true;
+    }
+
+    match /amerGauntletHistory/{entryId} {
+      allow read: if true;
+    }
+
+    match /amerGauntletLeaderboards/{uid} {
+      allow read: if true;
+      allow write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    match /amerGauntletProfiles/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
   }
 }
