@@ -631,14 +631,14 @@ export default function SecretSanta() {
 
             <div className="space-y-6">
               {user ? (
-                <PageSection title="My preferences" description="Update what you hope to receive and any no-goes." contentClassName="space-y-3">
+                <PageSection title="My preferences" description="Update what you hope to receive and any no-go's." contentClassName="space-y-3">
                   <form onSubmit={saveMyPrefs} className="grid gap-3">
                     <div className="text-xs text-brand-muted">Enter 1–3 items, comma-separated.</div>
                     <input
                       name="jerseySize"
                       defaultValue={me?.jerseySize ?? ""}
                       placeholder="Jersey size"
-                      className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 uppercase placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
+                      className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
                     />
                     <textarea
                       name="shippingAddress"
