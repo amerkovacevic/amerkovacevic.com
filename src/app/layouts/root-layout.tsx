@@ -7,6 +7,24 @@ import { ThemeToggle } from "../../shared/components/theme-toggle";
 import { auth, googleProvider } from "../../shared/lib/firebase";
 import { cn } from "../../shared/lib/classnames";
 
+const BRAND_NAME = "AK";
+
+const TITLE_MAP: { pattern: RegExp; title: string }[] = [
+  { pattern: /^\/$/, title: "Home" },
+  { pattern: /^\/tools$/, title: "Apps" },
+  { pattern: /^\/tools\/amer-gauntlet$/, title: "Amer Gauntlet" },
+  { pattern: /^\/tools\/pickup$/, title: "Pickup" },
+  { pattern: /^\/tools\/pickup\/[^/]+$/, title: "Pickup Game" },
+  { pattern: /^\/tools\/new$/, title: "Create Pickup Game" },
+  { pattern: /^\/tools\/santa$/, title: "Secret Santa" },
+  { pattern: /^\/tools\/fm$/, title: "FM Team Draw" },
+  { pattern: /^\/tools\/bracket$/, title: "Bracket Generator" },
+  { pattern: /^\/professional$/, title: "Professional" },
+  { pattern: /^\/professional\/portfolio$/, title: "Portfolio" },
+  { pattern: /^\/professional\/start-a-project$/, title: "Start a Project" },
+  { pattern: /^\/professional\/links$/, title: "Contact" },
+];
+
 // Lightweight Google "G" icon for the auth button to avoid extra assets.
 function GoogleG({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -31,7 +49,7 @@ export default function RootLayout() {
   const location = useLocation();
 
   const navItems = [
-    { id: "home", label: "Amer", to: "/" },
+    { id: "home", label: BRAND_NAME, to: "/" },
     { id: "apps", label: "Apps", to: "/tools" },
     { id: "professional", label: "Professional", to: "/professional" },
   ] as const;
@@ -41,6 +59,18 @@ export default function RootLayout() {
   useEffect(() => {
     setMobileNavOpen(false);
   }, [location.pathname]);
+
+  const normalizedPath =
+    location.pathname.replace(/\/+$/, "") || "/";
+
+  useEffect(() => {
+    const entry = TITLE_MAP.find((item) => item.pattern.test(normalizedPath));
+    if (entry) {
+      document.title = `${entry.title} | ${BRAND_NAME}`;
+    } else {
+      document.title = BRAND_NAME;
+    }
+  }, [normalizedPath]);
 
   const handleSignIn = async () => {
     await signInWithPopup(auth, googleProvider);
