@@ -6,6 +6,94 @@ service cloud.firestore {
     // Helper
     function isSignedIn() { return request.auth != null; }
 
+    function hasOnlyFields(data, fields) {
+      return data.keys().hasOnly(fields);
+    }
+
+    function hasAllFields(data, fields) {
+      return data.keys().hasAll(fields);
+    }
+
+    function isStringWithMax(value, maxLength) {
+      return value is string && value.size() > 0 && value.size() <= maxLength;
+    }
+
+    function isOptionalDateKey(value) {
+      return value == null || (value is string && value.matches('^\\d{4}-\\d{2}-\\d{2}$'));
+    }
+
+    function isNonNegativeNumber(value, maxValue) {
+      return value is number && value >= 0 && value <= maxValue;
+    }
+
+    function isOptionalTimestamp(value) {
+      return value == null || value is timestamp || value == request.time;
+    }
+
+    function listOfStrings(values, maxLength, maxItems) {
+      return values is list
+        && values.size() <= maxItems
+        && values.where(item, !(item is string && item.size() > 0 && item.size() <= maxLength)).size() == 0;
+    }
+
+    function mapOfNumberValues(values, maxItems, maxValue) {
+      return values is map
+        && values.keys().size() <= maxItems
+        && values.values().where(value, !(value is number && value >= 0 && value <= maxValue)).size() == 0;
+    }
+
+    function mapOfResultValues(values, maxItems) {
+      return values is map
+        && values.keys().size() <= maxItems
+        && values.values().where(value, !(value == 'win' || value == 'loss')).size() == 0;
+    }
+
+    function isValidGauntletLeaderboard(data) {
+      return hasOnlyFields(data, ['displayName', 'seasonScore', 'bestRun', 'currentStreak', 'lastPlayedOn'])
+        && hasAllFields(data, ['displayName', 'seasonScore', 'bestRun'])
+        && isStringWithMax(data.displayName, 80)
+        && isNonNegativeNumber(data.seasonScore, 100000)
+        && isNonNegativeNumber(data.bestRun, 1000)
+        && (!data.keys().hasAny(['currentStreak']) || isNonNegativeNumber(data.currentStreak, 1000))
+        && (!data.keys().hasAny(['lastPlayedOn']) || isOptionalTimestamp(data.lastPlayedOn));
+    }
+
+    function isValidGauntletProfile(data) {
+      return hasOnlyFields(data, [
+          'displayName',
+          'activeDailyKey',
+          'todaysCompleted',
+          'todaysScore',
+          'scoreByGame',
+          'resultsByGame',
+          'currentStreak',
+          'bestStreak',
+          'totalGauntlets',
+          'lastPlayedOn'
+        ])
+        && hasAllFields(data, [
+          'displayName',
+          'activeDailyKey',
+          'todaysCompleted',
+          'todaysScore',
+          'scoreByGame',
+          'resultsByGame',
+          'currentStreak',
+          'bestStreak',
+          'totalGauntlets'
+        ])
+        && isStringWithMax(data.displayName, 80)
+        && isOptionalDateKey(data.activeDailyKey)
+        && listOfStrings(data.todaysCompleted, 60, 15)
+        && isNonNegativeNumber(data.todaysScore, 5000)
+        && mapOfNumberValues(data.scoreByGame, 20, 1000)
+        && mapOfResultValues(data.resultsByGame, 20)
+        && isNonNegativeNumber(data.currentStreak, 365)
+        && isNonNegativeNumber(data.bestStreak, 365)
+        && isNonNegativeNumber(data.totalGauntlets, 10000)
+        && (!data.keys().hasAny(['lastPlayedOn']) || isOptionalTimestamp(data.lastPlayedOn));
+    }
+
     // -------------------------
     // Users
     // -------------------------
@@ -99,11 +187,15 @@ service cloud.firestore {
 
     match /amerGauntletLeaderboards/{uid} {
       allow read: if true;
-      allow write: if isSignedIn() && request.auth.uid == uid;
+      allow write: if isSignedIn()
+        && request.auth.uid == uid
+        && isValidGauntletLeaderboard(request.resource.data);
     }
 
     match /amerGauntletProfiles/{uid} {
-      allow read, write: if isSignedIn() && request.auth.uid == uid;
+      allow read, write: if isSignedIn()
+        && request.auth.uid == uid
+        && isValidGauntletProfile(request.resource.data);
     }
 
   }

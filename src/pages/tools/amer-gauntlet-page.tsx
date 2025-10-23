@@ -726,12 +726,15 @@ export default function AmerGauntletPage() {
     penaltySeconds,
   ]);
 
-  const handleCompleteGame = (
+  const applyGameResult = (
+    entry: SessionEntry | null,
     result: "win" | "loss",
     options?: { penaltySeconds?: number }
   ) => {
-    if (!activeEntry) return;
-    const gameId = activeEntry.game.id;
+    if (!entry) {
+      return false;
+    }
+    const gameId = entry.game.id;
     let applied = false;
     setLocalResults((prev) => {
       if (prev[gameId]) {
@@ -744,7 +747,7 @@ export default function AmerGauntletPage() {
       };
     });
     if (!applied) {
-      return;
+      return false;
     }
     if (!sessionStartedAt) {
       setSessionStartedAt(new Date());
@@ -753,13 +756,26 @@ export default function AmerGauntletPage() {
     if (penalty) {
       setPenaltySeconds((prev) => prev + penalty);
     }
+    setLastSyncedSignature(null);
     if (remainingGames === 1) {
       setSessionEndedAt(new Date());
     }
+    return true;
+  };
+
+  const handleCompleteGame = (
+    result: "win" | "loss",
+    options?: { penaltySeconds?: number }
+  ) => {
+    applyGameResult(activeEntry, result, options);
   };
 
   const handleSkipGame = () => {
-    handleCompleteGame("loss", { penaltySeconds: 30 });
+    const applied = applyGameResult(activeEntry, "loss", { penaltySeconds: 30 });
+    if (!applied) {
+      setPenaltySeconds((prev) => prev + 30);
+      setLastSyncedSignature(null);
+    }
   };
 
   const handleStartGauntlet = () => {
@@ -796,7 +812,7 @@ export default function AmerGauntletPage() {
           <>
             <StatPill>5 Games per day</StatPill>
             <StatPill>Season leaderboard</StatPill>
-            <StatPill>Firestore-tracked progress</StatPill>
+            <StatPill>Profile-synced progress</StatPill>
             <StatPill>Active beta build</StatPill>
           </>
         }
@@ -821,7 +837,7 @@ export default function AmerGauntletPage() {
                 Sign in with Google
               </button>
               <p className="max-w-xs text-xs text-brand-muted dark:text-white/70">
-                Authentication is powered by Firebase so your streaks, scores, and history follow you on every device.
+                Sign in with Google so your streaks, scores, and history follow you on every device.
               </p>
             </div>
           )
@@ -859,36 +875,24 @@ export default function AmerGauntletPage() {
             note={dailyConfig?.note}
           />
 
-          <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
-            <ActiveGamePanel
-              activeEntry={activeEntry}
-              upcomingEntry={upcomingEntry}
-              totalGames={totalGames}
-              elapsedSeconds={displayElapsedSeconds}
-              onComplete={handleCompleteGame}
-              onSkip={handleSkipGame}
-              sessionEnded={sessionFullyCompleted}
-              wins={wins}
-              losses={losses}
-              hasStarted={hasStarted}
-              onStart={handleStartGauntlet}
-              countdownSeconds={countdownSeconds}
-              syncingResults={syncingResults}
-              hasPendingResults={hasPendingResults}
-            />
-
-            <div className="space-y-4">
-              <SessionSummaryCard
-                completedCount={completedCount}
-                totalGames={totalGames}
-                wins={wins}
-                losses={losses}
-                elapsedSeconds={displayElapsedSeconds}
-              />
-
-              <SessionProgressList entries={sessionEntries} />
-            </div>
-          </div>
+          <ActiveGamePanel
+            activeEntry={activeEntry}
+            upcomingEntry={upcomingEntry}
+            entries={sessionEntries}
+            totalGames={totalGames}
+            completedCount={completedCount}
+            elapsedSeconds={displayElapsedSeconds}
+            onComplete={handleCompleteGame}
+            onSkip={handleSkipGame}
+            sessionEnded={sessionFullyCompleted}
+            wins={wins}
+            losses={losses}
+            hasStarted={hasStarted}
+            onStart={handleStartGauntlet}
+            countdownSeconds={countdownSeconds}
+            syncingResults={syncingResults}
+            hasPendingResults={hasPendingResults}
+          />
         </div>
       </PageSection>
 
@@ -978,7 +982,7 @@ export default function AmerGauntletPage() {
               <h3 className="text-sm font-semibold uppercase tracking-[0.26em]">How scoring works</h3>
               <ul className="mt-3 space-y-2 text-[13px] leading-relaxed">
                 <li>• 5 games × 100-160 pts each. Finishers earn a completion multiplier.</li>
-                <li>• Daily total syncs to Firestore profiles and the season leaderboard instantly.</li>
+                <li>• Daily total syncs to your profile and the season leaderboard instantly.</li>
                 <li>• Miss a day and your streak resets — keep it alive to unlock bonus XP.</li>
               </ul>
             </Card>
@@ -997,7 +1001,7 @@ export default function AmerGauntletPage() {
             ))
           ) : (
             <p className="text-sm text-brand-muted dark:text-white/70">
-              History entries will appear here once daily results are posted to Firestore.
+              History entries will appear here once daily results are posted.
             </p>
           )}
         </div>
@@ -1069,7 +1073,7 @@ function SessionHeader({
           </span>
           {todaysScore != null ? (
             <span className="rounded-full border border-brand/30 bg-brand/5 px-3 py-1 uppercase tracking-[0.22em] text-brand-strong/80 dark:border-brand/50 dark:bg-brand/15 dark:text-brand-foreground/90">
-              Firestore score: {todaysScore} pts
+              Today&apos;s score: {todaysScore} pts
             </span>
           ) : (
             <span className="text-[11px] uppercase tracking-[0.2em] text-brand-muted dark:text-white/60">
@@ -1092,7 +1096,9 @@ function SessionHeader({
 function ActiveGamePanel({
   activeEntry,
   upcomingEntry,
+  entries,
   totalGames,
+  completedCount,
   elapsedSeconds,
   onComplete,
   onSkip,
@@ -1107,7 +1113,9 @@ function ActiveGamePanel({
 }: {
   activeEntry: SessionEntry | null;
   upcomingEntry: SessionEntry | null;
+  entries: SessionEntry[];
   totalGames: number;
+  completedCount: number;
   elapsedSeconds: number;
   onComplete: (result: "win" | "loss") => void;
   onSkip: () => void;
@@ -1165,27 +1173,46 @@ function ActiveGamePanel({
 
   if (!activeEntry) {
     return (
-      <Card className="flex h-full flex-col justify-center gap-6 border border-emerald-200 bg-emerald-100/60 p-8 text-center text-emerald-700 shadow-brand-sm dark:border-emerald-500/80 dark:bg-emerald-400/15 dark:text-emerald-100">
-        <div className="text-4xl">🎉</div>
-        <div className="space-y-2">
-          <h3 className="text-xl font-semibold uppercase tracking-[0.28em]">Run complete</h3>
-          <p className="text-sm uppercase tracking-[0.2em]">Time: {formatDurationLabel(elapsedSeconds)}</p>
-          <p className="text-sm uppercase tracking-[0.2em]">Record: {wins}-{losses}</p>
+      <Card className="flex h-full flex-col gap-6 border border-emerald-200 bg-emerald-100/60 p-8 text-emerald-700 shadow-brand-sm dark:border-emerald-500/80 dark:bg-emerald-400/15 dark:text-emerald-100">
+        <div className="text-center">
+          <div className="text-4xl">🎉</div>
+          <div className="mt-3 space-y-2">
+            <h3 className="text-xl font-semibold uppercase tracking-[0.28em]">Run complete</h3>
+            <p className="text-sm uppercase tracking-[0.2em]">Time: {formatDurationLabel(elapsedSeconds)}</p>
+            <p className="text-sm uppercase tracking-[0.2em]">Record: {wins}-{losses}</p>
+          </div>
         </div>
+
         {sessionEnded ? (
           <p
             className={cn(
-              "text-xs font-medium uppercase tracking-[0.2em]",
+              "text-center text-xs font-medium uppercase tracking-[0.2em]",
               hasPendingResults || syncingResults
                 ? "text-amber-700 dark:text-amber-200"
                 : "text-emerald-800 dark:text-emerald-200/80"
             )}
           >
             {hasPendingResults || syncingResults
-              ? "Syncing results to Firestore..."
-              : "Results synced to Firestore."}
+              ? "Syncing results to your profile..."
+              : "Results saved to your profile."}
           </p>
         ) : null}
+
+        <div className="grid gap-3 rounded-brand-lg border border-emerald-300/60 bg-white/10 p-4 text-sm shadow-brand-sm dark:border-emerald-400/40 dark:bg-emerald-400/5">
+          <RunSummaryStat label="Games cleared" value={`${completedCount}/${totalGames || entries.length || 5}`} />
+          <RunSummaryStat label="Wins" value={`${wins}`} tone="emerald" />
+          <RunSummaryStat label="Losses" value={`${losses}`} tone="rose" />
+          <RunSummaryStat label="Elapsed time" value={formatDurationLabel(elapsedSeconds)} />
+        </div>
+
+        <div className="rounded-brand-lg border border-emerald-300/60 bg-white/10 p-4 shadow-brand-sm dark:border-emerald-400/40 dark:bg-emerald-400/10">
+          <h4 className="text-sm font-semibold uppercase tracking-[0.26em]">Gauntlet breakdown</h4>
+          <div className="mt-3 space-y-2">
+            {entries.map((entry) => (
+              <RunBreakdownRow key={entry.game.id} entry={entry} />
+            ))}
+          </div>
+        </div>
       </Card>
     );
   }
@@ -1237,6 +1264,21 @@ function ActiveGamePanel({
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.22em] text-brand-muted dark:text-white/60">
+        <span className="rounded-full border border-border-light/60 px-3 py-1 dark:border-border-dark/60">
+          Cleared {completedCount}/{totalGames || entries.length || 5}
+        </span>
+        <span className="rounded-full border border-emerald-200 bg-emerald-100/60 px-3 py-1 font-semibold text-emerald-700 dark:border-emerald-400/70 dark:bg-emerald-400/15 dark:text-emerald-200">
+          Wins {wins}
+        </span>
+        <span className="rounded-full border border-rose-200 bg-rose-100/60 px-3 py-1 font-semibold text-rose-600 dark:border-rose-400/70 dark:bg-rose-400/15 dark:text-rose-200">
+          Losses {losses}
+        </span>
+        <span className="rounded-full border border-border-light/60 px-3 py-1 dark:border-border-dark/60">
+          Time {formatDurationLabel(elapsedSeconds)}
+        </span>
+      </div>
+
       <div className="mt-auto flex flex-wrap gap-3">
         <button
           type="button"
@@ -1250,155 +1292,70 @@ function ActiveGamePanel({
   );
 }
 
-function SessionSummaryCard({
-  completedCount,
-  totalGames,
-  wins,
-  losses,
-  elapsedSeconds,
+function RunSummaryStat({
+  label,
+  value,
+  tone,
 }: {
-  completedCount: number;
-  totalGames: number;
-  wins: number;
-  losses: number;
-  elapsedSeconds: number;
+  label: string;
+  value: string;
+  tone?: "emerald" | "rose";
 }) {
-  return (
-    <Card className="border border-border-light/70 bg-surface/90 p-5 text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
-      <h3 className="text-sm font-semibold uppercase tracking-[0.26em] text-brand-muted dark:text-white/60">
-        Run tracker
-      </h3>
-      <div className="mt-4 grid gap-3">
-        <SummaryStat label="Games cleared" value={`${completedCount}/${totalGames || 5}`} />
-        <SummaryStat label="Wins" value={`${wins}`} accent="emerald" />
-        <SummaryStat label="Losses" value={`${losses}`} accent="rose" />
-        <SummaryStat label="Elapsed time" value={formatDurationLabel(elapsedSeconds)} />
-      </div>
-    </Card>
-  );
-}
-
-function SessionProgressList({ entries }: { entries: SessionEntry[] }) {
-  return (
-    <Card className="border border-border-light/70 bg-surface/90 p-5 text-sm text-brand-muted shadow-brand-sm dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70">
-      <h3 className="text-sm font-semibold uppercase tracking-[0.26em] text-brand-muted dark:text-white/60">
-        Progression order
-      </h3>
-      <div className="mt-4 space-y-3">
-        {entries.map((entry) => (
-          <SessionProgressRow key={entry.game.id} entry={entry} />
-        ))}
-      </div>
-    </Card>
-  );
-}
-
-function SessionProgressRow({ entry }: { entry: SessionEntry }) {
-  const { game, order, status, result, completed, synced } = entry;
   return (
     <div
       className={cn(
-        "flex items-start justify-between gap-3 rounded-brand-md border px-4 py-3",
-        status === "active"
-          ? "border-brand/40 bg-brand/10 text-brand-strong dark:border-brand/60 dark:bg-brand/20 dark:text-brand-foreground"
-          : "border-border-light/60 bg-surface text-brand-muted dark:border-border-dark/60 dark:bg-surface-muted dark:text-white/70"
+        "flex items-center justify-between rounded-brand-md border px-3 py-2",
+        tone === "emerald"
+          ? "border-emerald-300/70 bg-emerald-200/30 text-emerald-900 dark:border-emerald-400/70 dark:bg-emerald-400/20 dark:text-emerald-100"
+          : tone === "rose"
+          ? "border-rose-300/70 bg-rose-200/30 text-rose-900 dark:border-rose-400/70 dark:bg-rose-400/20 dark:text-rose-100"
+          : "border-emerald-200/60 bg-white/10 text-emerald-900 dark:border-emerald-300/50 dark:bg-emerald-300/10 dark:text-emerald-50"
       )}
     >
-      <div>
-        <p className="text-[11px] uppercase tracking-[0.24em]">Game {order}</p>
-        <p className="text-sm font-semibold text-brand-strong dark:text-white">{game.name}</p>
-      </div>
-      <StatusIndicator status={status} result={result} completed={completed} synced={synced} />
+      <span className="text-[11px] font-semibold uppercase tracking-[0.24em]">{label}</span>
+      <span className="text-sm font-semibold">{value}</span>
     </div>
   );
 }
 
-function StatusIndicator({
-  status,
-  result,
-  completed,
-  synced,
-}: {
-  status: DailyGameStatus;
-  result: SessionGameResult;
-  completed: boolean;
-  synced: boolean;
-}) {
-  if (status === "completed") {
-    return (
-      <div className="flex flex-col items-end gap-1 text-right">
-        <span
-          className={cn(
-            "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em]",
-            result === "loss"
-              ? "border-rose-300 bg-rose-200/60 text-rose-900 dark:border-rose-500/80 dark:bg-rose-400/25 dark:text-rose-200"
-              : "border-emerald-300 bg-emerald-200/60 text-emerald-900 dark:border-emerald-500/80 dark:bg-emerald-400/25 dark:text-emerald-200"
-          )}
-        >
-          ✅ Cleared
-        </span>
-        {result ? (
-          <span
-            className={cn(
-              "text-xs font-semibold uppercase tracking-[0.2em]",
-              result === "loss"
-                ? "text-rose-500 dark:text-rose-200"
-                : "text-emerald-500 dark:text-emerald-200"
-            )}
-          >
-            {result === "win" ? "Win" : "Loss"}
-          </span>
-        ) : completed ? (
-          <span
-            className={cn(
-              "text-xs uppercase tracking-[0.2em]",
-              synced
-                ? "text-brand-muted dark:text-white/60"
-                : "text-amber-600 dark:text-amber-200"
-            )}
-          >
-            {synced ? "Synced" : "Syncing..."}
-          </span>
-        ) : null}
+function RunBreakdownRow({ entry }: { entry: SessionEntry }) {
+  const { game, order, result, synced, completed } = entry;
+  const resolvedResult = result ?? (completed && synced ? "win" : result);
+  const statusLabel =
+    resolvedResult === "win"
+      ? "Win"
+      : resolvedResult === "loss"
+      ? "Loss"
+      : completed
+      ? synced
+        ? "Saved"
+        : "Syncing"
+      : "Pending";
+  const tone =
+    resolvedResult === "win"
+      ? "emerald"
+      : resolvedResult === "loss"
+      ? "rose"
+      : undefined;
+
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-brand-md border border-emerald-200/60 bg-white/5 px-4 py-3 text-sm dark:border-emerald-400/50 dark:bg-emerald-400/10">
+      <div>
+        <p className="text-[11px] uppercase tracking-[0.24em] text-emerald-900/80 dark:text-emerald-100/80">Game {order}</p>
+        <p className="text-sm font-semibold text-emerald-950 dark:text-emerald-50">{game.name}</p>
       </div>
-    );
-  }
-
-  if (status === "active") {
-    return (
-      <span className="inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-strong dark:border-brand/60 dark:bg-brand/20 dark:text-brand-foreground">
-        ▶️ In play
+      <span
+        className={cn(
+          "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em]",
+          tone === "emerald"
+            ? "border-emerald-400 bg-emerald-300/30 text-emerald-900 dark:border-emerald-300/70 dark:bg-emerald-300/20 dark:text-emerald-50"
+            : tone === "rose"
+            ? "border-rose-400 bg-rose-300/30 text-rose-900 dark:border-rose-300/70 dark:bg-rose-300/20 dark:text-rose-50"
+            : "border-emerald-200/70 bg-white/10 text-emerald-900 dark:border-emerald-300/50 dark:bg-emerald-300/10 dark:text-emerald-50"
+        )}
+      >
+        {resolvedResult === "win" ? "✅" : resolvedResult === "loss" ? "⚠️" : "⏱"} {statusLabel}
       </span>
-    );
-  }
-
-  return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-border-light/70 bg-transparent px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-muted dark:border-border-dark/60 dark:text-white/60">
-      ⏳ Queued
-    </span>
-  );
-}
-
-function SummaryStat({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent?: "emerald" | "rose";
-}) {
-  const accentStyles =
-    accent === "emerald"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/70 dark:bg-emerald-400/10 dark:text-emerald-200"
-      : accent === "rose"
-      ? "border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-500/70 dark:bg-rose-400/10 dark:text-rose-200"
-      : "border-border-light/60 bg-surface text-brand-strong dark:border-border-dark/60 dark:bg-surface-muted dark:text-white";
-
-  return (
-    <div className={cn("flex items-center justify-between rounded-brand-md border px-3 py-2", accentStyles)}>
-      <span className="text-[11px] font-semibold uppercase tracking-[0.24em]">{label}</span>
-      <span className="text-sm font-semibold">{value}</span>
     </div>
   );
 }
@@ -1451,7 +1408,7 @@ function makePlaceholderGame(id: string): MiniGameDefinition {
     id,
     name: label,
     icon: "🎮",
-    summary: "Placeholder definition — configure this mini game in Firestore or the library array.",
+    summary: "Placeholder definition — configure this mini game in the library array.",
     focus: ["New"],
     estTime: "—",
     scoring: "Define scoring rules to surface them to players.",
@@ -1783,3 +1740,5 @@ function formatRelativeTime(timestamp?: Timestamp | null) {
   if (diffWeeks < 5) return `${diffWeeks}w ago`;
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(date);
 }
+
+export { calculateAmerGauntletTotals, computeGameScore };
