@@ -40,6 +40,8 @@ type Member = {
   uid: string;
   name: string;
   email: string;
+  jerseySize: string;
+  shippingAddress: string;
   wantPlayers: string[];
   wantTeams: string[];
   avoidPlayers: string[];
@@ -112,6 +114,8 @@ export default function SecretSanta() {
             uid: d.id,
             name: data?.name ?? "Unknown",
             email: data?.email ?? "",
+            jerseySize: data?.jerseySize ?? "",
+            shippingAddress: data?.shippingAddress ?? "",
             wantPlayers: (data?.wantPlayers ?? []) as string[],
             wantTeams: (data?.wantTeams ?? []) as string[],
             avoidPlayers: (data?.avoidPlayers ?? []) as string[],
@@ -198,6 +202,8 @@ export default function SecretSanta() {
       await setDoc(doc(db, "santaEvents", eventRef.id, "members", user.uid), {
         name: user.displayName ?? "Anonymous",
         email: user.email ?? "",
+        jerseySize: "",
+        shippingAddress: "",
         wantPlayers: [],
         wantTeams: [],
         avoidPlayers: [],
@@ -225,6 +231,8 @@ export default function SecretSanta() {
     const form = e.currentTarget as HTMLFormElement & {
       code: HTMLInputElement;
       displayName: HTMLInputElement;
+      jerseySize: HTMLInputElement;
+      shippingAddress: HTMLTextAreaElement;
       wantPlayers: HTMLInputElement;
       wantTeams: HTMLInputElement;
       avoidPlayers: HTMLInputElement;
@@ -240,6 +248,8 @@ export default function SecretSanta() {
     const wantTeams = normList(form.wantTeams?.value ?? "");
     const avoidPlayers = normList(form.avoidPlayers?.value ?? "");
     const avoidTeams = normList(form.avoidTeams?.value ?? "");
+    const jerseySize = form.jerseySize?.value.trim().toUpperCase() ?? "";
+    const shippingAddress = form.shippingAddress?.value.trim() ?? "";
 
     setLoading(true);
     setErr(null);
@@ -260,6 +270,8 @@ export default function SecretSanta() {
         {
           name: displayName,
           email: user.email ?? "",
+          jerseySize,
+          shippingAddress,
           wantPlayers,
           wantTeams,
           avoidPlayers,
@@ -284,6 +296,8 @@ export default function SecretSanta() {
     if (!activeEvent || !user) return;
 
     const form = e.currentTarget as HTMLFormElement & {
+      jerseySize: HTMLInputElement;
+      shippingAddress: HTMLTextAreaElement;
       wantPlayers: HTMLInputElement;
       wantTeams: HTMLInputElement;
       avoidPlayers: HTMLInputElement;
@@ -296,6 +310,8 @@ export default function SecretSanta() {
       await setDoc(
         doc(db, "santaEvents", activeEvent.id, "members", user.uid),
         {
+          jerseySize: form.jerseySize.value.trim().toUpperCase(),
+          shippingAddress: form.shippingAddress.value.trim(),
           wantPlayers: normList(form.wantPlayers.value),
           wantTeams: normList(form.wantTeams.value),
           avoidPlayers: normList(form.avoidPlayers.value),
@@ -323,6 +339,8 @@ export default function SecretSanta() {
           uid: d.id,
           name: data?.name ?? "Unknown",
           email: data?.email ?? "",
+          jerseySize: data?.jerseySize ?? "",
+          shippingAddress: data?.shippingAddress ?? "",
           wantPlayers: (data?.wantPlayers ?? []) as string[],
           wantTeams: (data?.wantTeams ?? []) as string[],
           avoidPlayers: (data?.avoidPlayers ?? []) as string[],
@@ -379,6 +397,8 @@ export default function SecretSanta() {
                 uid: recSnap.id,
                 name: d?.name ?? "Unknown",
                 email: d?.email ?? "",
+                jerseySize: d?.jerseySize ?? "",
+                shippingAddress: d?.shippingAddress ?? "",
                 wantPlayers: d?.wantPlayers ?? [],
                 wantTeams: d?.wantTeams ?? [],
                 avoidPlayers: d?.avoidPlayers ?? [],
@@ -518,6 +538,25 @@ export default function SecretSanta() {
                     disabled={!user || loading}
                   />
                 </label>
+                <label className="flex flex-col gap-2 text-sm">
+                  <span className="font-medium text-brand-muted dark:text-brand-subtle">Jersey size</span>
+                  <input
+                    name="jerseySize"
+                    placeholder="e.g., M, L, XL"
+                    className="rounded-brand border border-border-light bg-surface px-3 py-2 text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 uppercase placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
+                    disabled={!user || loading}
+                  />
+                </label>
+                <label className="flex flex-col gap-2 text-sm">
+                  <span className="font-medium text-brand-muted dark:text-brand-subtle">Shipping address</span>
+                  <textarea
+                    name="shippingAddress"
+                    placeholder="Street, city, state, ZIP"
+                    className="min-h-[96px] rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
+                    disabled={!user || loading}
+                  />
+                  <span className="text-xs text-brand-muted dark:text-brand-subtle">Only your Secret Santa will see this.</span>
+                </label>
                 <div className="text-xs text-brand-muted">Enter 1–3 items, comma-separated.</div>
                 <input name="wantPlayers" placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" disabled={!user || loading} />
                 <input name="wantTeams" placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" disabled={!user || loading} />
@@ -592,9 +631,21 @@ export default function SecretSanta() {
 
             <div className="space-y-6">
               {user ? (
-                <PageSection title="My preferences" description="Update what you hope to receive and any no-goes." contentClassName="space-y-3">
+                <PageSection title="My preferences" description="Update what you hope to receive and any no-go's." contentClassName="space-y-3">
                   <form onSubmit={saveMyPrefs} className="grid gap-3">
                     <div className="text-xs text-brand-muted">Enter 1–3 items, comma-separated.</div>
+                    <input
+                      name="jerseySize"
+                      defaultValue={me?.jerseySize ?? ""}
+                      placeholder="Jersey size"
+                      className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
+                    />
+                    <textarea
+                      name="shippingAddress"
+                      defaultValue={me?.shippingAddress ?? ""}
+                      placeholder="Shipping address"
+                      className="min-h-[96px] rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle"
+                    />
                     <input name="wantPlayers" defaultValue={(me?.wantPlayers ?? []).join(", ")} placeholder="Desired players" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" />
                     <input name="wantTeams" defaultValue={(me?.wantTeams ?? []).join(", ")} placeholder="Desired teams" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" />
                     <input name="avoidPlayers" defaultValue={(me?.avoidPlayers ?? []).join(", ")} placeholder="Players to avoid" className="rounded-brand border border-border-light bg-surface px-3 py-2 text-sm text-brand-strong shadow-brand-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-accent/30 placeholder:text-brand-muted dark:bg-surface-overlayDark dark:text-white dark:placeholder:text-brand-subtle" />
@@ -615,6 +666,16 @@ export default function SecretSanta() {
                     <div>
                       <div className="text-base font-semibold text-brand-strong dark:text-white">{myMatch.name}</div>
                       <div className="text-xs text-brand-muted dark:text-brand-subtle">{myMatch.email}</div>
+                    </div>
+                    <PreferenceList
+                      label="Jersey Size"
+                      items={myMatch.jerseySize ? [myMatch.jerseySize] : []}
+                    />
+                    <div className="space-y-1 text-sm text-brand-muted dark:text-brand-subtle">
+                      <span className="font-medium text-brand-strong dark:text-white">Shipping address:</span>
+                      <div className="whitespace-pre-wrap text-brand-strong dark:text-white">
+                        {myMatch.shippingAddress ? myMatch.shippingAddress : "-"}
+                      </div>
                     </div>
                     <PreferenceList label="Wants - Players" items={myMatch.wantPlayers} />
                     <PreferenceList label="Wants - Teams" items={myMatch.wantTeams} />
