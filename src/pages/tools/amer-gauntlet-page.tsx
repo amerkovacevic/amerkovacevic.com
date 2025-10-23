@@ -15,6 +15,8 @@ import {
   onSnapshot,
   orderBy,
   query,
+  runTransaction,
+  serverTimestamp,
   type Timestamp,
 } from "firebase/firestore";
 
@@ -71,6 +73,7 @@ type ProfileState = {
   todaysScore: number | null;
   todaysCompleted: string[];
   scoreByGame: Record<string, number>;
+  resultsByGame: Record<string, "win" | "loss">;
   lastPlayedOn?: Timestamp | null;
 };
 
@@ -300,6 +303,8 @@ export default function AmerGauntletPage() {
   const [penaltySeconds, setPenaltySeconds] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
   const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null);
+  const [syncingResults, setSyncingResults] = useState(false);
+  const [lastSyncedSignature, setLastSyncedSignature] = useState<string | null>(null);
 
   useEffect(() => {
     const ref = doc(db, "amerGauntletDaily", todayKey);
@@ -412,6 +417,7 @@ export default function AmerGauntletPage() {
             todaysScore: null,
             todaysCompleted: [],
             scoreByGame: {},
+            resultsByGame: {},
           });
           return;
         }
@@ -432,6 +438,14 @@ export default function AmerGauntletPage() {
                 Object.entries(data.scoreByGame).map(([key, value]) => [key, Number(value ?? 0)])
               )
             : {},
+          resultsByGame: typeof data.resultsByGame === "object" && data.resultsByGame
+            ? Object.fromEntries(
+                Object.entries(data.resultsByGame).map(([key, value]) => [
+                  key,
+                  value === "win" ? "win" : "loss",
+                ])
+              )
+            : {},
           lastPlayedOn:
             lastPlayed && typeof lastPlayed.toDate === "function"
               ? (lastPlayed as Timestamp)
@@ -448,6 +462,7 @@ export default function AmerGauntletPage() {
           todaysScore: null,
           todaysCompleted: [],
           scoreByGame: {},
+          resultsByGame: {},
         });
       }
     );
@@ -495,28 +510,52 @@ export default function AmerGauntletPage() {
     }, {} as Record<string, number>);
   }, [profile, todayKey]);
 
+  const todaysResultsByGame = useMemo(() => {
+    if (!profile) return {} as Record<string, "win" | "loss">;
+    if (profile.activeDailyKey !== todayKey) return {} as Record<string, "win" | "loss">;
+    return Object.entries(profile.resultsByGame ?? {}).reduce((acc, [key, value]) => {
+      const normalized = normalizeGameId(key);
+      if (value === "win" || value === "loss") {
+        acc[normalized] = value;
+      }
+      return acc;
+    }, {} as Record<string, "win" | "loss">);
+  }, [profile, todayKey]);
+
   const dailyEntries = useMemo(() => {
     const completedSet = new Set(todaysCompleted);
 
     return lineup.map((game, index) => {
-      const completed = completedSet.has(game.id);
+      const syncedResult = todaysResultsByGame[game.id] ?? null;
+      const completed = completedSet.has(game.id) || syncedResult != null;
       return {
         order: index + 1,
         game,
         completed,
         score: todaysScoreByGame?.[game.id] ?? null,
+        result: syncedResult,
       };
     });
-  }, [lineup, todaysCompleted, todaysScoreByGame]);
+  }, [lineup, todaysCompleted, todaysScoreByGame, todaysResultsByGame]);
+
+  const sessionResultsByGame = useMemo(() => {
+    const merged: Record<string, "win" | "loss"> = { ...todaysResultsByGame };
+    Object.entries(localResults).forEach(([gameId, result]) => {
+      if (result) {
+        merged[gameId] = result;
+      }
+    });
+    return merged;
+  }, [localResults, todaysResultsByGame]);
 
   const sessionEntries = useMemo(() => {
     const firstPendingIndex = dailyEntries.findIndex(
-      (entry) => !(entry.completed || localResults[entry.game.id] != null)
+      (entry) => !(entry.completed || sessionResultsByGame[entry.game.id] != null)
     );
 
     return dailyEntries.map((entry, index) => {
-      const localResult = localResults[entry.game.id] ?? null;
-      const completed = entry.completed || localResult != null;
+      const resolvedResult = sessionResultsByGame[entry.game.id] ?? null;
+      const completed = entry.completed || resolvedResult != null;
       const status: DailyGameStatus = completed
         ? "completed"
         : firstPendingIndex === -1
@@ -529,10 +568,34 @@ export default function AmerGauntletPage() {
         ...entry,
         completed,
         status,
-        localResult,
+        result: resolvedResult,
+        synced:
+          resolvedResult != null && todaysResultsByGame[entry.game.id] === resolvedResult,
       };
     });
-  }, [dailyEntries, localResults]);
+  }, [dailyEntries, sessionResultsByGame, todaysResultsByGame]);
+
+  const pendingSyncIds = useMemo(
+    () =>
+      lineupIds.filter((id) => {
+        const result = sessionResultsByGame[id];
+        if (!result) {
+          return false;
+        }
+        return todaysResultsByGame[id] !== result;
+      }),
+    [lineupIds, sessionResultsByGame, todaysResultsByGame]
+  );
+  const hasPendingResults = pendingSyncIds.length > 0;
+  const pendingSignature = useMemo(() => {
+    if (!hasPendingResults) {
+      return null;
+    }
+    return pendingSyncIds
+      .map((id) => `${id}:${sessionResultsByGame[id]}`)
+      .sort()
+      .join("|");
+  }, [hasPendingResults, pendingSyncIds, sessionResultsByGame]);
 
   const activeEntry = hasStarted
     ? sessionEntries.find((entry) => entry.status === "active") ?? null
@@ -542,6 +605,7 @@ export default function AmerGauntletPage() {
   const completedCount = sessionEntries.filter((entry) => entry.completed).length;
   const progressPercent = totalGames ? Math.round((completedCount / totalGames) * 100) : 0;
   const remainingGames = sessionEntries.filter((entry) => !entry.completed).length;
+  const sessionFullyCompleted = totalGames > 0 && remainingGames === 0;
 
   useEffect(() => {
     if (!sessionEntries.length) {
@@ -551,15 +615,17 @@ export default function AmerGauntletPage() {
       setSessionStartedAt(new Date());
       return;
     }
-    if (
-      sessionStartedAt &&
-      !activeEntry &&
-      sessionEntries.every((entry) => entry.completed) &&
-      !sessionEndedAt
-    ) {
+    if (sessionStartedAt && !activeEntry && sessionFullyCompleted && !sessionEndedAt) {
       setSessionEndedAt(new Date());
     }
-  }, [sessionEntries, activeEntry, sessionStartedAt, sessionEndedAt, hasStarted]);
+  }, [
+    sessionEntries,
+    activeEntry,
+    sessionStartedAt,
+    sessionEndedAt,
+    hasStarted,
+    sessionFullyCompleted,
+  ]);
 
   useEffect(() => {
     if (countdownSeconds == null) {
@@ -591,12 +657,74 @@ export default function AmerGauntletPage() {
     return () => window.clearInterval(timer);
   }, [sessionStartedAt, sessionEndedAt]);
 
-  const wins = Object.values(localResults).filter((result) => result === "win").length;
-  const losses = Object.values(localResults).filter((result) => result === "loss").length;
+  const wins = sessionEntries.filter((entry) => entry.result === "win").length;
+  const losses = sessionEntries.filter((entry) => entry.result === "loss").length;
   const baseElapsedSeconds = sessionStartedAt
     ? getDisplayDurationSeconds(sessionStartedAt, sessionEndedAt, elapsedSeconds)
     : 0;
   const displayElapsedSeconds = baseElapsedSeconds + penaltySeconds;
+
+  useEffect(() => {
+    if (!hasPendingResults && lastSyncedSignature !== null) {
+      setLastSyncedSignature(null);
+    }
+  }, [hasPendingResults, lastSyncedSignature]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    if (!pendingSignature) {
+      return;
+    }
+    if (syncingResults) {
+      return;
+    }
+    if (pendingSignature === lastSyncedSignature) {
+      return;
+    }
+
+    let cancelled = false;
+    setSyncingResults(true);
+
+    const run = async () => {
+      try {
+        await syncGauntletProgress({
+          user,
+          todayKey,
+          lineupIds,
+          resultsByGame: sessionResultsByGame,
+          baseElapsedSeconds,
+          penaltySeconds,
+        });
+        if (!cancelled) {
+          setLastSyncedSignature(pendingSignature);
+        }
+      } catch (error) {
+        console.error("Failed to sync Amer Gauntlet results", error);
+      } finally {
+        if (!cancelled) {
+          setSyncingResults(false);
+        }
+      }
+    };
+
+    void run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    user,
+    pendingSignature,
+    syncingResults,
+    lastSyncedSignature,
+    todayKey,
+    lineupIds,
+    sessionResultsByGame,
+    baseElapsedSeconds,
+    penaltySeconds,
+  ]);
 
   const handleCompleteGame = (
     result: "win" | "loss",
@@ -739,12 +867,14 @@ export default function AmerGauntletPage() {
               elapsedSeconds={displayElapsedSeconds}
               onComplete={handleCompleteGame}
               onSkip={handleSkipGame}
-              sessionEnded={sessionEntries.every((entry) => entry.completed)}
+              sessionEnded={sessionFullyCompleted}
               wins={wins}
               losses={losses}
               hasStarted={hasStarted}
               onStart={handleStartGauntlet}
               countdownSeconds={countdownSeconds}
+              syncingResults={syncingResults}
+              hasPendingResults={hasPendingResults}
             />
 
             <div className="space-y-4">
@@ -887,7 +1017,8 @@ type SessionEntry = {
   completed: boolean;
   status: DailyGameStatus;
   score: number | null;
-  localResult: SessionGameResult;
+  result: SessionGameResult;
+  synced: boolean;
 };
 
 function SessionHeader({
@@ -971,6 +1102,8 @@ function ActiveGamePanel({
   hasStarted,
   onStart,
   countdownSeconds,
+  syncingResults,
+  hasPendingResults,
 }: {
   activeEntry: SessionEntry | null;
   upcomingEntry: SessionEntry | null;
@@ -984,6 +1117,8 @@ function ActiveGamePanel({
   hasStarted: boolean;
   onStart: () => void;
   countdownSeconds: number | null;
+  syncingResults: boolean;
+  hasPendingResults: boolean;
 }) {
   if (totalGames === 0) {
     return (
@@ -1038,8 +1173,17 @@ function ActiveGamePanel({
           <p className="text-sm uppercase tracking-[0.2em]">Record: {wins}-{losses}</p>
         </div>
         {sessionEnded ? (
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-emerald-800 dark:text-emerald-200/80">
-            Your results are ready to sync. Firestore updates when each mini game reports completion.
+          <p
+            className={cn(
+              "text-xs font-medium uppercase tracking-[0.2em]",
+              hasPendingResults || syncingResults
+                ? "text-amber-700 dark:text-amber-200"
+                : "text-emerald-800 dark:text-emerald-200/80"
+            )}
+          >
+            {hasPendingResults || syncingResults
+              ? "Syncing results to Firestore..."
+              : "Results synced to Firestore."}
           </p>
         ) : null}
       </Card>
@@ -1150,7 +1294,7 @@ function SessionProgressList({ entries }: { entries: SessionEntry[] }) {
 }
 
 function SessionProgressRow({ entry }: { entry: SessionEntry }) {
-  const { game, order, status, localResult, completed } = entry;
+  const { game, order, status, result, completed, synced } = entry;
   return (
     <div
       className={cn(
@@ -1164,7 +1308,7 @@ function SessionProgressRow({ entry }: { entry: SessionEntry }) {
         <p className="text-[11px] uppercase tracking-[0.24em]">Game {order}</p>
         <p className="text-sm font-semibold text-brand-strong dark:text-white">{game.name}</p>
       </div>
-      <StatusIndicator status={status} result={localResult} completed={completed} />
+      <StatusIndicator status={status} result={result} completed={completed} synced={synced} />
     </div>
   );
 }
@@ -1173,10 +1317,12 @@ function StatusIndicator({
   status,
   result,
   completed,
+  synced,
 }: {
   status: DailyGameStatus;
   result: SessionGameResult;
   completed: boolean;
+  synced: boolean;
 }) {
   if (status === "completed") {
     return (
@@ -1203,8 +1349,15 @@ function StatusIndicator({
             {result === "win" ? "Win" : "Loss"}
           </span>
         ) : completed ? (
-          <span className="text-xs uppercase tracking-[0.2em] text-brand-muted dark:text-white/60">
-            Synced
+          <span
+            className={cn(
+              "text-xs uppercase tracking-[0.2em]",
+              synced
+                ? "text-brand-muted dark:text-white/60"
+                : "text-amber-600 dark:text-amber-200"
+            )}
+          >
+            {synced ? "Synced" : "Syncing..."}
           </span>
         ) : null}
       </div>
@@ -1313,6 +1466,277 @@ function humanizeId(id: string) {
     .replace(/\s+/g, " ")
     .trim()
     .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+type GauntletResultsMap = Record<string, "win" | "loss">;
+
+type SyncPayload = {
+  user: User;
+  todayKey: string;
+  lineupIds: string[];
+  resultsByGame: GauntletResultsMap;
+  baseElapsedSeconds: number;
+  penaltySeconds: number;
+};
+
+type GauntletTotals = {
+  totalScore: number;
+  scoreByGame: Record<string, number>;
+  completedCount: number;
+  longestWinStreak: number;
+  finishedAll: boolean;
+  perfectRun: boolean;
+};
+
+async function syncGauntletProgress({
+  user,
+  todayKey,
+  lineupIds,
+  resultsByGame,
+  baseElapsedSeconds,
+  penaltySeconds,
+}: SyncPayload) {
+  const normalizedResults: GauntletResultsMap = {};
+  lineupIds.forEach((id) => {
+    const result = resultsByGame[id];
+    if (result === "win" || result === "loss") {
+      normalizedResults[id] = result;
+    }
+  });
+
+  if (!Object.keys(normalizedResults).length) {
+    return;
+  }
+
+  await runTransaction(db, async (transaction) => {
+    const profileRef = doc(db, "amerGauntletProfiles", user.uid);
+    const leaderboardRef = doc(db, "amerGauntletLeaderboards", user.uid);
+
+    const profileSnap = await transaction.get(profileRef);
+    const leaderboardSnap = await transaction.get(leaderboardRef);
+
+    const prevProfile = profileSnap.exists() ? (profileSnap.data() as any) : {};
+    const prevActiveDailyKey =
+      typeof prevProfile.activeDailyKey === "string" ? prevProfile.activeDailyKey : null;
+    const carryForward = prevActiveDailyKey === todayKey;
+
+    const prevResultsRaw =
+      carryForward && typeof prevProfile.resultsByGame === "object" && prevProfile.resultsByGame
+        ? (prevProfile.resultsByGame as Record<string, string>)
+        : {};
+
+    const mergedResults: GauntletResultsMap = {};
+    Object.entries(prevResultsRaw).forEach(([key, value]) => {
+      const normalizedKey = normalizeGameId(key);
+      if (value === "win" || value === "loss") {
+        mergedResults[normalizedKey] = value;
+      }
+    });
+    Object.entries(normalizedResults).forEach(([key, value]) => {
+      const normalizedKey = normalizeGameId(key);
+      mergedResults[normalizedKey] = value;
+    });
+
+    const metrics = calculateAmerGauntletTotals(lineupIds, mergedResults, {
+      baseElapsedSeconds,
+      penaltySeconds,
+    });
+
+    const completedGameIds = lineupIds.filter((id) => mergedResults[id]);
+    const finishedAll = metrics.finishedAll;
+
+    const prevScoreByGameRaw =
+      carryForward && typeof prevProfile.scoreByGame === "object" && prevProfile.scoreByGame
+        ? (prevProfile.scoreByGame as Record<string, number>)
+        : {};
+    const prevScoreByGame: Record<string, number> = {};
+    Object.entries(prevScoreByGameRaw).forEach(([key, value]) => {
+      const normalizedKey = normalizeGameId(key);
+      const numeric = Number(value ?? 0);
+      if (!Number.isNaN(numeric)) {
+        prevScoreByGame[normalizedKey] = numeric;
+      }
+    });
+    const nextScoreByGame: Record<string, number> = { ...prevScoreByGame };
+    Object.entries(metrics.scoreByGame).forEach(([key, value]) => {
+      nextScoreByGame[key] = value;
+    });
+
+    const prevCompletedDayKey =
+      prevActiveDailyKey &&
+      Array.isArray(prevProfile.todaysCompleted) &&
+      (prevProfile.todaysCompleted as string[]).length >= lineupIds.length
+        ? prevActiveDailyKey
+        : null;
+    const alreadyCountedToday =
+      carryForward &&
+      Array.isArray(prevProfile.todaysCompleted) &&
+      (prevProfile.todaysCompleted as string[]).length >= lineupIds.length;
+
+    const prevTotalGauntlets = Number(
+      prevProfile.totalGauntlets ?? prevProfile.completedGauntlets ?? 0
+    );
+    const prevCurrentStreak = Number(prevProfile.currentStreak ?? 0);
+    const prevBestStreak = Number(prevProfile.bestStreak ?? prevProfile.bestRun ?? 0);
+    const prevTodaysScore = alreadyCountedToday
+      ? Number(prevProfile.todaysScore ?? 0)
+      : 0;
+
+    let nextCurrentStreak = prevCurrentStreak;
+    let nextBestStreak = prevBestStreak;
+    let nextTotalGauntlets = prevTotalGauntlets;
+
+    if (finishedAll) {
+      if (alreadyCountedToday) {
+        nextCurrentStreak = prevCurrentStreak || 1;
+      } else if (prevCompletedDayKey && isNextDay(prevCompletedDayKey, todayKey)) {
+        nextCurrentStreak = (prevCurrentStreak || 0) + 1;
+      } else {
+        nextCurrentStreak = 1;
+      }
+      nextBestStreak = Math.max(nextCurrentStreak, prevBestStreak || 0);
+      nextTotalGauntlets = prevTotalGauntlets + (alreadyCountedToday ? 0 : 1);
+    }
+
+    const profileUpdate: Record<string, unknown> = {
+      displayName: user.displayName ?? prevProfile.displayName ?? "You",
+      activeDailyKey: todayKey,
+      todaysCompleted: completedGameIds,
+      todaysScore: metrics.totalScore,
+      scoreByGame: Object.fromEntries(
+        Object.entries(nextScoreByGame).map(([key, value]) => [key, Number(value ?? 0)])
+      ),
+      resultsByGame: Object.fromEntries(Object.entries(mergedResults)),
+      currentStreak: nextCurrentStreak,
+      bestStreak: nextBestStreak,
+      totalGauntlets: nextTotalGauntlets,
+      lastPlayedOn: serverTimestamp(),
+    };
+
+    transaction.set(profileRef, profileUpdate, { merge: true });
+
+    const prevLeaderboard = leaderboardSnap.exists() ? (leaderboardSnap.data() as any) : {};
+    const prevSeasonScore = Number(prevLeaderboard.seasonScore ?? 0);
+    const prevBestRun = Number(prevLeaderboard.bestRun ?? 0);
+    const prevLeaderboardStreak = Number(prevLeaderboard.currentStreak ?? 0);
+
+    let nextSeasonScore = prevSeasonScore;
+    let nextLeaderboardStreak = prevLeaderboardStreak;
+    let nextBestRun = Math.max(prevBestRun, metrics.longestWinStreak);
+
+    if (finishedAll) {
+      const seasonDelta = metrics.totalScore - prevTodaysScore;
+      nextSeasonScore = Math.max(0, prevSeasonScore + seasonDelta);
+      nextLeaderboardStreak = nextCurrentStreak;
+      nextBestRun = Math.max(nextBestRun, nextCurrentStreak);
+    }
+
+    const leaderboardUpdate: Record<string, unknown> = {
+      displayName:
+        user.displayName ??
+        prevProfile.displayName ??
+        prevLeaderboard.displayName ??
+        "Player",
+      seasonScore: nextSeasonScore,
+      bestRun: nextBestRun,
+    };
+
+    if (finishedAll) {
+      leaderboardUpdate.currentStreak = nextLeaderboardStreak;
+      leaderboardUpdate.lastPlayedOn = serverTimestamp();
+    }
+
+    transaction.set(leaderboardRef, leaderboardUpdate, { merge: true });
+  });
+}
+
+function calculateAmerGauntletTotals(
+  lineupIds: string[],
+  resultsByGame: GauntletResultsMap,
+  options: { baseElapsedSeconds?: number; penaltySeconds?: number }
+): GauntletTotals {
+  let rawTotal = 0;
+  let completedCount = 0;
+  let winStreak = 0;
+  let longestWinStreak = 0;
+  const scoreByGame: Record<string, number> = {};
+
+  lineupIds.forEach((id) => {
+    const result = resultsByGame[id];
+    if (result === "win") {
+      winStreak += 1;
+      longestWinStreak = Math.max(longestWinStreak, winStreak);
+      const score = computeGameScore("win", winStreak);
+      scoreByGame[id] = score;
+      rawTotal += score;
+      completedCount += 1;
+    } else if (result === "loss") {
+      const score = computeGameScore("loss", 0);
+      scoreByGame[id] = score;
+      rawTotal += score;
+      completedCount += 1;
+      winStreak = 0;
+    } else {
+      winStreak = 0;
+    }
+  });
+
+  const finishedAll = completedCount === lineupIds.length && lineupIds.length > 0;
+  const perfectRun = finishedAll && lineupIds.every((id) => resultsByGame[id] === "win");
+
+  let adjustedTotal = rawTotal;
+  if (finishedAll) {
+    const completionMultiplier = perfectRun ? 1.2 : 1.1;
+    adjustedTotal = Math.round(adjustedTotal * completionMultiplier);
+    const tempoWindow = options.baseElapsedSeconds ?? 0;
+    if (tempoWindow > 0 && lineupIds.length > 0) {
+      const averageSeconds = tempoWindow / lineupIds.length;
+      const tempoBonus = Math.max(0, Math.round((180 - averageSeconds) / 5));
+      adjustedTotal += tempoBonus;
+    }
+  }
+
+  const penaltySeconds = options.penaltySeconds ?? 0;
+  if (penaltySeconds > 0) {
+    adjustedTotal = Math.max(0, adjustedTotal - penaltySeconds * 2);
+  }
+
+  return {
+    totalScore: Math.round(adjustedTotal),
+    scoreByGame,
+    completedCount,
+    longestWinStreak,
+    finishedAll,
+    perfectRun,
+  };
+}
+
+function computeGameScore(result: "win" | "loss", winStreak: number) {
+  if (result === "win") {
+    const base = 120;
+    const streakBonus = Math.min(Math.max(winStreak - 1, 0) * 10, 40);
+    return base + streakBonus;
+  }
+  return 100;
+}
+
+function parseDateKeyToDate(key: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) {
+    return null;
+  }
+  const date = new Date(`${key}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function isNextDay(previousKey: string, currentKey: string) {
+  const previousDate = parseDateKeyToDate(previousKey);
+  const currentDate = parseDateKeyToDate(currentKey);
+  if (!previousDate || !currentDate) {
+    return false;
+  }
+  const dayMs = 86_400_000;
+  const diff = currentDate.getTime() - previousDate.getTime();
+  return Math.round(diff / dayMs) === 1;
 }
 
 function getDisplayDurationSeconds(startedAt: Date, endedAt: Date | null, liveElapsed: number) {
